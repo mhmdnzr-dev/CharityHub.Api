@@ -5,7 +5,6 @@ namespace CharityHub.Endpoints;
 
 public static class HostingExtensions
 {
-    ILogger
     public static void AddCORSPolicy(this IServiceCollection services, IConfiguration configuration)
     {
         var allowedDomains = configuration.GetSection("AllowedOrigins").Get<string[]>();
@@ -29,10 +28,10 @@ public static class HostingExtensions
             // Configure MSSQL Sink with AdditionalColumns
             var columnOptions = new ColumnOptions
             {
-                AdditionalColumns =
-                [
+                AdditionalColumns = new List<SqlColumn>
+                {
                     new SqlColumn { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 100 }
-                ]
+                }
             };
 
             columnOptions.Store.Remove(StandardColumn.Properties);
@@ -60,6 +59,6 @@ public static class HostingExtensions
         });
 
         return builder;
-
     }
+
 }
