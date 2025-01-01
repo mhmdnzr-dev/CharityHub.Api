@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CharityHub.Infra.Identity.Configuration;
 
-namespace CharityHub.Infra.Identity.Configuration
+internal class JwtConfig
 {
-    internal class JwtConfig
-    {
-    }
 }
