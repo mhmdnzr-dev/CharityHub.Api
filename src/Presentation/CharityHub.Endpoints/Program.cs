@@ -3,6 +3,7 @@ using CharityHub.Endpoints;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseCustomSerilog(builder.Configuration);
 builder.Services.AddApplicationConfiguration(builder.Configuration);
 
 // Add services to the container.
