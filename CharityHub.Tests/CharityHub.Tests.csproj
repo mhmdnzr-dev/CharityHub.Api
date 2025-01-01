@@ -1,25 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="MSTest" Version="3.6.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+		<PackageReference Include="MSTest" Version="3.6.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
-  </ItemGroup>
+	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="IntegrationTests\" />
-    <Folder Include="Fixtures\" />
-    <Folder Include="UnitTests\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="IntegrationTests\" />
+		<Folder Include="Fixtures\" />
+		<Folder Include="UnitTests\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Core\CharityHub.Core.Application\CharityHub.Core.Application.csproj" />
+		<ProjectReference Include="..\..\Infra\CharityHub.Infra.Sql\CharityHub.Infra.Sql.csproj" />
+		<ProjectReference Include="..\..\Infra\CharityHub.Infra.Identity\CharityHub.Infra.Identity.csproj" />
+		<ProjectReference Include="..\..\Presentation\CharityHub.WebApi\CharityHub.Endpoints.csproj" />
+	</ItemGroup>
 
 </Project>
