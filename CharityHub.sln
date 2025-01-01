@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.AspireHost", "CharityHub.AspireHost\CharityHub.AspireHost.csproj", "{81658F9B-1FED-4CC4-A6DA-47503FD8256E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{071D69FF-3B36-4989-B809-BD2704302862}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{1E6702BA-5BF7-4C00-B4A7-BDE716AD1EB4}"
@@ -35,16 +33,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Utils.Extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Tests", "test\CharityHub.Tests\CharityHub.Tests.csproj", "{9444650A-C41B-4693-9650-1568C3149285}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.AspireHost", "CharityHub.AspireHost\CharityHub.AspireHost.csproj", "{6FF0911C-2E81-4A93-BE72-19BCD8B50797}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81658F9B-1FED-4CC4-A6DA-47503FD8256E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81658F9B-1FED-4CC4-A6DA-47503FD8256E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81658F9B-1FED-4CC4-A6DA-47503FD8256E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81658F9B-1FED-4CC4-A6DA-47503FD8256E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44D5B9FB-8977-4E8E-BEC6-FE96A23622BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44D5B9FB-8977-4E8E-BEC6-FE96A23622BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D5B9FB-8977-4E8E-BEC6-FE96A23622BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,6 +77,10 @@ Global
 		{9444650A-C41B-4693-9650-1568C3149285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9444650A-C41B-4693-9650-1568C3149285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9444650A-C41B-4693-9650-1568C3149285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,9 +12,10 @@
 		<Folder Include="Data\SeedData\" />
 		<Folder Include="Repositories\" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\Core\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
-	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Core\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
+	</ItemGroup>
+	
 
 </Project>

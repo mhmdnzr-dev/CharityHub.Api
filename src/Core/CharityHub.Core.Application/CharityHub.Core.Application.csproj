@@ -11,10 +11,11 @@
 		<Folder Include="Interfaces\" />
 		<Folder Include="Services\" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
-		<ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
-	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
+	  <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
+	</ItemGroup>
+	
 
 </Project>
