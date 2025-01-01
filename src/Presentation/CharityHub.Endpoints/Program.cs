@@ -1,5 +1,6 @@
 using CharityHub.Core.Application.Configuration;
 using CharityHub.Endpoints;
+using CharityHub.Endpoints.Middleware;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,4 +33,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.Run();
