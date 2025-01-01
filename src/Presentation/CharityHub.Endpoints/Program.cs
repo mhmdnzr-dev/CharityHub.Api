@@ -1,23 +1,14 @@
+using CharityHub.Core.Application.Configuration;
+using CharityHub.Endpoints;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddApplicationConfiguration(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Read allowed origins from appsettings.json
-var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
-
-// Add CORS policy
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CorsPolicy", policy =>
-    {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+builder.Services.AddCORSPolicy(builder.Configuration);
 
 // Learn more about configuring OpenAPI
 builder.Services.AddOpenApi();
