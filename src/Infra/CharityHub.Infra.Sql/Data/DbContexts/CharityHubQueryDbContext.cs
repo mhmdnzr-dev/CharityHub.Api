@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 
-using CharityHub.Core.Domain.Entities.Donations;
-using CharityHub.Core.Domain.Entities.Users;
+using CharityHub.Core.Domain.Entities.Identity;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 namespace CharityHub.Infra.Sql.Data.DbContexts;
 
 
-public class CharityHubQueryDbContext : IdentityDbContext<User, UserRole, string>
+public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
     #region DbSets
-    public DbSet<Donation> Donations { get; set; }
+
     #endregion
 
     public CharityHubQueryDbContext(DbContextOptions<CharityHubQueryDbContext> options)
