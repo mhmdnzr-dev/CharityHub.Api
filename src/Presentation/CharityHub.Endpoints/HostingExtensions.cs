@@ -1,12 +1,16 @@
-﻿using CharityHub.Core.Application.Services.Donations;
+﻿using System.Text;
+
+using CharityHub.Core.Application.Services.Donations;
 using CharityHub.Core.Contract.Donations.Interfaces.Repositories;
 using CharityHub.Core.Contract.Donations.Interfaces.Services;
-using CharityHub.Core.Domain.Entities.Users;
+using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Sql.Data.DbContexts;
 using CharityHub.Infra.Sql.Repositories.Donations;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
@@ -73,8 +77,10 @@ public static class HostingExtensions
 
     public static void AddIdentityAuthorization(this IServiceCollection services)
     {
+        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+
         // Register Identity services
-        services.AddIdentity<User, UserRole>()
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<CharityHubCommandDbContext>()
             .AddDefaultTokenProviders();
 
@@ -84,6 +90,26 @@ public static class HostingExtensions
         {
             options.AddPolicy("CanViewDonations", policy =>
                 policy.RequireRole("Admin", "Manager"));
+        });
+
+        // Add authentication and authorization
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["Jwt:Issuer"],
+                ValidAudience = configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+            };
         });
     }
 
