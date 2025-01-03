@@ -1,5 +1,5 @@
 using CharityHub.Core.Application.Configuration;
-using CharityHub.Endpoints;
+using CharityHub.Endpoints.DependencyInjection;
 using CharityHub.Endpoints.Middleware;
 
 using Scalar.AspNetCore;

@@ -5,6 +5,8 @@ using CharityHub.Core.Application.Services.Donations;
 using CharityHub.Core.Contract.Donations.Interfaces.Repositories;
 using CharityHub.Core.Contract.Donations.Interfaces.Services;
 using CharityHub.Core.Domain.Entities.Identity;
+using CharityHub.Infra.Identity.Interfaces;
+using CharityHub.Infra.Identity.Services;
 using CharityHub.Infra.Sql.Data.DbContexts;
 using CharityHub.Infra.Sql.Repositories.Donations;
 
@@ -16,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 
-namespace CharityHub.Endpoints;
+namespace CharityHub.Endpoints.DependencyInjection;
 
 public static class HostingExtensions
 {
@@ -132,6 +134,10 @@ public static class HostingExtensions
         services.AddTransient<IDonationApplicationService, DonationApplicationService>();
         services.AddTransient<IDonationCommandRepository, DonationCommandRepository>();
         services.AddTransient<IDonationQueryRepository, DonationQueryRepository>();
+
+
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ITokenService, TokenService>();
     }
 
     public static void AddDbContext(this IServiceCollection services)
