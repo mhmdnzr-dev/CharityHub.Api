@@ -8,10 +8,3 @@ public abstract class BaseEntity
     public DateTime? ModifiedAt { get; set; }
     public bool IsActive { get; set; } = true;
 }
-
-
-public abstract class Aggregate<TAggregate> : BaseEntity
-    where TAggregate : BaseEntity
-{
-    public TAggregate AggregateRoot { get; protected set; }
-}

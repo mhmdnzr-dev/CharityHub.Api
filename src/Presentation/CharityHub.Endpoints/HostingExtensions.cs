@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 
 using CharityHub.Core.Application.Services.Donations;
 using CharityHub.Core.Contract.Donations.Interfaces.Repositories;
@@ -109,6 +110,19 @@ public static class HostingExtensions
                 ValidIssuer = configuration["Jwt:Issuer"],
                 ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = context =>
+                {
+                    var userClaims = context.Principal.Claims;
+                    // Example: Extract roles or custom claims
+                    var roles = userClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+                    var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")?.Value;
+
+                    // Perform additional validation or processing if necessary
+                    return Task.CompletedTask;
+                }
             };
         });
     }

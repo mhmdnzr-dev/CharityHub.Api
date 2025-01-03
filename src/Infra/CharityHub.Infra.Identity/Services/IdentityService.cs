@@ -1,5 +1,5 @@
 ﻿namespace CharityHub.Infra.Identity.Services;
 
-internal class IdentityService
+public class IdentityService
 {
 }

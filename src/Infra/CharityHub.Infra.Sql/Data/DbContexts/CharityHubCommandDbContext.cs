@@ -1,26 +1,71 @@
-﻿namespace CharityHub.Infra.Sql.Data.DbContexts;
+﻿using System.Reflection;
 
-using System.Reflection;
-
-using CharityHub.Core.Domain.Entities.Donations;
-using CharityHub.Core.Domain.Entities.Users;
+using CharityHub.Core.Domain.Entities;
+using CharityHub.Core.Domain.Entities.Identity;
+using CharityHub.Core.Domain.ValueObjects;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class CharityHubCommandDbContext : IdentityDbContext<User, UserRole, string>
+namespace CharityHub.Infra.Sql.Data.DbContexts;
+
+
+
+public class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
     #region DbSets
-    public DbSet<Donation> Donations { get; set; }
+    public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<Charity> Charities { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
     #endregion
-    public CharityHubCommandDbContext()
+
+
+    #region Constructor
+    private CharityHubCommandDbContext()
     {
 
     }
+    public CharityHubCommandDbContext(DbContextOptions<CharityHubCommandDbContext> options) : base(options)
+    {
+    }
+    #endregion
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entityEntry in entries)
+        {
+            var entity = (BaseEntity)entityEntry.Entity;
+
+            if (entityEntry.State == EntityState.Added)
+            {
+                entity.CreatedAt = DateTime.UtcNow;
+            }
+            else if (entityEntry.State == EntityState.Modified)
+            {
+                entity.ModifiedAt = DateTime.UtcNow;
+                entityEntry.Property(nameof(entity.CreatedAt)).IsModified = false;
+            }
+        }
     }
 }
