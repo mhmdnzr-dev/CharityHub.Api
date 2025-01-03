@@ -11,7 +11,7 @@ public static class DependencyInjection
     {
         // Bind configuration models to use with IOptions<T>
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
-
+        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         return services;
     }
 }

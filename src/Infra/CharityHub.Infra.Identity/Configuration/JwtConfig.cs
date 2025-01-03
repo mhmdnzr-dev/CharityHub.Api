@@ -1,5 +1,5 @@
 ﻿namespace CharityHub.Infra.Identity.Configuration;
 
-internal class JwtConfig
+public class JwtConfig
 {
 }
