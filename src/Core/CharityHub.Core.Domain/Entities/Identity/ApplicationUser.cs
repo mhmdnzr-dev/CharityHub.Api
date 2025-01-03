@@ -2,4 +2,5 @@
 namespace CharityHub.Core.Domain.Entities.Identity;
 public class ApplicationUser : IdentityUser
 {
+
 }

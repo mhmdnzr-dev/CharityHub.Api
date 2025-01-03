@@ -9,9 +9,9 @@ namespace CharityHub.Infra.Identity.Services;
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -30,7 +30,7 @@ public class IdentityService : IIdentityService
     }
 
     // Get user roles
-    public async Task<IList<string>> GetUserRolesAsync(ApplicationUser user)
+    public async Task<IEnumerable<string>> GetUserRolesAsync(ApplicationUser user)
     {
         return await _userManager.GetRolesAsync(user);
     }
@@ -46,7 +46,7 @@ public class IdentityService : IIdentityService
     {
         if (!await _roleManager.RoleExistsAsync(roleName))
         {
-            var role = new IdentityRole(roleName);
+            var role = new ApplicationRole(roleName);
             return await _roleManager.CreateAsync(role);
         }
         return IdentityResult.Failed(new IdentityError { Description = "Role already exists." });
@@ -83,7 +83,7 @@ public class IdentityService : IIdentityService
     }
 
     // Get all roles
-    public IEnumerable<IdentityRole> GetAllRoles()
+    public IEnumerable<ApplicationRole> GetAllRoles()
     {
         return _roleManager.Roles;
     }
