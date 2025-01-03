@@ -2,6 +2,8 @@ using CharityHub.Core.Application.Configuration;
 using CharityHub.Endpoints.DependencyInjection;
 using CharityHub.Endpoints.Middleware;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +29,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(op =>
+    {
+        // Enable authentication for the API reference
+        op.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecurityScheme = JwtBearerDefaults.AuthenticationScheme
+        };
+
+
+    });
 }
 
 app.UseHttpsRedirection();
@@ -36,6 +47,7 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

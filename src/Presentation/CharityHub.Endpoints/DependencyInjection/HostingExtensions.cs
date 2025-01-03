@@ -59,7 +59,9 @@ public static class HostingExtensions
                 .ReadFrom.Services(services)
                 .WriteTo.Console()
                 .WriteTo.MSSqlServer(
-                    connectionString: context.Configuration.GetConnectionString("DefaultConnection"),
+                      connectionString: context.Configuration.GetSection("Serilog:WriteTo").GetChildren()
+                    .First(x => x.GetValue<string>("Name") == "MSSqlServer")
+                    .GetSection("Args").GetValue<string>("connectionString"),
                     sinkOptions: new MSSqlServerSinkOptions
                     {
                         AutoCreateSqlTable = true,

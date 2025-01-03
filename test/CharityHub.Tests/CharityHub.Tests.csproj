@@ -22,11 +22,6 @@
 		<Folder Include="UnitTests\" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\Core\CharityHub.Core.Application\CharityHub.Core.Application.csproj" />
-		<ProjectReference Include="..\..\Infra\CharityHub.Infra.Sql\CharityHub.Infra.Sql.csproj" />
-		<ProjectReference Include="..\..\Infra\CharityHub.Infra.Identity\CharityHub.Infra.Identity.csproj" />
-		<ProjectReference Include="..\..\Presentation\CharityHub.WebApi\CharityHub.Endpoints.csproj" />
-	</ItemGroup>
+	
 
 </Project>
