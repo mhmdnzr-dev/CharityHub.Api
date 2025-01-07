@@ -1,5 +1,7 @@
 ﻿using CharityHub.Core.Application.Configuration.Models;
 
+using FluentValidation;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,9 +13,15 @@ public static class DependencyInjection
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 
-        // Bind configuration models to use with IOptions<T>
+        // Bind configuration models to use with IOptions<T>    
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+
+
+        // Automatically register all AbstractValidator<T> implementations in the assembly
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
+
         return services;
     }
 }

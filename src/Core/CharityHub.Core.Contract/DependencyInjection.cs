@@ -24,6 +24,10 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRequestHandler<>), typeof(MediatorCommandHandlerAdapter<>));
         services.AddScoped(typeof(IRequestHandler<,>), typeof(MediatorQueryHandlerAdapter<,>));
 
+        // Add MediatR pipeline behavior for FluentValidation
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
+
+
         return services;
     }
 }
