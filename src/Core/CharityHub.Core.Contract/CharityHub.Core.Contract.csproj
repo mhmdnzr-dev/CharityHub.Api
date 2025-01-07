@@ -10,11 +10,17 @@
 
 	<ItemGroup>
 	  <Folder Include="Donations\Interfaces\Services\" />
+	  <Folder Include="Services\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
 	  <PackageReference Include="MediatR" Version="12.4.1" />
 	  <PackageReference Include="Scrutor" Version="5.1.1" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
 	</ItemGroup>
 </Project>

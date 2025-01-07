@@ -131,8 +131,6 @@ public static class HostingExtensions
 
     public static void AddCustomServices(this IServiceCollection services)
     {
-
-
         services.AddApplication();
         services.AddContract();
 
