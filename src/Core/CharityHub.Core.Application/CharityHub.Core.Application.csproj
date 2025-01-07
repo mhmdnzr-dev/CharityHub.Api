@@ -16,6 +16,10 @@
 	  <ProjectReference Include="..\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
 	  <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Services\" />
+	</ItemGroup>
 	
 
 </Project>

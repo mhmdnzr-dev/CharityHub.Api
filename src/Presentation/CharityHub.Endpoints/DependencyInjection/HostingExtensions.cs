@@ -1,14 +1,12 @@
 ﻿using System.Security.Claims;
 using System.Text;
 
-using CharityHub.Core.Application.Services.Donations;
-using CharityHub.Core.Contract.Donations.Interfaces.Repositories;
-using CharityHub.Core.Contract.Donations.Interfaces.Services;
+using CharityHub.Core.Application;
+using CharityHub.Core.Contract;
 using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Identity.Interfaces;
 using CharityHub.Infra.Identity.Services;
 using CharityHub.Infra.Sql.Data.DbContexts;
-using CharityHub.Infra.Sql.Repositories.Donations;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -133,9 +131,10 @@ public static class HostingExtensions
 
     public static void AddCustomServices(this IServiceCollection services)
     {
-        services.AddTransient<IDonationApplicationService, DonationApplicationService>();
-        services.AddTransient<IDonationCommandRepository, DonationCommandRepository>();
-        services.AddTransient<IDonationQueryRepository, DonationQueryRepository>();
+
+
+        services.AddApplication();
+        services.AddContract();
 
 
         services.AddScoped<IIdentityService, IdentityService>();
