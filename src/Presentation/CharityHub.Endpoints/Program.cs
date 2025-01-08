@@ -1,25 +1,23 @@
+
 using CharityHub.Endpoints.DependencyInjection;
-using CharityHub.Endpoints.Middleware;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseCustomSerilog(builder.Configuration);
-
+builder.Services.AddEndpointsApiExplorer();
 
 // Add services to the container.
 builder.Services.AddControllers();
-
 builder.Services.AddCORSPolicy(builder.Configuration);
-
 
 builder.Services.AddIdentityAuthorization();
 builder.Services.AddCustomServices();
 builder.Services.AddDbContext();
 
 // Learn more about configuring OpenAPI
+builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -27,6 +25,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
     app.MapOpenApi();
     app.MapScalarApiReference(op =>
     {
@@ -35,8 +36,6 @@ if (app.Environment.IsDevelopment())
         {
             PreferredSecurityScheme = JwtBearerDefaults.AuthenticationScheme
         };
-
-
     });
 }
 
@@ -45,10 +44,13 @@ app.UseHttpsRedirection();
 // Use CORS middleware
 app.UseCors("CorsPolicy");
 
-app.UseAuthorization();
+app.UseRouting();
+
+// Add custom response middleware
+
+
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.Run();

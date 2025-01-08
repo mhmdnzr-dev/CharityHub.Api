@@ -36,7 +36,7 @@ public static class HostingExtensions
             });
         });
     }
-    public static IHostBuilder UseCustomSerilog(this IHostBuilder builder, IConfiguration configuration)
+    public static IHostBuilder AddSerilog(this IHostBuilder builder)
     {
         builder.UseSerilog((context, services, configurationBuilder) =>
         {

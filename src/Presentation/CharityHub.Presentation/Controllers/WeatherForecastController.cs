@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace CharityHub.Endpoints.Controllers;
+namespace CharityHub.Presentation.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
-public class WeatherForecastController : ControllerBase
+internal sealed class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {
@@ -31,4 +30,16 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
+}
+
+
+internal sealed class WeatherForecast
+{
+    public DateOnly Date { get; set; }
+
+    public int TemperatureC { get; set; }
+
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+    public string? Summary { get; set; }
 }

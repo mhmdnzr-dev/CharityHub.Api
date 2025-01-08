@@ -18,16 +18,14 @@
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 		<PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="8.1.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Filters\" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Core\CharityHub.Core.Application\CharityHub.Core.Application.csproj" />
 	  <ProjectReference Include="..\..\Infra\CharityHub.Infra.Identity\CharityHub.Infra.Identity.csproj" />
 	  <ProjectReference Include="..\..\Infra\CharityHub.Infra.Sql\CharityHub.Infra.Sql.csproj" />
+	  <ProjectReference Include="..\CharityHub.Presentation\CharityHub.Presentation.csproj" />
 	</ItemGroup>
 
 
