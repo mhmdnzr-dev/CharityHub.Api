@@ -1,6 +1,8 @@
 ﻿namespace CharityHub.Core.Presistance.Interfaces.Base;
 
-public interface IQueryRepository<T> where T : class
+using CharityHub.Core.Domain.ValueObjects;
+
+public interface IQueryRepository<T> where T : BaseEntity
 {
     T GetById(int id);
     IEnumerable<T> GetAll();

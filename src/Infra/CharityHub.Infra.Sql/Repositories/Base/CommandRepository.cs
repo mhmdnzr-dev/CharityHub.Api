@@ -1,9 +1,10 @@
 ﻿namespace CharityHub.Infra.Sql.Repositories.Base;
 
+using CharityHub.Core.Domain.ValueObjects;
 using CharityHub.Core.Presistance.Interfaces.Base;
 using CharityHub.Infra.Sql.Data.DbContexts;
 
-public class CommandRepository<T>(CharityHubCommandDbContext commandDbContext) : ICommandRepository<T> where T : class
+public class CommandRepository<T>(CharityHubCommandDbContext commandDbContext) : ICommandRepository<T> where T : BaseEntity
 {
     protected readonly CharityHubCommandDbContext _commandDbContext = commandDbContext;
 

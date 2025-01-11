@@ -1,5 +1,7 @@
 ﻿namespace CharityHub.Core.Presistance.Interfaces.Base;
-public interface ICommandRepository<T> where T : class
+using CharityHub.Core.Domain.ValueObjects;
+
+public interface ICommandRepository<T> where T : BaseEntity
 {
     void Add(T entity);
     void Update(T entity);
