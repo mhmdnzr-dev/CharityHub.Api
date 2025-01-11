@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
+    <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

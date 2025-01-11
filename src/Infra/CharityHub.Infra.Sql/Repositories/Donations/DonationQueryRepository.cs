@@ -1,16 +1,22 @@
-﻿using CharityHub.Core.Contract.Donations.Interfaces.Repositories;
+﻿
+using CharityHub.Core.Contract.Donations.DTOs.Queries.GetAllDonations;
+using CharityHub.Core.Contract.Primitives;
+using CharityHub.Core.Domain.Entities;
+using CharityHub.Core.Presistance.Interfaces.Donations.Queries;
 using CharityHub.Infra.Sql.Data.DbContexts;
+using CharityHub.Infra.Sql.Repositories.Base;
 
 
 namespace CharityHub.Infra.Sql.Repositories.Donations;
 
 
-public class DonationQueryRepository : IDonationQueryRepository
+public class DonationQueryRepository : QueryRepository<Donation>, IDonationQueryRepository
 {
-    private readonly CharityHubQueryDbContext _dbContext;
-    public DonationQueryRepository(CharityHubQueryDbContext dbContext)
+    public DonationQueryRepository(CharityHubQueryDbContext queryDbContext) : base(queryDbContext) { }
+
+    public Task<PagedData<GetAllDonationsResponseDto>> GetPagedDonationsAsync(GetAllDonationsQuery query)
     {
-        _dbContext = dbContext;
+        throw new NotImplementedException();
     }
 
 
