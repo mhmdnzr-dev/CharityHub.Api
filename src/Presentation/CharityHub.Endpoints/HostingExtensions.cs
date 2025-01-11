@@ -7,7 +7,7 @@ using CharityHub.Presentation;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 
-namespace CharityHub.Endpoints.DependencyInjection;
+namespace CharityHub.Endpoints;
 
 public static class HostingExtensions
 {
@@ -68,8 +68,4 @@ public static class HostingExtensions
         services.AddApplication();
         services.AddContract();
     }
-
-
-
-
 }

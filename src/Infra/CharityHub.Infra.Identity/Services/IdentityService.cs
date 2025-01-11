@@ -87,4 +87,11 @@ public class IdentityService : IIdentityService
     {
         return _roleManager.Roles;
     }
+
+    // IdentityService
+    public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
+    {
+        return await _userManager.CheckPasswordAsync(user, password);
+    }
+
 }

@@ -1,4 +1,4 @@
-using CharityHub.Endpoints.DependencyInjection;
+using CharityHub.Endpoints;
 using CharityHub.Presentation.Extensions;
 using CharityHub.Presentation.Middleware;
 

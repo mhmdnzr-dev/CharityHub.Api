@@ -15,5 +15,6 @@
 	
 	<ItemGroup>
 		<ProjectReference Include="..\..\Core\CharityHub.Core.Application\CharityHub.Core.Application.csproj" />
+		<ProjectReference Include="..\..\Infra\CharityHub.Infra.Identity\CharityHub.Infra.Identity.csproj" />
 	</ItemGroup>
 </Project>

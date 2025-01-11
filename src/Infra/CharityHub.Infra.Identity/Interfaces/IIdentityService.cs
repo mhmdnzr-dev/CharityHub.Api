@@ -17,4 +17,5 @@ public interface IIdentityService
     Task<IdentityResult> DeleteUserAsync(ApplicationUser user);
     Task<bool> IsUserInRoleAsync(ApplicationUser user, string role);
     IEnumerable<ApplicationRole> GetAllRoles();
+    Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
 }
