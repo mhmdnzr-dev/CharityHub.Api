@@ -1,6 +1,7 @@
 
 using CharityHub.Endpoints.DependencyInjection;
 using CharityHub.Presentation.Extensions;
+using CharityHub.Presentation.Middleware;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -34,14 +35,13 @@ builder.Services.AddDbContext();
 // Learn more about configuring OpenAPI
 builder.Services.AddSwaggerGen(options =>
 {
-    var provider = builder.Services.BuildServiceProvider()
-                                   .GetRequiredService<IApiVersionDescriptionProvider>();
+    var provider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
 
     foreach (var description in provider.ApiVersionDescriptions)
     {
         options.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
         {
-            Title = $"API {description.GroupName.ToUpper()}",
+            Title = $"api version {description.GroupName.ToUpper()}",
             Version = description.ApiVersion.ToString(),
             Description = $"API Documentation for version {description.ApiVersion}"
         });
@@ -74,17 +74,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Use CORS middleware
 app.UseCors("CorsPolicy");
 
 app.UseRouting();
 
-// Add custom response middleware
 
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseBaseResponseMiddleware();
-
+app.UseMiddleware<BaseResponseMiddleware>();
 app.MapControllers();
 app.Run();
