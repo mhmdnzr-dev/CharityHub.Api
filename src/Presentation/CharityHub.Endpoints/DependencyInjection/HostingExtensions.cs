@@ -20,8 +20,10 @@ namespace CharityHub.Endpoints.DependencyInjection;
 
 public static class HostingExtensions
 {
-    public static void AddCORSPolicy(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCORSPolicy(this IServiceCollection services)
     {
+        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+
         var allowedDomains = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
         // Add CORS policy
