@@ -1,7 +1,8 @@
-﻿using CharityHub.Infra.Identity.Services;
+﻿using CharityHub.Infra.Identity.Interfaces;
 
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 
 namespace CharityHub.Presentation.Controllers;
@@ -9,43 +10,47 @@ namespace CharityHub.Presentation.Controllers;
 
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
+[OutputCache(PolicyName = "Expire20")]
 public class UsersController : ControllerBase
 {
-    private readonly SignupService _signupService;
-    private readonly SigninService _signinService;
+    private readonly IIdentityService _identityService;
 
-    public UsersController(SignupService signupService, SigninService signinService)
+    public UsersController(IIdentityService identityService)
     {
-        _signupService = signupService;
-        _signinService = signinService;
+        _identityService = identityService;
     }
+
 
     [HttpPost("register")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var success = await _signupService.SignUpAsync(request.Email, request.Password);
+        var success = await _identityService.SignUpAsync(request.Email, request.Password);
         if (success)
         {
-            return Ok(new { Message = "User registered successfully." });
+            return Ok(new { Data = "User registered successfully." });
         }
 
-        return BadRequest(new { Message = "Failed to register user." });
+        return BadRequest(new { Data = "Failed to register user." });
     }
 
     [HttpPost("login")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var success = await _signinService.SignInAsync(request.Email, request.Password);
+        var (success, token) = await _identityService.SignInAsync(request.Email, request.Password);
         if (success)
         {
-            return Ok(new { Message = "Login successful." });
+            return Ok(new
+            {
+                Data = "Login successful.",
+                Token = token
+            });
         }
 
-        return Unauthorized(new { Message = "Invalid email or password." });
+        return Unauthorized(new { Data = "Invalid email or password." });
     }
 }
 

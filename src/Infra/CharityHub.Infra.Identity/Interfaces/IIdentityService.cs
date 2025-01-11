@@ -18,4 +18,6 @@ public interface IIdentityService
     Task<bool> IsUserInRoleAsync(ApplicationUser user, string role);
     IEnumerable<ApplicationRole> GetAllRoles();
     Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
+    Task<bool> SignUpAsync(string email, string password, string role = null);
+    Task<(bool success, string token)> SignInAsync(string email, string password);
 }

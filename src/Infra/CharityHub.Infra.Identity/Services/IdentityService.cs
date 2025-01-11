@@ -10,11 +10,13 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly ITokenService _tokenService;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ITokenService tokenService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _tokenService = tokenService;
     }
 
     // Create a new user
@@ -94,4 +96,45 @@ public class IdentityService : IIdentityService
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
+
+    public async Task<bool> SignUpAsync(string email, string password, string role = null)
+    {
+        var user = new ApplicationUser { Email = email, UserName = email };
+        var result = await CreateUserAsync(user, password);
+
+        if (!result.Succeeded)
+        {
+            return false; // User creation failed
+        }
+
+        if (!string.IsNullOrEmpty(role))
+        {
+            var roleResult = await AddUserToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+            {
+                await DeleteUserAsync(user); // Rollback user creation
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<(bool success, string token)> SignInAsync(string email, string password)
+    {
+        var user = await FindUserByEmailAsync(email);
+        if (user == null)
+        {
+            return (false, null); // User not found
+        }
+
+        var isPasswordValid = await CheckPasswordAsync(user, password);
+        if (!isPasswordValid)
+        {
+            return (false, null); // Invalid password
+        }
+
+        var token = await _tokenService.GenerateToken(user);
+        return (true, token);
+    }
 }
