@@ -3,25 +3,12 @@ using CharityHub.Endpoints.DependencyInjection;
 using CharityHub.Presentation.Extensions;
 using CharityHub.Presentation.Middleware;
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.AssumeDefaultVersionWhenUnspecified = true; // در صورت مشخص نشدن نسخه، از نسخه پیش‌فرض استفاده می‌کند.
-    options.DefaultApiVersion = new ApiVersion(1, 0);  // نسخه پیش‌فرض
-    options.ReportApiVersions = true; // گزارش نسخه‌های پشتیبانی‌شده
-});
-
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV"; // قالب‌بندی نسخه‌ها (مثلاً v1, v2)
-    options.SubstituteApiVersionInUrl = true; // جایگذاری نسخه در URL
-});
-
+builder.Services.AddVersion();
 
 
 // Add services to the container.

@@ -10,6 +10,7 @@ using CharityHub.Infra.Sql.Data.DbContexts;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -158,6 +159,23 @@ public static class HostingExtensions
         // Register the query-side DbContext (for read operations)
         services.AddDbContext<CharityHubQueryDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("QueryConnectionString")));
+
+    }
+
+    public static void AddVersion(this IServiceCollection services)
+    {
+        services.AddApiVersioning(options =>
+        {
+            options.AssumeDefaultVersionWhenUnspecified = true; // در صورت مشخص نشدن نسخه، از نسخه پیش‌فرض استفاده می‌کند.
+            options.DefaultApiVersion = new ApiVersion(1, 0);  // نسخه پیش‌فرض
+            options.ReportApiVersions = true; // گزارش نسخه‌های پشتیبانی‌شده
+        });
+
+        services.AddVersionedApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV"; // قالب‌بندی نسخه‌ها (مثلاً v1, v2)
+            options.SubstituteApiVersionInUrl = true; // جایگذاری نسخه در URL
+        });
 
     }
 }
