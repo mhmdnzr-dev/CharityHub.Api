@@ -1,18 +1,8 @@
-﻿using System.Security.Claims;
-using System.Text;
-
-using CharityHub.Core.Application;
+﻿using CharityHub.Core.Application;
 using CharityHub.Core.Contract;
-using CharityHub.Core.Domain.Entities.Identity;
-using CharityHub.Infra.Identity.Interfaces;
-using CharityHub.Infra.Identity.Services;
-using CharityHub.Infra.Sql.Data.DbContexts;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using CharityHub.Infra.Identity;
+using CharityHub.Infra.Sql;
+using CharityHub.Presentation;
 
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
@@ -21,24 +11,7 @@ namespace CharityHub.Endpoints.DependencyInjection;
 
 public static class HostingExtensions
 {
-    public static void AddCORSPolicy(this IServiceCollection services)
-    {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 
-        var allowedDomains = configuration.GetSection("AllowedOrigins").Get<string[]>();
-
-        // Add CORS policy
-        services.AddCors(options =>
-        {
-            options.AddPolicy("CorsPolicy", policy =>
-            {
-                // The allowed origins will be resolved at runtime
-                policy.WithOrigins(allowedDomains)
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
-            });
-        });
-    }
     public static IHostBuilder AddSerilog(this IHostBuilder builder)
     {
         builder.UseSerilog((context, services, configurationBuilder) =>
@@ -81,101 +54,21 @@ public static class HostingExtensions
         return builder;
     }
 
-    public static void AddIdentityAuthorization(this IServiceCollection services)
-    {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 
-        // Register Identity services
-        services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<CharityHubCommandDbContext>()
-            .AddDefaultTokenProviders();
-
-
-        // Register policies for access control
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("CanViewDonations", policy =>
-                policy.RequireRole("Admin", "Manager"));
-        });
-
-        // Add authentication and authorization
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
-                ValidAudience = configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
-            };
-            options.Events = new JwtBearerEvents
-            {
-                OnTokenValidated = context =>
-                {
-                    var userClaims = context.Principal.Claims;
-                    // Example: Extract roles or custom claims
-                    var roles = userClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
-                    var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")?.Value;
-
-                    // Perform additional validation or processing if necessary
-                    return Task.CompletedTask;
-                }
-            };
-        });
-    }
 
     public static void AddCustomServices(this IServiceCollection services)
     {
+        services.AddVersion();
+        services.AddCORSPolicy();
+        services.AddControllers();
+        services.AddSwagger();
+        services.AddInfra();
+        services.AddIdentity();
         services.AddApplication();
         services.AddContract();
-
-
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<ITokenService, TokenService>();
     }
 
-    public static void AddDbContext(this IServiceCollection services)
-    {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
 
 
-        // Register the command-side DbContext (for write operations)
-        services.AddDbContext<CharityHubCommandDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("CommandConnectionString")));
 
-        // Register the query-side DbContext (for read operations)
-        services.AddDbContext<CharityHubQueryDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("QueryConnectionString")));
-
-    }
-
-    public static void AddVersion(this IServiceCollection services)
-    {
-        services.AddApiVersioning(options =>
-        {
-            options.AssumeDefaultVersionWhenUnspecified = true; // در صورت مشخص نشدن نسخه، از نسخه پیش‌فرض استفاده می‌کند.
-            options.DefaultApiVersion = new ApiVersion(1, 0);  // نسخه پیش‌فرض
-            options.ReportApiVersions = true; // گزارش نسخه‌های پشتیبانی‌شده
-        });
-
-        services.AddVersionedApiExplorer(options =>
-        {
-            options.GroupNameFormat = "'v'VVV"; // قالب‌بندی نسخه‌ها (مثلاً v1, v2)
-            options.SubstituteApiVersionInUrl = true; // جایگذاری نسخه در URL
-        });
-
-    }
 }

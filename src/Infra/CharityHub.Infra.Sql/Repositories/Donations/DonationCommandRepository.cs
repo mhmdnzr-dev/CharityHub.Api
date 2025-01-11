@@ -1,13 +1,12 @@
-﻿using CharityHub.Core.Domain.Entities;
-using CharityHub.Core.Presistance.Interfaces.Donations.Commands;
+﻿using CharityHub.Core.Contract.Donations.Commands;
+using CharityHub.Core.Domain.Entities;
 using CharityHub.Infra.Sql.Data.DbContexts;
-using CharityHub.Infra.Sql.Repositories.Base;
+using CharityHub.Infra.Sql.Premitives;
 
 namespace CharityHub.Infra.Sql.Repositories.Donations;
 
-public class DonationCommandRepository : CommandRepository<Donation>, IDonationCommandRepository
+public class DonationCommandRepository(CharityHubCommandDbContext commandDbContext) : CommandRepository<Donation>(commandDbContext), IDonationCommandRepository
 {
-    public DonationCommandRepository(CharityHubCommandDbContext commandDbContext) : base(commandDbContext) { }
 
 
 

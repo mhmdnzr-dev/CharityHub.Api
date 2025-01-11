@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace CharityHub.Tests;
+﻿namespace CharityHub.Tests;
 
 [TestClass]
 public sealed class Test1
