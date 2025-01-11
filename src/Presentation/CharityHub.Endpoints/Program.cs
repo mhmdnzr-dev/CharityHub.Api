@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddCustomServices();
 
 
@@ -29,7 +30,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
-
+app.UseOutputCache();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

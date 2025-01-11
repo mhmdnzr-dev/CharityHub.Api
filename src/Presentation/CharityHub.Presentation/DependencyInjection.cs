@@ -8,7 +8,18 @@ namespace CharityHub.Presentation;
 
 public static class DependencyInjection
 {
-
+    public static void AddDotnetOutputCache(this IServiceCollection services)
+    {
+        services.AddOutputCache(options =>
+        {
+            options.AddBasePolicy(builder =>
+                builder.Expire(TimeSpan.FromSeconds(10)));
+            options.AddPolicy("Expire20", builder =>
+                builder.Expire(TimeSpan.FromSeconds(20)));
+            options.AddPolicy("Expire30", builder =>
+                builder.Expire(TimeSpan.FromSeconds(30)));
+        });
+    }
     public static void AddSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
