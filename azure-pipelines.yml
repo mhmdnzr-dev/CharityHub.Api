@@ -1,0 +1,37 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: Build
+    displayName: 'Build Solution'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '9.0.x' # تنظیم نسخه دات‌نت بر اساس نیاز
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+        projects: 'CharityHub.sln'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: 'CharityHub.sln'
+        arguments: '--configuration $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: 'test/CharityHub.Tests/CharityHub.Tests.csproj'
+        arguments: '--configuration $(buildConfiguration)'
