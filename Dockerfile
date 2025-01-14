@@ -21,8 +21,13 @@ COPY src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj src/In
 COPY src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj src/Infra/CharityHub.Infra.Sql/
 COPY src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj src/Presentation/CharityHub.Endpoints/
 COPY src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj src/Presentation/CharityHub.Presentation/
+COPY src/Presentation/CharityHub.Endpoints/appsettings.json src/Presentation/CharityHub.Endpoints/
+COPY src/Presentation/CharityHub.Endpoints/appsettings.Development.json src/Presentation/CharityHub.Endpoints/
+
+
 COPY src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj src/Utils/CharityHub.Utils.Extensions/
 COPY test/CharityHub.Tests/CharityHub.Tests.csproj test/CharityHub.Tests/
+
 
 # Restore dependencies for all projects
 RUN dotnet restore "CharityHub.AspireHost/CharityHub.AspireHost.csproj"
@@ -35,18 +40,3 @@ WORKDIR "/src/CharityHub.AspireHost"
 RUN dotnet build "CharityHub.AspireHost.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 WORKDIR "/src/test/CharityHub.Tests"
-RUN dotnet build "CharityHub.Tests.csproj" -c $BUILD_CONFIGURATION -o /app/build/tests
-
-# Publish the main project
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-WORKDIR "/src/CharityHub.AspireHost"
-RUN dotnet publish "CharityHub.AspireHost.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-# Final runtime stage
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-
-# Set entry point to the main application
-ENTRYPOINT ["dotnet", "CharityHub.AspireHost.dll"]
