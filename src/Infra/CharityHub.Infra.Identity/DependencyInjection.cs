@@ -70,5 +70,7 @@ public static class DependencyInjection
 
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IOTPService, KavenegarOtpService>();
+
     }
 }

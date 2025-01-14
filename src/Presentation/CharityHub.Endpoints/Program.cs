@@ -12,8 +12,9 @@ builder.Services.AddCustomServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var isDevMode = app.Environment.IsDevelopment();
+
+if (true)
 {
     app.UseSwagger();
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

@@ -1,23 +1,8 @@
-﻿using CharityHub.Core.Domain.Entities.Identity;
-
-using Microsoft.AspNetCore.Identity;
-namespace CharityHub.Infra.Identity.Interfaces;
+﻿namespace CharityHub.Infra.Identity.Interfaces;
 
 
 public interface IIdentityService
 {
-    Task<IdentityResult> CreateUserAsync(ApplicationUser user, string password);
-    Task<IdentityResult> AddUserToRoleAsync(ApplicationUser user, string role);
-    Task<IEnumerable<string>> GetUserRolesAsync(ApplicationUser user);
-    Task<IdentityResult> RemoveUserFromRoleAsync(ApplicationUser user, string role);
-    Task<IdentityResult> CreateRoleAsync(string roleName);
-    Task<ApplicationUser> FindUserByEmailAsync(string email);
-    Task<ApplicationUser> FindUserByIdAsync(string userId);
-    Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
-    Task<IdentityResult> DeleteUserAsync(ApplicationUser user);
-    Task<bool> IsUserInRoleAsync(ApplicationUser user, string role);
-    IEnumerable<ApplicationRole> GetAllRoles();
-    Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
-    Task<bool> SignUpAsync(string email, string password, string role = null);
-    Task<(bool success, string token)> SignInAsync(string email, string password);
+    Task<bool> SendOTPAsync(string phoneNumber);
+    Task<bool> VerifyOTPAsync(string phoneNumber, string otp);
 }

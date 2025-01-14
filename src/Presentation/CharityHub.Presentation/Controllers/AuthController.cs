@@ -1,0 +1,50 @@
+﻿using CharityHub.Core.Contract.Authentication;
+using CharityHub.Infra.Identity.Interfaces;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+
+namespace CharityHub.Presentation.Controllers;
+
+
+[ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+[OutputCache(PolicyName = "Expire20")]
+public class AuthController : ControllerBase
+{
+    private readonly IIdentityService _identityService;
+
+    public AuthController(IIdentityService identityService)
+    {
+        _identityService = identityService;
+    }
+
+    [HttpPost("send-otp")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> SendOtp([FromBody] SendOtpQuery query)
+    {
+        var success = await _identityService.SendOTPAsync(query.PhoneNumber);
+        if (success)
+        {
+            return Ok(new { OTPStatus = "OTP code sent to user phone number" });
+        }
+
+        return BadRequest("Failed to send OTP.");
+    }
+
+    [HttpPost("verify-otp")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpQuery query)
+    {
+        var success = await _identityService.VerifyOTPAsync(query.PhoneNumber, query.Otp);
+        if (success)
+        {
+            return Ok(new { OTPStatus = "OTP code verfied" });
+        }
+
+        return BadRequest("Invalid or expired OTP.");
+    }
+}
+
