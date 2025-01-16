@@ -11,7 +11,20 @@ WORKDIR /src
 
 # Copy solution and all project files to leverage layer caching for dependencies
 COPY CharityHub.sln .
+
+COPY src/Presentation/CharityHub.Endpoints/appsettings.json src/Presentation/CharityHub.Endpoints/
+COPY src/Presentation/CharityHub.Endpoints/appsettings.Development.json src/Presentation/CharityHub.Endpoints/
+
+
 COPY CharityHub.AspireHost/CharityHub.AspireHost.csproj CharityHub.AspireHost/
+
+COPY src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj src/Presentation/CharityHub.Endpoints/
+
+COPY src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj src/Presentation/CharityHub.Presentation/
+
+
+
+
 COPY src/Core/CharityHub.Core.Application/CharityHub.Core.Application.csproj src/Core/CharityHub.Core.Application/
 COPY src/Core/CharityHub.Core.Contract/CharityHub.Core.Contract.csproj src/Core/CharityHub.Core.Contract/
 COPY src/Core/CharityHub.Core.Domain/CharityHub.Core.Domain.csproj src/Core/CharityHub.Core.Domain/
@@ -19,11 +32,6 @@ COPY src/Core/CharityHub.Core.DomainService/CharityHub.Core.DomainService.csproj
 COPY src/Core/CharityHub.Core.Presistance/CharityHub.Core.Presistance.csproj src/Core/CharityHub.Core.Presistance/
 COPY src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj src/Infra/CharityHub.Infra.Identity/
 COPY src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj src/Infra/CharityHub.Infra.Sql/
-COPY src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj src/Presentation/CharityHub.Endpoints/
-COPY src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj src/Presentation/CharityHub.Presentation/
-COPY src/Presentation/CharityHub.Endpoints/appsettings.json src/Presentation/CharityHub.Endpoints/
-COPY src/Presentation/CharityHub.Endpoints/appsettings.Development.json src/Presentation/CharityHub.Endpoints/
-
 
 COPY src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj src/Utils/CharityHub.Utils.Extensions/
 COPY test/CharityHub.Tests/CharityHub.Tests.csproj test/CharityHub.Tests/
