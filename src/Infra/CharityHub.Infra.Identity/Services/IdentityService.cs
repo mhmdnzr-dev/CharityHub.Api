@@ -15,18 +15,21 @@ public class IdentityService : IIdentityService
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly string _expireTimeMinutes;
     private readonly IOTPService _otpService;
+    private readonly ITokenService _tokenService;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         IOTPService otpService,
-        IOptions<SmsProviderOptions> options
+        IOptions<SmsProviderOptions> options,
+        ITokenService tokenService
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _expireTimeMinutes = options.Value.ExpireTimeMinutes;
+        _expireTimeMinutes = options.Value.ExpireMinute;
         _otpService = otpService;
+        _tokenService = tokenService;
     }
 
     public async Task<bool> SendOTPAsync(string phoneNumber)
@@ -48,30 +51,38 @@ public class IdentityService : IIdentityService
         user.OTPCreationTime = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 
-        return await _otpService.SendOtpAsync(phoneNumber, otp);
+        return await _otpService.SendOTPAsync(phoneNumber, otp);
     }
 
-    public async Task<bool> VerifyOTPAsync(string phoneNumber, string otp)
+
+    public async Task<string> VerifyOTPAndGenerateTokenAsync(string phoneNumber, string otp)
     {
+        // Find user by phone number
         var user = await _userManager.FindByNameAsync(phoneNumber);
         if (user is null)
         {
             throw new Exception("User not found.");
         }
 
-        if (user.OTP == otp &&
-            user.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) >= DateTime.UtcNow) // OTP valid for X minutes
-        {
-            user.OTP = null;
-            await _userManager.UpdateAsync(user);
+        // Check if OTP is expired
+        var isTokenExpired = user.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
+        var isOTPValid = user.OTP == otp;
 
+        // Validate OTP
+        if (isOTPValid && !isTokenExpired) // OTP valid for X minutes
+        {
+            // Assign role to user if OTP is valid
             await AssignRoleToUserAsync(user, "Client");
 
-            return true;
+            // Generate and return token
+            var token = await _tokenService.GenerateTokenAsync(user);
+            return token;
         }
 
-        return false;
+        throw new Exception("Invalid or expired OTP.");
     }
+
+
 
     private async Task AssignRoleToUserAsync(ApplicationUser user, string roleName)
     {

@@ -3,5 +3,5 @@ using System.Threading.Tasks;
 
 public interface IOTPService
 {
-    Task<bool> SendOtpAsync(string phoneNumber, string otp);
+    Task<bool> SendOTPAsync(string phoneNumber, string otp);
 }

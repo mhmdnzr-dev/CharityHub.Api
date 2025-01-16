@@ -38,13 +38,8 @@ public class AuthController : ControllerBase
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpQuery query)
     {
-        var success = await _identityService.VerifyOTPAsync(query.PhoneNumber, query.Otp);
-        if (success)
-        {
-            return Ok(new { OTPStatus = "OTP code verfied" });
-        }
-
-        return BadRequest("Invalid or expired OTP.");
+        var token = await _identityService.VerifyOTPAndGenerateTokenAsync(query.PhoneNumber, query.Otp);
+        return Ok(new { OTPStatus = "OTP code verfied", Token = token });
     }
 }
 

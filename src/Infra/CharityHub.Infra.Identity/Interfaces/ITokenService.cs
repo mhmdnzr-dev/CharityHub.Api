@@ -6,6 +6,6 @@ namespace CharityHub.Infra.Identity.Interfaces;
 
 public interface ITokenService
 {
-    Task<string> GenerateToken(ApplicationUser user);
+    Task<string> GenerateTokenAsync(ApplicationUser user);
     ClaimsPrincipal GetUserDetailsFromToken(string token);
 }

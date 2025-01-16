@@ -20,14 +20,14 @@ public class KavenegarOtpService : IOTPService
         _sender = options.Value.SenderNumber;
     }
 
-    public async Task<bool> SendOtpAsync(string phoneNumber, string otp)
+    public async Task<bool> SendOTPAsync(string phoneNumber, string otp)
     {
         try
         {
             var api = new KavenegarApi(_apiKey);
             var message = $"Your OTP is: {otp}";
 
-            await Task.Run(() => api.Send(_sender, phoneNumber, message));
+            var test = await Task.Run(() => api.Send(_sender, phoneNumber, message));
 
             return true;
         }
