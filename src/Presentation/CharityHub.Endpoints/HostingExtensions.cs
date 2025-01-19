@@ -19,10 +19,10 @@ public static class HostingExtensions
             // Configure MSSQL Sink with AdditionalColumns
             var columnOptions = new ColumnOptions
             {
-                AdditionalColumns = new List<SqlColumn>
-                {
-                    new SqlColumn { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 100 }
-                }
+                AdditionalColumns =
+                [
+                    new() { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 100 }
+                ]
             };
 
             columnOptions.Store.Remove(StandardColumn.Properties);
