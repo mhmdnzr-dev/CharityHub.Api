@@ -5,8 +5,7 @@ using CharityHub.Presentation.Filters;
 using Microsoft.AspNetCore.Http;
 
 namespace CharityHub.Presentation.Middleware;
-
-public sealed class BaseResponseMiddleware
+internal sealed class BaseResponseMiddleware
 {
     private readonly RequestDelegate _next;
 
@@ -32,11 +31,18 @@ public sealed class BaseResponseMiddleware
             object parsedData;
             try
             {
-                parsedData = JsonSerializer.Deserialize<object>(responseBody);
+                parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody);
             }
             catch
             {
                 parsedData = responseBody;
+            }
+
+            if (parsedData is JsonElement jsonElement && jsonElement.TryGetProperty("success", out _))
+            {
+                context.Response.Body = originalBodyStream;
+                await context.Response.WriteAsync(responseBody);
+                return;
             }
 
             var baseResponse = new BaseResponse<object>

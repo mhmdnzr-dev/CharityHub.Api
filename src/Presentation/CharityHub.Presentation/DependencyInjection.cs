@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CharityHub.Presentation.Middleware;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -102,4 +105,16 @@ public static class DependencyInjection
             });
         });
     }
+
+    public static IApplicationBuilder UseExceptionResponseMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<ExceptionResponseMiddleware>();
+    }
+
+
+    public static IApplicationBuilder UseBaseResponseMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<BaseResponseMiddleware>();
+    }
+
 }

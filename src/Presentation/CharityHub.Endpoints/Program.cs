@@ -1,6 +1,6 @@
 using CharityHub.Endpoints;
+using CharityHub.Presentation;
 using CharityHub.Presentation.Extensions;
-using CharityHub.Presentation.Middleware;
 
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
@@ -35,6 +35,11 @@ app.UseOutputCache();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<BaseResponseMiddleware>();
+
+
+app.UseBaseResponseMiddleware();
+app.UseExceptionResponseMiddleware();
+
+
 app.MapControllers();
 app.Run();
