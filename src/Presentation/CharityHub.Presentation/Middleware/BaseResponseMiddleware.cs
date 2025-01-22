@@ -6,70 +6,53 @@ using Microsoft.AspNetCore.Http;
 
 namespace CharityHub.Presentation.Middleware;
 
-
 public sealed class BaseResponseMiddleware
 {
     private readonly RequestDelegate _next;
 
     public BaseResponseMiddleware(RequestDelegate next)
     {
-        _next = next;
+        _next = next ?? throw new ArgumentNullException(nameof(next));
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         var originalBodyStream = context.Response.Body;
 
-        try
+        using (var responseBodyStream = new MemoryStream())
         {
-            using var memoryStream = new MemoryStream();
-            context.Response.Body = memoryStream;
+            context.Response.Body = responseBodyStream;
 
-            // اجرای درخواست بعدی
             await _next(context);
 
-            // بررسی اینکه پاسخ هنوز شروع نشده باشد
-            if (!context.Response.HasStarted)
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+
+            string parsedData;
+            try
             {
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                var originalResponseBody = await new StreamReader(memoryStream).ReadToEndAsync();
-
-                var response = new BaseResponse<object>
-                {
-                    Success = context.Response.StatusCode == StatusCodes.Status200OK,
-                    Data = JsonSerializer.Deserialize<object>(originalResponseBody),
-                    ErrorMessage = context.Response.StatusCode != StatusCodes.Status200OK ? "An error occurred." : null,
-                    StatusCode = context.Response.StatusCode
-                };
-
-                context.Response.Body = originalBodyStream;
-                context.Response.ContentType = "application/json";
-
-                await context.Response.WriteAsJsonAsync(response);
+                parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody).ToString();
             }
-        }
-        catch (Exception ex)
-        {
-            if (!context.Response.HasStarted)
+            catch
             {
-                context.Response.Clear();
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                context.Response.ContentType = "application/json";
-
-                var errorResponse = new BaseResponse<object>
-                {
-                    Success = false,
-                    Data = null,
-                    ErrorMessage = ex.Message,
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-
-                await context.Response.WriteAsJsonAsync(errorResponse);
+                parsedData = responseBody;
             }
-        }
-        finally
-        {
+
+            var baseResponse = new BaseResponse<object>
+            {
+                Success = context.Response.StatusCode is >= 200 and < 300,
+                Data = parsedData,
+                ErrorMessage = context.Response.StatusCode >= 400 ? "An error occurred." : null,
+                StatusCode = context.Response.StatusCode
+            };
+
             context.Response.Body = originalBodyStream;
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = baseResponse.StatusCode;
+
+            var jsonResponse = JsonSerializer.Serialize(baseResponse);
+            await context.Response.WriteAsync(jsonResponse);
         }
     }
 }

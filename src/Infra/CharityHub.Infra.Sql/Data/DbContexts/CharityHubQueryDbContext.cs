@@ -29,5 +29,8 @@ public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, Appli
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.Ignore<ApplicationUser>();
+        modelBuilder.Ignore<ApplicationRole>();
     }
 }

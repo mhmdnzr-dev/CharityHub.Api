@@ -32,8 +32,12 @@ public class IdentityService : IIdentityService
         _tokenService = tokenService;
     }
 
-    public async Task<bool> SendOTPAsync(string phoneNumber)
+    public async Task<bool> SendOTPAsync(string phoneNumber, bool acceptedTerms)
     {
+        if (!acceptedTerms)
+        {
+            throw new Exception("You have to accept terms then try to login!");
+        }
         var user = await _userManager.FindByNameAsync(phoneNumber);
         if (user is null)
         {
@@ -51,7 +55,10 @@ public class IdentityService : IIdentityService
         user.OTPCreationTime = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 
-        return await _otpService.SendOTPAsync(phoneNumber, otp);
+        // TODO: replace await _otpService.SendOTPAsync(phoneNumber, otp) instead of true in production
+        var isSMSSent = true;
+
+        return isSMSSent;
     }
 
 
@@ -66,7 +73,9 @@ public class IdentityService : IIdentityService
 
         // Check if OTP is expired
         var isTokenExpired = user.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
-        var isOTPValid = user.OTP == otp;
+
+        // TODO: replace user.OTP in production
+        var isOTPValid = "522368" == otp;
 
         // Validate OTP
         if (isOTPValid && !isTokenExpired) // OTP valid for X minutes

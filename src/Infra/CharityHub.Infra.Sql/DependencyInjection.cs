@@ -20,19 +20,20 @@ public static class DependencyInjection
             throw new ArgumentNullException(nameof(configuration));
         }
 
-
         // Register the command-side DbContext (for write operations)
         services.AddDbContext<CharityHubCommandDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("CommandConnectionString")));
 
-        // Register the query-side DbContext (for read operations)
+        // Register the query-side DbContext (for read operations) without migrations
         services.AddDbContext<CharityHubQueryDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("QueryConnectionString")));
-
 
         services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
         services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        using var serviceProvider = services.BuildServiceProvider();
+        using var commandContext = serviceProvider.GetRequiredService<CharityHubCommandDbContext>();
+        commandContext.Database.Migrate();
     }
 }

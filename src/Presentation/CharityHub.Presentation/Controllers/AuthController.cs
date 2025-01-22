@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> SendOtp([FromBody] SendOtpQuery query)
     {
-        var success = await _identityService.SendOTPAsync(query.PhoneNumber);
+        var success = await _identityService.SendOTPAsync(query.PhoneNumber,query.AcceptedTerms);
         if (success)
         {
             return Ok(new { OTPStatus = "OTP code sent to user phone number" });
