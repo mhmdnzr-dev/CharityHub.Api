@@ -1,6 +1,7 @@
 ﻿using CharityHub.Core.Application.Configuration.Models;
 using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Identity.Interfaces;
+using CharityHub.Utils.Extensions.Extensions;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -34,6 +35,11 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> SendOTPAsync(string phoneNumber, bool acceptedTerms)
     {
+        if (!PhoneNumberHelpers.IsValidIranianMobileNumber(phoneNumber))
+        {
+            throw new Exception("Mobile number isn't valid!");
+        }
+
         if (!acceptedTerms)
         {
             throw new Exception("You have to accept terms then try to login!");
