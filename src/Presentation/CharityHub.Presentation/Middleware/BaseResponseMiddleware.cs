@@ -29,10 +29,10 @@ public sealed class BaseResponseMiddleware
             var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
             responseBodyStream.Seek(0, SeekOrigin.Begin);
 
-            string parsedData;
+            object parsedData;
             try
             {
-                parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody).ToString();
+                parsedData = JsonSerializer.Deserialize<object>(responseBody);
             }
             catch
             {
@@ -51,7 +51,7 @@ public sealed class BaseResponseMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = baseResponse.StatusCode;
 
-            var jsonResponse = JsonSerializer.Serialize(baseResponse);
+            var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             await context.Response.WriteAsync(jsonResponse);
         }
     }
