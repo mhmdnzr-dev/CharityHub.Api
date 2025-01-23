@@ -44,28 +44,28 @@ public class IdentityService : IIdentityService
 
 
         var user = await _userManager.FindByNameAsync(request.PhoneNumber);
-        if (user is null)
+        var isNewUser = user == null ? true : false;
+
+        if (isNewUser)
         {
-            if (request.AcceptedTerm)
+            result.IsNewUser = true;
+            user = new ApplicationUser
             {
-                result.IsNewUser = true;
-                user = new ApplicationUser
-                {
-                    UserName = request.PhoneNumber,
-                    PhoneNumber = request.PhoneNumber
-                };
-                var createUserResult = await _userManager.CreateAsync(user);
-                if (!createUserResult.Succeeded)
-                {
-                    throw new Exception("Failed to create user.");
-                }
-            }
-            else
+                UserName = request.PhoneNumber,
+                PhoneNumber = request.PhoneNumber
+            };
+            var createUserResult = await _userManager.CreateAsync(user);
+            if (!createUserResult.Succeeded)
             {
-                throw new Exception("New users have to accept terms then try to login!");
+                throw new Exception("Failed to create user.");
             }
+
         }
-        result.IsNewUser = false;
+        else
+        {
+            result.IsNewUser = false;
+        }
+
 
         string otp = GenerateOTP();
 
@@ -84,19 +84,37 @@ public class IdentityService : IIdentityService
     public async Task<VerifyOtpResponse> VerifyOTPAndGenerateTokenAsync(VerifyOtpRequest request)
     {
         var result = new VerifyOtpResponse();
-        var user = await _userManager.FindByNameAsync(request.PhoneNumber);
-        if (user is null)
+
+        // Check if user exists
+        var userExists = await _userManager.FindByNameAsync(request.PhoneNumber);
+
+        if (userExists is null)
         {
-            throw new Exception("User not found.");
+            // If user is new, check if terms are accepted
+            if (!request.AcceptedTerms)
+            {
+                throw new Exception("User must accept the terms before proceeding.");
+            }
+
+            // Create the user if needed or other actions if the user is new
+            userExists = new ApplicationUser
+            {
+                UserName = request.PhoneNumber,
+                PhoneNumber = request.PhoneNumber,
+            };
+
+            // Optionally, you can save the user to the database here
+            await _userManager.CreateAsync(userExists);
         }
 
-        var isTokenExpired = user.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
+        // If the user exists or has been created, proceed with OTP verification
+        var isTokenExpired = userExists.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
         var isOTPValid = "522368" == request.Otp;
 
         if (isOTPValid && !isTokenExpired)
         {
-            await AssignRoleToUserAsync(user, "Client");
-            var token = await _tokenService.GenerateTokenAsync(user);
+            await AssignRoleToUserAsync(userExists, "Client");
+            var token = await _tokenService.GenerateTokenAsync(userExists);
             result.Token = token;
             return result;
         }

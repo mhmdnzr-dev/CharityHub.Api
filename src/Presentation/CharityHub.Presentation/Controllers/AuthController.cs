@@ -28,7 +28,6 @@ public class AuthController : ControllerBase
     {
         var otpResponse = await _identityService.SendOTPAsync(new SendOtpRequest
         {
-            AcceptedTerm = query.AcceptedTerms,
             PhoneNumber = query.PhoneNumber,
         });
         if (otpResponse.IsSMSSent)
@@ -51,6 +50,7 @@ public class AuthController : ControllerBase
         {
             PhoneNumber = query.PhoneNumber,
             Otp = query.Otp,
+            AcceptedTerms = query.AcceptedTerms
         });
 
         VerifyDto verifyDto = new VerifyDto
