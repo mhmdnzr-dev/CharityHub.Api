@@ -47,50 +47,8 @@ public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationU
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-
-
-        modelBuilder.Entity<Charity>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Charity__8189E594F67961C8");
-
-            entity.Property(e => e.ContactName).IsFixedLength();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.ManagerName).IsFixedLength();
-
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Charities)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Charity__Created__3B75D760");
-        });
-
-        modelBuilder.Entity<CharityCategory>(entity =>
-        {
-            entity.HasNoKey();
-            entity.HasOne(d => d.Category).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CharityCategory_Category");
-
-            entity.HasOne(d => d.Charity).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CharityCategory_Charity");
-        });
-
-        modelBuilder.Entity<Donation>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Donation__3214EC07A3F2D206");
-
-            entity.Property(e => e.DonatedAt).HasDefaultValueSql("(getdate())");
-
-            entity.HasOne(d => d.Campaign).WithMany(p => p.Donations)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Donation_Campaign");
-        });
-
-
-        OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
     public override int SaveChanges()
     {
