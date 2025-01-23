@@ -1,10 +1,10 @@
-﻿namespace CharityHub.Infra.Sql.Data.Configurations.Write;
+﻿namespace CharityHub.Infra.Sql.Data.Configurations.Read;
 using CharityHub.Core.Domain.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class CampaignCategoryConfiguration : IEntityTypeConfiguration<CampaignCategory>
+internal class CampaignCategoryReadConfiguration : IEntityTypeConfiguration<CampaignCategory>
 {
     public void Configure(EntityTypeBuilder<CampaignCategory> builder)
     {

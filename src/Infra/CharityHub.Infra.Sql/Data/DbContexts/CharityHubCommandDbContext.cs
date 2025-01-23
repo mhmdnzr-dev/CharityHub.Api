@@ -46,7 +46,12 @@ public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationU
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
+            type => type.Name.EndsWith("ReadConfiguration"));
+
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
+            type => type.Name.EndsWith("WriteConfiguration"));
     }
 
 

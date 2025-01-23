@@ -5,7 +5,7 @@ using CharityHub.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class DonationConfiguration : IEntityTypeConfiguration<Donation>
+internal class DonationWriteConfiguration : IEntityTypeConfiguration<Donation>
 {
     public void Configure(EntityTypeBuilder<Donation> builder)
     {
