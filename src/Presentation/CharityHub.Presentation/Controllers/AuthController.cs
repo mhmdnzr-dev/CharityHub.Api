@@ -1,5 +1,6 @@
 ﻿using CharityHub.Core.Contract.Authentication;
 using CharityHub.Infra.Identity.Interfaces;
+using CharityHub.Infra.Identity.Models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -25,10 +26,18 @@ public class AuthController : ControllerBase
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> SendOtp([FromBody] SendOtpQuery query)
     {
-        var success = await _identityService.SendOTPAsync(query.PhoneNumber,query.AcceptedTerms);
-        if (success)
+        var otpResponse = await _identityService.SendOTPAsync(new SendOtpRequest
         {
-            return Ok(new { OTPStatus = "OTP code sent to user phone number" });
+            AcceptedTerm = query.AcceptedTerms,
+            PhoneNumber = query.PhoneNumber,
+        });
+        if (otpResponse.IsSMSSent)
+        {
+            SendOtpDto sendOtpDto = new SendOtpDto
+            {
+                IsNewUser = otpResponse.IsNewUser
+            };
+            return Ok(sendOtpDto);
         }
 
         return BadRequest("Failed to send OTP.");
@@ -38,8 +47,17 @@ public class AuthController : ControllerBase
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpQuery query)
     {
-        var token = await _identityService.VerifyOTPAndGenerateTokenAsync(query.PhoneNumber, query.Otp);
-        return Ok(new { OTPStatus = "OTP code verfied", Token = token });
+        var response = await _identityService.VerifyOTPAndGenerateTokenAsync(new VerifyOtpRequest
+        {
+            PhoneNumber = query.PhoneNumber,
+            Otp = query.Otp,
+        });
+
+        VerifyDto verifyDto = new VerifyDto
+        {
+            Token = response.Token,
+        };
+        return Ok(verifyDto);
     }
 }
 
