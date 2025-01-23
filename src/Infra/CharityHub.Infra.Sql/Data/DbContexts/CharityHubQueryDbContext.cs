@@ -7,17 +7,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CharityHub.Infra.Sql.Data.DbContexts;
 
+using Configurations;
 
-public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     #region DbSets
 
     #endregion
 
-    public CharityHubQueryDbContext(DbContextOptions<CharityHubQueryDbContext> options)
-        : base(options)
+    #region Ctor
+    // Parameterless constructor for design-time
+    public CharityHubQueryDbContext() : base() { }
+
+    // Constructor with DbContextOptions for runtime
+    public CharityHubQueryDbContext(DbContextOptions<CharityHubQueryDbContext> options) : base(options)
     {
     }
+    #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -28,9 +34,8 @@ public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, Appli
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        modelBuilder.Ignore<ApplicationUser>();
-        modelBuilder.Ignore<ApplicationRole>();
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
+            type => type.Name.EndsWith("ReadConfiguration")
+                    || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(BaseEntityConfiguration<>)));
     }
 }

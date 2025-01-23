@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
 namespace CharityHub.Core.Domain.Entities.Identity;
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser<int>
 {
     public string? OTP { get; set; }
     public DateTime OTPCreationTime { get; set; }

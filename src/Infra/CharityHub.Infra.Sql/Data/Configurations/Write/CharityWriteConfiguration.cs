@@ -8,6 +8,7 @@ internal class CharityWriteConfiguration : IEntityTypeConfiguration<Charity>
 {
     public void Configure(EntityTypeBuilder<Charity> builder)
     {
+        // Configure basic properties
         builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(255);
@@ -35,17 +36,27 @@ internal class CharityWriteConfiguration : IEntityTypeConfiguration<Charity>
             .IsRequired(false)
             .HasMaxLength(50);
 
-        builder.Property(c => c.ContactPhoneNumber)
+        builder.Property(c => c.ContactPhone)
             .IsRequired(false)
             .HasMaxLength(15)
             .IsUnicode(false);
 
-        builder.HasOne(c => c.CreatedByNavigation)
-            .WithMany()
-            .HasForeignKey(c => c.CreatedByUserId);
+        // Configure relationship with ApplicationUser (CreatedByUserId)
+        builder.HasOne(c => c.ApplicationUser)  // Navigation property
+            .WithMany()  // Assuming one ApplicationUser can create many Charities (one-to-many)
+            .HasForeignKey(c => c.CreatedByUserId)  // Foreign key property (CreatedByUserId)
+            .IsRequired()  // This relationship is required (not null)
+            .OnDelete(DeleteBehavior.Restrict);  // Set delete behavior (optional)
 
+        // Configure relationship with Campaigns
         builder.HasMany(c => c.Campaigns)
             .WithOne(ca => ca.Charity)
-            .HasForeignKey(ca => ca.CharityId);
+            .HasForeignKey(ca => ca.CharityId)
+            .OnDelete(DeleteBehavior.Cascade);  // Optional: Set delete behavior for campaigns
+
+        // Configure CreatedAt property with default value
+        builder.Property(c => c.CreatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("GETUTCDATE()");
     }
 }

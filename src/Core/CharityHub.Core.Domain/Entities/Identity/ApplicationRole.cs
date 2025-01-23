@@ -2,7 +2,7 @@
 namespace CharityHub.Core.Domain.Entities.Identity;
 
 
-public class ApplicationRole : IdentityRole
+public class ApplicationRole : IdentityRole<int>
 {
     public ApplicationRole(string roleName) : base(roleName)
     {
