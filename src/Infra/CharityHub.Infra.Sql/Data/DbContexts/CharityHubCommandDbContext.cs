@@ -49,23 +49,6 @@ public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationU
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 
-        modelBuilder.Entity<CampaignCategory>(entity =>
-        {
-            entity.HasNoKey();
-            entity.HasOne(d => d.Campaign).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CampaignCategory_Campaign");
-
-            entity.HasOne(d => d.Category).WithMany()
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CampaignCategory_Category");
-        });
-
-        modelBuilder.Entity<Category>(entity =>
-        {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Name).IsFixedLength();
-        });
 
         modelBuilder.Entity<Charity>(entity =>
         {
