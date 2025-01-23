@@ -8,7 +8,6 @@
 
 	<ItemGroup>
 		<Folder Include="Data\Configurations\Read\" />
-		<Folder Include="Data\Configurations\Write\" />
 		<Folder Include="Data\SeedData\" />
 	</ItemGroup>
 

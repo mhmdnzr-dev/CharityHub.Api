@@ -48,16 +48,6 @@ public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationU
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        modelBuilder.Entity<Campaign>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Campaign__3F5E8A99E4970CE9");
-
-            entity.Property(e => e.Photo).IsFixedLength();
-
-            entity.HasOne(d => d.Charity).WithMany(p => p.Campaigns)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Campaign__Charit__3F466844");
-        });
 
         modelBuilder.Entity<CampaignCategory>(entity =>
         {

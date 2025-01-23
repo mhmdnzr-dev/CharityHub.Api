@@ -1,11 +1,8 @@
-﻿
-using CharityHub.Core.Domain.Entities.Identity;
-using CharityHub.Core.Domain.ValueObjects;
+﻿namespace CharityHub.Core.Domain.Entities;
 
+using Identity;
 
-namespace CharityHub.Core.Domain.Entities;
-
-
+using ValueObjects;
 
 public class Transaction : BaseEntity
 {
