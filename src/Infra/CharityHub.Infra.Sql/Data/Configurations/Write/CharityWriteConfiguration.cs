@@ -42,6 +42,12 @@ internal sealed class CharityWriteConfiguration : BaseEntityConfiguration<Charit
             .HasMaxLength(15)
             .IsUnicode(false);
 
+        entity.HasOne(aut => aut.Social)
+            .WithMany()
+            .HasForeignKey(aut => aut.SocialId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Configure relationship with ApplicationUser (CreatedByUserId)
         entity.HasOne(c => c.ApplicationUser)  // Navigation property
             .WithMany()  // Assuming one ApplicationUser can create many Charities (one-to-many)

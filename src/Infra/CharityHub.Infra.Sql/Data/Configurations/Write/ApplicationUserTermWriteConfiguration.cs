@@ -23,11 +23,7 @@ internal sealed class ApplicationUserTermWriteConfiguration : BaseEntityConfigur
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        entity.HasOne(aut => aut.Social)
-            .WithMany()
-            .HasForeignKey(aut => aut.SocialId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+
 
         entity.Property(aut => aut.AcceptedAt)
             .IsRequired()
