@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 using ValueObjects;
 
-public class Category : BaseEntity
+public sealed class Category : BaseEntity
 {
     [StringLength(10)]
     public string Name { get; private set; }

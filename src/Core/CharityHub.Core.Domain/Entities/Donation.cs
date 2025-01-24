@@ -4,7 +4,7 @@ using Identity;
 
 using ValueObjects;
 
-public class Donation : BaseEntity
+public sealed class Donation : BaseEntity
 {
     public int UserId { get; private set; }
     public ApplicationUser User { get; private set; }

@@ -16,7 +16,7 @@ public sealed class Campaign : BaseEntity
 
     public decimal? ChargedAmount { get; private set; }
 
-    public string Photo { get; private set; }
+    public int PhotoId { get; private set; }
 
     public int? CityId { get; private set; }
 

@@ -6,23 +6,26 @@ using Identity;
 
 using ValueObjects;
 
-public class Charity : BaseEntity
+public sealed class Charity : BaseEntity
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Website { get; set; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public string Website { get; private set; }
 
-    public int CreatedByUserId { get; set; }
-    public ApplicationUser ApplicationUser { get; set; }
+    public int CreatedByUserId { get; private set; }
+    public ApplicationUser ApplicationUser { get; private set; }
 
-    public string Address { get; set; }
+    public string Address { get; private set; }
 
-    public int? CityId { get; set; }
-    public string Telephone { get; set; }
-    public string ManagerName { get; set; }
+    public int? CityId { get; private set; }
+    public string Telephone { get; private set; }
+    public string ManagerName { get; private set; }
 
-    public int? SocialId { get; set; }
-    public string ContactName { get; set; }
-    public string ContactPhone { get; set; }
-    public ICollection<Campaign> Campaigns { get; set; } = new HashSet<Campaign>();
+    public int LogoId { get; private set; }
+    public int BannerId { get; private set; }
+
+    public int? SocialId { get; private set; }
+    public string ContactName { get; private set; }
+    public string ContactPhone { get; private set; }
+    public ICollection<Campaign> Campaigns { get; private set; } = new HashSet<Campaign>();
 }
