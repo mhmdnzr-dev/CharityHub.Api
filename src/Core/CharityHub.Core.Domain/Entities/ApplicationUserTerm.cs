@@ -12,14 +12,14 @@ public sealed class ApplicationUserTerm : BaseEntity
     public int TermId { get; private set; }
     public Term Term { get; private set; }
 
-    public DateTime AcceptedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime AcceptedAt { get; private set; }
 
     // Private constructor to enforce controlled instantiation via factory method
-    private ApplicationUserTerm(int userId, int termId, DateTime? acceptedAt = null)
+    private ApplicationUserTerm(int userId, int termId)
     {
         UserId = userId;
         TermId = termId;
-        AcceptedAt = acceptedAt ?? DateTime.UtcNow;
+        AcceptedAt = DateTime.UtcNow;
     }
 
     // Factory method to add a new ApplicationUserTerm

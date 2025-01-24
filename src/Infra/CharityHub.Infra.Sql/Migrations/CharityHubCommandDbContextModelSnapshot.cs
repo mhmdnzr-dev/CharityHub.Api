@@ -44,9 +44,6 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("smalldatetime");
 
-                    b.Property<int>("SocialId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TermId")
                         .HasColumnType("int");
 
@@ -54,8 +51,6 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SocialId");
 
                     b.HasIndex("TermId");
 
@@ -205,7 +200,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("SocialId")
+                    b.Property<int>("SocialId")
                         .HasColumnType("int");
 
                     b.Property<string>("Telephone")
@@ -222,6 +217,8 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SocialId");
 
                     b.ToTable("Charities");
                 });
@@ -633,12 +630,6 @@ namespace CharityHub.Infra.Sql.Migrations
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.ApplicationUserTerm", b =>
                 {
-                    b.HasOne("CharityHub.Core.Domain.Entities.Social", "Social")
-                        .WithMany()
-                        .HasForeignKey("SocialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CharityHub.Core.Domain.Entities.Term", "Term")
                         .WithMany()
                         .HasForeignKey("TermId")
@@ -652,8 +643,6 @@ namespace CharityHub.Infra.Sql.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("Social");
 
                     b.Navigation("Term");
                 });
@@ -681,7 +670,15 @@ namespace CharityHub.Infra.Sql.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("CharityHub.Core.Domain.Entities.Social", "Social")
+                        .WithMany()
+                        .HasForeignKey("SocialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Social");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Donation", b =>

@@ -52,8 +52,9 @@ public class IdentityService : IIdentityService
     public async Task<SendOtpResponse> SendOTPAsync(SendOtpRequest request)
     {
         var otpCode = "522368"; // TODO: use it in prod: GenerateOtpCode()
-        // TODO: use it in prod: var isSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
         var result = new SendOtpResponse();
+        result.IsSMSSent = true; // TODO: use it in prod: result.IsSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
+
         var user = await _userManager.FindByNameAsync(request.PhoneNumber);
         var isUserExist = user != null;
 
@@ -67,10 +68,10 @@ public class IdentityService : IIdentityService
         {
             var newUser = new ApplicationUser
             {
-                UserName = request.PhoneNumber
+                UserName = request.PhoneNumber,
+                PhoneNumber = request.PhoneNumber
             };
 
-            newUser.Deactivate();
 
             var createNewUserResult = await _userManager.CreateAsync(newUser);
 
@@ -109,6 +110,7 @@ public class IdentityService : IIdentityService
         // Query the pending OTP for the user
         var pendingOtp = await _queryDbContext.OTPs
             .Where(otp => otp.Status == OTPStatus.Pending)
+            .OrderByDescending(otp => otp.CreatedAt)
             .FirstOrDefaultAsync(otp => otp.UserId == user.Id);
 
         if (pendingOtp == null)

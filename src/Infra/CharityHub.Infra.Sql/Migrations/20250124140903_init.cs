@@ -209,46 +209,6 @@ namespace CharityHub.Infra.Sql.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Charities",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Website = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CityId = table.Column<int>(type: "int", nullable: true),
-                    Telephone = table.Column<string>(type: "varchar(15)", unicode: false, maxLength: 15, nullable: true),
-                    ManagerName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    LogoId = table.Column<int>(type: "int", nullable: false),
-                    BannerId = table.Column<int>(type: "int", nullable: false),
-                    SocialId = table.Column<int>(type: "int", nullable: true),
-                    ContactName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ContactPhone = table.Column<string>(type: "varchar(15)", unicode: false, maxLength: 15, nullable: true),
-                    ApplicationUserId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "smalldatetime", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAt = table.Column<DateTime>(type: "smalldatetime", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Charities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Charities_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Charities_AspNetUsers_CreatedByUserId",
-                        column: x => x.CreatedByUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OTPs",
                 columns: table => new
                 {
@@ -274,6 +234,52 @@ namespace CharityHub.Infra.Sql.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Charities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CityId = table.Column<int>(type: "int", nullable: true),
+                    Telephone = table.Column<string>(type: "varchar(15)", unicode: false, maxLength: 15, nullable: true),
+                    ManagerName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LogoId = table.Column<int>(type: "int", nullable: false),
+                    BannerId = table.Column<int>(type: "int", nullable: false),
+                    SocialId = table.Column<int>(type: "int", nullable: false),
+                    ContactName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ContactPhone = table.Column<string>(type: "varchar(15)", unicode: false, maxLength: 15, nullable: true),
+                    ApplicationUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "smalldatetime", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    ModifiedAt = table.Column<DateTime>(type: "smalldatetime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Charities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Charities_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Charities_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Charities_Socials_SocialId",
+                        column: x => x.SocialId,
+                        principalTable: "Socials",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplicationUserTerms",
                 columns: table => new
                 {
@@ -281,7 +287,6 @@ namespace CharityHub.Infra.Sql.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TermId = table.Column<int>(type: "int", nullable: false),
-                    SocialId = table.Column<int>(type: "int", nullable: false),
                     AcceptedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     CreatedAt = table.Column<DateTime>(type: "smalldatetime", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "smalldatetime", nullable: true),
@@ -294,12 +299,6 @@ namespace CharityHub.Infra.Sql.Migrations
                         name: "FK_ApplicationUserTerms_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ApplicationUserTerms_Socials_SocialId",
-                        column: x => x.SocialId,
-                        principalTable: "Socials",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -448,11 +447,6 @@ namespace CharityHub.Infra.Sql.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserTerms_SocialId",
-                table: "ApplicationUserTerms",
-                column: "SocialId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUserTerms_TermId",
                 table: "ApplicationUserTerms",
                 column: "TermId");
@@ -527,6 +521,11 @@ namespace CharityHub.Infra.Sql.Migrations
                 column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Charities_SocialId",
+                table: "Charities",
+                column: "SocialId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CharityCategories_CategoryId",
                 table: "CharityCategories",
                 column: "CategoryId");
@@ -599,9 +598,6 @@ namespace CharityHub.Infra.Sql.Migrations
                 name: "Transactions");
 
             migrationBuilder.DropTable(
-                name: "Socials");
-
-            migrationBuilder.DropTable(
                 name: "Terms");
 
             migrationBuilder.DropTable(
@@ -618,6 +614,9 @@ namespace CharityHub.Infra.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Socials");
         }
     }
 }

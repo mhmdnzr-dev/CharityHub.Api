@@ -3,5 +3,4 @@ public class VerifyOtpRequest
 {
     public string PhoneNumber { get; set; }
     public string OtpCode { get; set; }
-    public bool AcceptedTerms { get; set; }
 }

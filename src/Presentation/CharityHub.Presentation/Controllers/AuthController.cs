@@ -30,16 +30,12 @@ public class AuthController : ControllerBase
         {
             PhoneNumber = query.PhoneNumber,
         });
-        if (otpResponse.IsSMSSent)
-        {
-            SendOtpDto sendOtpDto = new SendOtpDto
-            {
-                IsNewUser = otpResponse.IsNewUser
-            };
-            return Ok(sendOtpDto);
-        }
 
-        return BadRequest("Failed to send OTP.");
+        SendOtpDto sendOTP = new SendOtpDto
+        {
+            IsNewUser = otpResponse.IsNewUser
+        };
+        return Ok(sendOTP);
     }
 
     [HttpPost("verify-otp")]
@@ -50,7 +46,6 @@ public class AuthController : ControllerBase
         {
             PhoneNumber = query.PhoneNumber,
             OtpCode = query.Otp,
-            AcceptedTerms = query.AcceptedTerms
         });
 
         VerifyDto verifyDto = new VerifyDto
