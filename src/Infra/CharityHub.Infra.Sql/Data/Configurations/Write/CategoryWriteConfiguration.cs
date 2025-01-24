@@ -4,11 +4,13 @@ using CharityHub.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class CategoryWriteConfiguration : IEntityTypeConfiguration<Category>
+internal class CategoryWriteConfiguration : BaseEntityConfiguration<Category>, IEntityTypeConfiguration<Category>
 {
-    public void Configure(EntityTypeBuilder<Category> builder)
+    public void Configure(EntityTypeBuilder<Category> entity)
     {
-        builder.Property(c => c.Name)
+        base.Configure(entity);
+
+        entity.Property(c => c.Name)
             .IsRequired()
             .IsFixedLength();
     }

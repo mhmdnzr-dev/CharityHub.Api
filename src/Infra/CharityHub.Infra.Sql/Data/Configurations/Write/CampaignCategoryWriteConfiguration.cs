@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 internal class CampaignCategoryWriteConfiguration : IEntityTypeConfiguration<CampaignCategory>
 {
-    public void Configure(EntityTypeBuilder<CampaignCategory> builder)
+    public void Configure(EntityTypeBuilder<CampaignCategory> entity)
     {
-        builder.HasNoKey();
+        entity.HasNoKey();
 
-        builder.HasOne(cc => cc.Campaign)
+        entity.HasOne(cc => cc.Campaign)
             .WithMany()
             .HasForeignKey(cc => cc.CampaignId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(cc => cc.Category)
+        entity.HasOne(cc => cc.Category)
             .WithMany()
             .HasForeignKey(cc => cc.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);

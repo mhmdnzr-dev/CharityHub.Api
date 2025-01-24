@@ -5,23 +5,25 @@ using CharityHub.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class DonationWriteConfiguration : IEntityTypeConfiguration<Donation>
+internal class DonationWriteConfiguration : BaseEntityConfiguration<Donation>, IEntityTypeConfiguration<Donation>
 {
-    public void Configure(EntityTypeBuilder<Donation> builder)
+    public void Configure(EntityTypeBuilder<Donation> entity)
     {
-        builder.Property(d => d.Amount)
+        base.Configure(entity);
+
+        entity.Property(d => d.Amount)
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
-        builder.Property(d => d.DonatedAt)
+        entity.Property(d => d.DonatedAt)
             .IsRequired();
 
-        builder.HasOne(d => d.User)
+        entity.HasOne(d => d.User)
             .WithMany()
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(d => d.Campaign)
+        entity.HasOne(d => d.Campaign)
             .WithMany(c => c.Donations)
             .HasForeignKey(d => d.CampaignId)
             .OnDelete(DeleteBehavior.Cascade);
