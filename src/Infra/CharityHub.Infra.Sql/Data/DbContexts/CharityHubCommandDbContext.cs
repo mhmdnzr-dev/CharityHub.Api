@@ -3,7 +3,6 @@
 using CharityHub.Core.Domain.Entities;
 using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Core.Domain.ValueObjects;
-using CharityHub.Infra.Sql.Data.Configurations;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,20 +12,20 @@ namespace CharityHub.Infra.Sql.Data.DbContexts;
 
 
 
-public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     #region DbSets
-    public virtual DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<Campaign> Campaigns { get; set; }
 
-    public virtual DbSet<CampaignCategory> CampaignCategories { get; set; }
+    public DbSet<CampaignCategory> CampaignCategories { get; set; }
 
-    public virtual DbSet<Category> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<Charity> Charities { get; set; }
+    public DbSet<Charity> Charities { get; set; }
 
-    public virtual DbSet<CharityCategory> CharityCategories { get; set; }
+    public DbSet<CharityCategory> CharityCategories { get; set; }
 
-    public virtual DbSet<Donation> Donations { get; set; }
+    public DbSet<Donation> Donations { get; set; }
 
     public DbSet<Transaction> Transactions { get; set; }
     #endregion
@@ -53,9 +52,7 @@ public partial class CharityHubCommandDbContext : IdentityDbContext<ApplicationU
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
-            type => type.Name.EndsWith("WriteConfiguration")
-                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(BaseEntityConfiguration<>)));
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(), type => type.Name.EndsWith("WriteConfiguration"));
     }
 
 

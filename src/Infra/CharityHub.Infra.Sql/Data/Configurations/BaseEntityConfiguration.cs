@@ -3,22 +3,36 @@ using CharityHub.Core.Domain.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-internal class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> where T : BaseEntity
+internal class BaseEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity
 {
-    public void Configure(EntityTypeBuilder<T> builder)
+    public void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        builder.HasKey(e => e.Id);
+        builder.HasKey(c => c.Id);
+        builder.Property(c => c.Id).IsRequired();
 
         builder.Property(e => e.CreatedAt)
-            .IsRequired()
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasColumnType("smalldatetime")
+            .HasConversion(
+                v => EnsureSmallDateTimeRange(v),  // Apply range check
+                v => v);
 
         builder.Property(e => e.ModifiedAt)
-            .IsRequired(false);
+            .HasColumnType("smalldatetime")
+            .HasConversion(
+                v => v.HasValue ? EnsureSmallDateTimeRange(v.Value) : (DateTime?)null,
+                v => v);
+    }
 
-        builder.Property(e => e.IsActive)
-            .IsRequired()
-            .HasDefaultValue(true);
+    public static DateTime EnsureSmallDateTimeRange(DateTime date)
+    {
+        DateTime minSqlDate = new DateTime(1900, 1, 1);
+        DateTime maxSqlDate = new DateTime(2079, 6, 6);
+
+        if (date < minSqlDate)
+            return minSqlDate;
+        else if (date > maxSqlDate)
+            return maxSqlDate;
+
+        return date;
     }
 }

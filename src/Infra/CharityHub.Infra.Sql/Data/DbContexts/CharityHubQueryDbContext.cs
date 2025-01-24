@@ -6,10 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CharityHub.Infra.Sql.Data.DbContexts;
-
-using Configurations;
-
-public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+public sealed class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     #region DbSets
 
@@ -34,8 +31,6 @@ public class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, Appli
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
-            type => type.Name.EndsWith("ReadConfiguration")
-                    || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(BaseEntityConfiguration<>)));
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(), type => type.Name.EndsWith("ReadConfiguration"));
     }
 }
