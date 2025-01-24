@@ -4,7 +4,7 @@ using CharityHub.Core.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class CampaignCategoryWriteConfiguration : IEntityTypeConfiguration<CampaignCategory>
+internal sealed class CampaignCategoryWriteConfiguration : IEntityTypeConfiguration<CampaignCategory>
 {
     public void Configure(EntityTypeBuilder<CampaignCategory> entity)
     {

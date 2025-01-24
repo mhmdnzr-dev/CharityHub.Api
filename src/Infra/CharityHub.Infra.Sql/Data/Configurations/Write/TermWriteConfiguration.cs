@@ -1,17 +1,18 @@
 ﻿namespace CharityHub.Infra.Sql.Data.Configurations.Write;
+
 using CharityHub.Core.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal sealed class CategoryWriteConfiguration : BaseEntityConfiguration<Category>, IEntityTypeConfiguration<Category>
+internal sealed class TermWriteConfiguration : BaseEntityConfiguration<Term>, IEntityTypeConfiguration<Term>
 {
-    public void Configure(EntityTypeBuilder<Category> entity)
+    public void Configure(EntityTypeBuilder<Term> entity)
     {
         base.Configure(entity);
 
-        entity.Property(c => c.Name)
+        entity.Property(t => t.Description)
             .IsRequired()
-            .IsFixedLength();
+            .HasMaxLength(500);
     }
 }

@@ -4,7 +4,7 @@ using CharityHub.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class TransactionWriteConfiguration : BaseEntityConfiguration<Transaction>, IEntityTypeConfiguration<Transaction>
+internal sealed class TransactionWriteConfiguration : BaseEntityConfiguration<Transaction>, IEntityTypeConfiguration<Transaction>
 {
     public void Configure(EntityTypeBuilder<Transaction> entity)
     {

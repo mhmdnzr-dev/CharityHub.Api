@@ -5,7 +5,7 @@ using CharityHub.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-internal class ApplicationUserTermConfiguration : BaseEntityConfiguration<ApplicationUserTerm>, IEntityTypeConfiguration<ApplicationUserTerm>
+internal sealed class ApplicationUserTermWriteConfiguration : BaseEntityConfiguration<ApplicationUserTerm>, IEntityTypeConfiguration<ApplicationUserTerm>
 {
     public void Configure(EntityTypeBuilder<ApplicationUserTerm> entity)
     {
