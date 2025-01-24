@@ -18,7 +18,7 @@ public sealed class Campaign : BaseEntity
 
     public int PhotoId { get; private set; }
 
-    public int? CityId { get; private set; }
+    public int CityId { get; private set; }
 
     public int CharityId { get; private set; }
     public Charity Charity { get; private set; }

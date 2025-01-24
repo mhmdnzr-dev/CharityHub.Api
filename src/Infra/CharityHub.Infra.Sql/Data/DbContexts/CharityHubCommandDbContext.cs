@@ -6,17 +6,21 @@ using CharityHub.Core.Domain.ValueObjects;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CharityHub.Infra.Sql.Data.DbContexts;
 
-
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     #region DbSets
-    public DbSet<Campaign> Campaigns { get; set; }
 
+    public DbSet<ApplicationUserTerm> ApplicationUserTerms { get; set; }
+
+    public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<OTP> OTPs { get; set; }
+    public DbSet<Social> Socials { get; set; }
+    public DbSet<Term> Terms { get; set; }
     public DbSet<CampaignCategory> CampaignCategories { get; set; }
 
     public DbSet<Category> Categories { get; set; }
@@ -41,12 +45,12 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     }
     #endregion
 
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(options);
-        options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

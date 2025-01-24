@@ -34,7 +34,7 @@ internal sealed class CampaignWriteConfiguration : BaseEntityConfiguration<Campa
 
         entity.Property(c => c.PhotoId)
             .IsFixedLength()
-            .IsRequired(false);
+            .IsRequired();
 
 
 

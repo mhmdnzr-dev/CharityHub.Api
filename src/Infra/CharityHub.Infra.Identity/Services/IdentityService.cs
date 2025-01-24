@@ -2,7 +2,6 @@
 using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Identity.Interfaces;
 using CharityHub.Infra.Identity.Models;
-using CharityHub.Utils.Extensions.Extensions;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -37,44 +36,44 @@ public class IdentityService : IIdentityService
     public async Task<SendOtpResponse> SendOTPAsync(SendOtpRequest request)
     {
         var result = new SendOtpResponse();
-        if (!PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber))
-        {
-            throw new Exception("Mobile number isn't valid!");
-        }
+        //if (!PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber))
+        //{
+        //    throw new Exception("Mobile number isn't valid!");
+        //}
 
 
-        var user = await _userManager.FindByNameAsync(request.PhoneNumber);
-        var isNewUser = user == null ? true : false;
+        //var user = await _userManager.FindByNameAsync(request.PhoneNumber);
+        //var isNewUser = user == null ? true : false;
 
-        if (isNewUser)
-        {
-            result.IsNewUser = true;
-            user = new ApplicationUser
-            {
-                UserName = request.PhoneNumber,
-                PhoneNumber = request.PhoneNumber
-            };
-            var createUserResult = await _userManager.CreateAsync(user);
-            if (!createUserResult.Succeeded)
-            {
-                throw new Exception("Failed to create user.");
-            }
+        //if (isNewUser)
+        //{
+        //    result.IsNewUser = true;
+        //    user = new ApplicationUser
+        //    {
+        //        UserName = request.PhoneNumber,
+        //        PhoneNumber = request.PhoneNumber
+        //    };
+        //    var createUserResult = await _userManager.CreateAsync(user);
+        //    if (!createUserResult.Succeeded)
+        //    {
+        //        throw new Exception("Failed to create user.");
+        //    }
 
-        }
-        else
-        {
-            result.IsNewUser = false;
-        }
+        //}
+        //else
+        //{
+        //    result.IsNewUser = false;
+        //}
 
 
-        string otp = GenerateOTP();
+        //string otp = GenerateOTP();
 
-        user.OTP = otp;
-        user.OTPCreationTime = DateTime.UtcNow;
-        await _userManager.UpdateAsync(user);
+        //user.OTP = otp;
+        //user.OTPCreationTime = DateTime.UtcNow;
+        //await _userManager.UpdateAsync(user);
 
-        // TODO: replace await _otpService.SendOTPAsync(phoneNumber, otp) instead of true in production
-        result.IsSMSSent = true;
+        //// TODO: replace await _otpService.SendOTPAsync(phoneNumber, otp) instead of true in production
+        //result.IsSMSSent = true;
 
 
         return result;
@@ -85,39 +84,39 @@ public class IdentityService : IIdentityService
     {
         var result = new VerifyOtpResponse();
 
-        // Check if user exists
-        var userExists = await _userManager.FindByNameAsync(request.PhoneNumber);
+        //// Check if user exists
+        //var userExists = await _userManager.FindByNameAsync(request.PhoneNumber);
 
-        if (userExists is null)
-        {
-            // If user is new, check if terms are accepted
-            if (!request.AcceptedTerms)
-            {
-                throw new Exception("User must accept the terms before proceeding.");
-            }
+        //if (userExists is null)
+        //{
+        //    // If user is new, check if terms are accepted
+        //    if (!request.AcceptedTerms)
+        //    {
+        //        throw new Exception("User must accept the terms before proceeding.");
+        //    }
 
-            // Create the user if needed or other actions if the user is new
-            userExists = new ApplicationUser
-            {
-                UserName = request.PhoneNumber,
-                PhoneNumber = request.PhoneNumber,
-            };
+        //    // Create the user if needed or other actions if the user is new
+        //    userExists = new ApplicationUser
+        //    {
+        //        UserName = request.PhoneNumber,
+        //        PhoneNumber = request.PhoneNumber,
+        //    };
 
-            // Optionally, you can save the user to the database here
-            await _userManager.CreateAsync(userExists);
-        }
+        //    // Optionally, you can save the user to the database here
+        //    await _userManager.CreateAsync(userExists);
+        //}
 
-        // If the user exists or has been created, proceed with OTP verification
-        var isTokenExpired = userExists.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
-        var isOTPValid = "522368" == request.Otp;
+        //// If the user exists or has been created, proceed with OTP verification
+        //var isTokenExpired = userExists.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
+        //var isOTPValid = "522368" == request.Otp;
 
-        if (isOTPValid && !isTokenExpired)
-        {
-            await AssignRoleToUserAsync(userExists, "Client");
-            var token = await _tokenService.GenerateTokenAsync(userExists);
-            result.Token = token;
-            return result;
-        }
+        //if (isOTPValid && !isTokenExpired)
+        //{
+        //    await AssignRoleToUserAsync(userExists, "Client");
+        //    var token = await _tokenService.GenerateTokenAsync(userExists);
+        //    result.Token = token;
+        //    return result;
+        //}
 
         throw new Exception("Invalid or expired OTP.");
     }
