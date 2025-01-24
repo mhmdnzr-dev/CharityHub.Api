@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 
 using Sql.Data.DbContexts;
 
+using Utils.Extensions.Extensions;
+
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -51,6 +53,13 @@ public class IdentityService : IIdentityService
 
     public async Task<SendOtpResponse> SendOTPAsync(SendOtpRequest request)
     {
+        var isValidPhoneNumber = PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber);
+        if (!isValidPhoneNumber)
+        {
+            throw new Exception("Phone number is not valid!");
+        }
+
+
         var otpCode = "522368"; // TODO: use it in prod: GenerateOtpCode()
         var result = new SendOtpResponse();
         result.IsSMSSent = true; // TODO: use it in prod: result.IsSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
@@ -96,6 +105,13 @@ public class IdentityService : IIdentityService
 
     public async Task<VerifyOtpResponse> VerifyOTPAndGenerateTokenAsync(VerifyOtpRequest request)
     {
+
+        var isValidPhoneNumber = PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber);
+        if (!isValidPhoneNumber)
+        {
+            throw new Exception("Phone number is not valid!");
+        }
+
         var result = new VerifyOtpResponse();
 
         // Find the user by phone number
