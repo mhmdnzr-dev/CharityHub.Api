@@ -24,7 +24,9 @@ public sealed class Charity : BaseEntity
     public int LogoId { get; private set; }
     public int BannerId { get; private set; }
 
-    public int? SocialId { get; private set; }
+    public int SocialId { get; private set; }
+    public Social Social { get; private set; }
+
     public string ContactName { get; private set; }
     public string ContactPhone { get; private set; }
     public ICollection<Campaign> Campaigns { get; private set; } = new HashSet<Campaign>();

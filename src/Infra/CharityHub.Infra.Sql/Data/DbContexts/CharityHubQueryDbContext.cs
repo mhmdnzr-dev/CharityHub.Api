@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 
+using CharityHub.Core.Domain.Entities;
 using CharityHub.Core.Domain.Entities.Identity;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -9,6 +10,8 @@ namespace CharityHub.Infra.Sql.Data.DbContexts;
 public sealed class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
 {
     #region DbSets
+    public DbSet<OTP> OTPs { get; set; }
+    public DbSet<Term> Terms { get; set; }
 
     #endregion
 

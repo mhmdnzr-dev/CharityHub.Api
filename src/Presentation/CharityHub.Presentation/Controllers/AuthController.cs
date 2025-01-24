@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
         var response = await _identityService.VerifyOTPAndGenerateTokenAsync(new VerifyOtpRequest
         {
             PhoneNumber = query.PhoneNumber,
-            Otp = query.Otp,
+            OtpCode = query.Otp,
             AcceptedTerms = query.AcceptedTerms
         });
 

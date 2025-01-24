@@ -8,7 +8,14 @@ using Microsoft.Extensions.Options;
 
 namespace CharityHub.Infra.Identity.Services;
 
+using CharityHub.Core.Domain.Enums;
 
+using Core.Domain.Entities;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using Sql.Data.DbContexts;
 
 public class IdentityService : IIdentityService
 {
@@ -17,13 +24,19 @@ public class IdentityService : IIdentityService
     private readonly string _expireTimeMinutes;
     private readonly IOTPService _otpService;
     private readonly ITokenService _tokenService;
+    private readonly CharityHubQueryDbContext _queryDbContext;
+    private readonly CharityHubCommandDbContext _commandDbContext;
+    private readonly ILogger<IdentityService> _logger;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         IOTPService otpService,
         IOptions<SmsProviderOptions> options,
-        ITokenService tokenService
+        ITokenService tokenService,
+        CharityHubQueryDbContext queryDbContext,
+        CharityHubCommandDbContext commandDbContext,
+        ILogger<IdentityService> logger
     )
     {
         _userManager = userManager;
@@ -31,94 +44,114 @@ public class IdentityService : IIdentityService
         _expireTimeMinutes = options.Value.ExpireMinute;
         _otpService = otpService;
         _tokenService = tokenService;
+        _queryDbContext = queryDbContext;
+        _commandDbContext = commandDbContext;
+        _logger = logger;
     }
 
     public async Task<SendOtpResponse> SendOTPAsync(SendOtpRequest request)
     {
+        var otpCode = "522368"; // TODO: use it in prod: GenerateOtpCode()
+        // TODO: use it in prod: var isSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
         var result = new SendOtpResponse();
-        //if (!PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber))
-        //{
-        //    throw new Exception("Mobile number isn't valid!");
-        //}
+        var user = await _userManager.FindByNameAsync(request.PhoneNumber);
+        var isUserExist = user != null;
 
+        if (isUserExist)
+        {
+            result.IsNewUser = false;
+            var otp = OTP.Add(user.Id, otpCode);
+            await CreateOtpAsync(otp);
+        }
+        else
+        {
+            var newUser = new ApplicationUser
+            {
+                UserName = request.PhoneNumber
+            };
 
-        //var user = await _userManager.FindByNameAsync(request.PhoneNumber);
-        //var isNewUser = user == null ? true : false;
+            newUser.Deactivate();
 
-        //if (isNewUser)
-        //{
-        //    result.IsNewUser = true;
-        //    user = new ApplicationUser
-        //    {
-        //        UserName = request.PhoneNumber,
-        //        PhoneNumber = request.PhoneNumber
-        //    };
-        //    var createUserResult = await _userManager.CreateAsync(user);
-        //    if (!createUserResult.Succeeded)
-        //    {
-        //        throw new Exception("Failed to create user.");
-        //    }
+            var createNewUserResult = await _userManager.CreateAsync(newUser);
 
-        //}
-        //else
-        //{
-        //    result.IsNewUser = false;
-        //}
+            if (!createNewUserResult.Succeeded)
+            {
+                throw new Exception("Unable to insert user into the database.");
+            }
 
+            await AssignRoleToUserAsync(newUser, "Client");
 
-        //string otp = GenerateOTP();
+            result.IsNewUser = true;
 
-        //user.OTP = otp;
-        //user.OTPCreationTime = DateTime.UtcNow;
-        //await _userManager.UpdateAsync(user);
-
-        //// TODO: replace await _otpService.SendOTPAsync(phoneNumber, otp) instead of true in production
-        //result.IsSMSSent = true;
-
+            var otp = OTP.Add(newUser.Id, otpCode);
+            await CreateOtpAsync(otp);
+        }
 
         return result;
     }
+
+
 
 
     public async Task<VerifyOtpResponse> VerifyOTPAndGenerateTokenAsync(VerifyOtpRequest request)
     {
         var result = new VerifyOtpResponse();
 
-        //// Check if user exists
-        //var userExists = await _userManager.FindByNameAsync(request.PhoneNumber);
+        // Find the user by phone number
+        var user = await _userManager.FindByNameAsync(request.PhoneNumber);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
 
-        //if (userExists is null)
-        //{
-        //    // If user is new, check if terms are accepted
-        //    if (!request.AcceptedTerms)
-        //    {
-        //        throw new Exception("User must accept the terms before proceeding.");
-        //    }
+        user.Activate();
 
-        //    // Create the user if needed or other actions if the user is new
-        //    userExists = new ApplicationUser
-        //    {
-        //        UserName = request.PhoneNumber,
-        //        PhoneNumber = request.PhoneNumber,
-        //    };
+        // Query the pending OTP for the user
+        var pendingOtp = await _queryDbContext.OTPs
+            .Where(otp => otp.Status == OTPStatus.Pending)
+            .FirstOrDefaultAsync(otp => otp.UserId == user.Id);
 
-        //    // Optionally, you can save the user to the database here
-        //    await _userManager.CreateAsync(userExists);
-        //}
+        if (pendingOtp == null)
+        {
+            throw new Exception("No pending OTP found for this phone number to verify!");
+        }
 
-        //// If the user exists or has been created, proceed with OTP verification
-        //var isTokenExpired = userExists.OTPCreationTime.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
-        //var isOTPValid = "522368" == request.Otp;
+        // Check if the OTP is expired
+        var isTokenExpired = pendingOtp.CreatedAt.AddMinutes(int.Parse(_expireTimeMinutes)) < DateTime.UtcNow;
+        if (isTokenExpired)
+        {
+            throw new Exception("OTP has expired!");
+        }
 
-        //if (isOTPValid && !isTokenExpired)
-        //{
-        //    await AssignRoleToUserAsync(userExists, "Client");
-        //    var token = await _tokenService.GenerateTokenAsync(userExists);
-        //    result.Token = token;
-        //    return result;
-        //}
+        // Check if the OTP code is valid
+        var isOTPValid = pendingOtp.OtpCode == request.OtpCode;
+        if (!isOTPValid)
+        {
+            throw new Exception("Invalid OTP code.");
+        }
 
-        throw new Exception("Invalid or expired OTP.");
+        // Mark OTP as verified
+        pendingOtp.Verify();
+        _commandDbContext.Update(pendingOtp);
+
+        // Get the latest term
+        var term = await _queryDbContext.Terms.OrderByDescending(t => t.Id).FirstOrDefaultAsync();
+        if (term == null)
+        {
+            throw new Exception("No terms found in the system.");
+        }
+
+
+        var userTerm = ApplicationUserTerm.Add(user.Id, term.Id);
+        _commandDbContext.ApplicationUserTerms.Add(userTerm);
+
+        await _commandDbContext.SaveChangesAsync();
+
+
+        var token = await _tokenService.GenerateTokenAsync(user);
+        result.Token = token;
+
+        return result;
     }
 
 
@@ -138,9 +171,19 @@ public class IdentityService : IIdentityService
     }
 
 
-    private static string GenerateOTP()
+
+
+    private async Task CreateOtpAsync(OTP otp)
     {
-        var random = new Random();
+        _commandDbContext.OTPs.Add(otp);
+        await _commandDbContext.SaveChangesAsync();
+    }
+
+    private string GenerateOtpCode()
+    {
+        // Generate a random OTP code (e.g., 6-digit number)
+        Random random = new Random();
         return random.Next(100000, 999999).ToString();
     }
+
 }
