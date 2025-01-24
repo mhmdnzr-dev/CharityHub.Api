@@ -1,6 +1,9 @@
 ﻿using CharityHub.Core.Contract.Authentication;
+using CharityHub.Core.Contract.Terms.Queries.GetLastTerm;
 using CharityHub.Infra.Identity.Interfaces;
 using CharityHub.Infra.Identity.Models;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -13,11 +16,10 @@ namespace CharityHub.Presentation.Controllers;
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
 [OutputCache(PolicyName = "Expire20")]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly IIdentityService _identityService;
-
-    public AuthController(IIdentityService identityService)
+    public AuthController(IMediator mediator, IIdentityService identityService) : base(mediator)
     {
         _identityService = identityService;
     }
@@ -53,6 +55,15 @@ public class AuthController : ControllerBase
             Token = response.Token,
         };
         return Ok(verifyDto);
+    }
+
+
+    [HttpGet("last-term")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetTerm([FromQuery] GetLastTermQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 }
 
