@@ -6,18 +6,21 @@ using Contract.Primitives.Handlers;
 using Contract.Terms.Queries;
 using Contract.Terms.Queries.GetLastTerm;
 
-public class GetLastTermHandler : IQueryHandler<GetLastTermQuery, LastTermResponseDto>
+public class GetLastTermQueryHandler : IQueryHandler<GetLastTermQuery, LastTermResponseDto>
 {
     private readonly ITermQueryRepository _termQueryRepository;
 
-    public GetLastTermHandler(ITermQueryRepository termQueryRepository)
+    public GetLastTermQueryHandler(ITermQueryRepository termQueryRepository)
     {
         _termQueryRepository = termQueryRepository;
     }
 
     public async Task<LastTermResponseDto> Handle(GetLastTermQuery query, CancellationToken cancellationToken)
     {
-        var result = await _termQueryRepository.GetLastTerm(query);
-        return result;
+        // Logic to handle the query, for example:
+        return new LastTermResponseDto
+        {
+            Content = "Test"
+        };
     }
 }

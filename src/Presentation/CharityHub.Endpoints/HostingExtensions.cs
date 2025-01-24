@@ -58,8 +58,6 @@ public static class HostingExtensions
 
     public static void AddCustomServices(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
         services.AddDotnetOutputCache();
         services.AddVersion();
         services.AddCORSPolicy();
@@ -67,7 +65,8 @@ public static class HostingExtensions
         services.AddSwagger();
         services.AddInfra();
         services.AddIdentity();
-        services.AddApplication();
         services.AddContract();
+        services.AddApplication();
+
     }
 }

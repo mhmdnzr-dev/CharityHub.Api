@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Infra\CharityHub.Infra.Sql\CharityHub.Infra.Sql.csproj" />
 	  <ProjectReference Include="..\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
 	  <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
 	</ItemGroup>
