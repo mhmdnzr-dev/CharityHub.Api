@@ -7,8 +7,6 @@ using CharityHub.Infra.Sql.Repositories.Terms;
 
 using FluentValidation;
 
-using MediatR;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,19 +23,6 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
 
-        // Register all query and command handlers automatically
-        services.Scan(scan => scan
-            .FromAssembliesOf(typeof(IQueryHandler<,>), typeof(ICommandHandler<>))  // Scan for handlers of both commands and queries
-            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))  // Register query handlers
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))  // Register command handlers
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
-
-        // Register Mediator Adapters
-        services.AddScoped(typeof(IRequestHandler<>), typeof(MediatorCommandHandlerAdapter<>));  // For commands
-        services.AddScoped(typeof(IRequestHandler<,>), typeof(MediatorQueryHandlerAdapter<,>));  // For queries
 
         services.AddScoped<ITermQueryRepository, TermQueryRepository>();
 
