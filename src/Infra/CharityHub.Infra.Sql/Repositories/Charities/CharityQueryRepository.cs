@@ -58,23 +58,24 @@ public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
 
     public async Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery query)
     {
+        // Retrieve the charity and its associated socials using a LINQ query
         var result = await (from charity in _queryDbContext.Charities
+            where charity.Id == query.Id
             join social in _queryDbContext.Socials
                 on charity.SocialId equals social.Id into socialsGroup
-            from social in socialsGroup.DefaultIfEmpty() // Left join
-            where charity.Id == query.Id
-            select new { Charity = charity, Socials = socialsGroup }).FirstOrDefaultAsync();
+            select new { Charity = charity, Socials = socialsGroup.ToList() }).FirstOrDefaultAsync();
 
+        // If no result is found, return null or throw an exception based on your needs
         if (result == null)
-        {
-            throw new KeyNotFoundException($"Charity with ID {query.Id} not found.");
-        }
+            return new CharityByIdResponseDto();
 
-        var socialsList = result.Socials.Select(s => new SocialModel { Name = s.Name, Url = "https://test.com" })
-            .ToList();
+        // Map the result to the response DTO
         var response = new CharityByIdResponseDto
         {
-            Name = result.Charity.Name, Description = result.Charity.Description, Socials = socialsList
+            Name = result.Charity.Name,
+            Description = result.Charity.Description,
+            Socials = result.Socials.Select(s => new SocialDtoModel { Name = s.Name, Url = "https://google.com" })
+                .ToList()
         };
 
         return response;
