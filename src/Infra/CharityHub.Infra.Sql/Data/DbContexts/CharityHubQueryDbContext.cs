@@ -15,6 +15,8 @@ public sealed class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser
 
     public DbSet<Charity> Charities { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
+    
+    public DbSet<Social> Socials { get; set; }
     #endregion
 
     #region Ctor

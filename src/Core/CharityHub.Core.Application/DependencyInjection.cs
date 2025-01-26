@@ -14,10 +14,12 @@ namespace CharityHub.Core.Application;
 
 using Contract.Charity.Queries;
 using Contract.Charity.Queries.GetAllCharities;
+using Contract.Charity.Queries.GetCharityById;
 
 using Infra.Sql.Repositories.Charities;
 
 using Services.Charities.Queries.GetAllCharities;
+using Services.Charities.Queries.GetCharityById;
 
 public static class DependencyInjection
 {
@@ -36,7 +38,8 @@ public static class DependencyInjection
 
         // Register Mediator Adapters
         services.AddScoped<IQueryHandler<GetLastTermQuery, LastTermResponseDto>, GetLastTermQueryHandler>();
-        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, List<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, IEnumerable<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetCharityByIdQuery, CharityByIdResponseDto>, GetCharityByIdQueryHandler>();
 
 
         // Automatically register all AbstractValidator<T> implementations in the assembly (for FluentValidation)

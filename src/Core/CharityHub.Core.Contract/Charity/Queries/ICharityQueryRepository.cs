@@ -4,9 +4,12 @@ using Domain.Entities;
 
 using GetAllCharities;
 
+using GetCharityById;
+
 using Primitives.Repositories;
 
 public interface ICharityQueryRepository : IQueryRepository<Charity>
 {
-    Task<List<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
+    Task<IEnumerable<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
+    Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery query);
 }
