@@ -53,6 +53,7 @@ public static class DependencyInjection
         #region Campaign Query Repostories DI
         services.AddScoped<ICampaignQueryRepository, CampaignQueryRepository>();
         services.AddScoped<IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>, GetAllCampaignsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>, GetAllCampaignsQueryHandler>();
         #endregion
         
         // Automatically register all AbstractValidator<T> implementations in the assembly (for FluentValidation)

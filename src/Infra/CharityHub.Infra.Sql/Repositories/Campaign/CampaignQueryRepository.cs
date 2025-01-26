@@ -4,6 +4,7 @@ using Charities;
 
 using Core.Contract.Campaign.Queries;
 using Core.Contract.Campaign.Queries.GetAllCamaigns;
+using Core.Contract.Campaign.Queries.GetCampaignById;
 using Core.Contract.Charity.Queries;
 using Core.Domain.Entities;
 
@@ -31,5 +32,29 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             .ToArrayAsync();
 
         return result;
+    }
+
+    public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
+    {
+        var campaign = await _queryDbContext.Campaigns
+            .Include(c => c.Charity) // Join the Charity table to Campaign
+            .FirstOrDefaultAsync(c => c.Id == query.Id);
+
+        if (campaign == null)
+        {
+            return new CampaignByIdResponseDto(); 
+        }
+
+        var campaignDto = new CampaignByIdResponseDto
+        {
+            Title = campaign.Title,
+            DonorCount = 0,
+            RemainingDayCount = 0, 
+            StartDateTime = campaign.StartDate,
+            ChargedAmountProgressPercentage = (int)((campaign.ChargedAmount ?? 0) / campaign.TotalAmount * 100), // Assuming TotalAmount is the target amount
+            TotalAmount = campaign.TotalAmount
+        };
+
+        return campaignDto;
     }
 }

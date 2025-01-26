@@ -6,7 +6,7 @@ using Contract.Charity.Queries;
 using Contract.Charity.Queries.GetAllCharities;
 using Contract.Primitives.Handlers;
 
-public class GetAllCampaignsQueryHandler: IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>
+public class GetAllCampaignsQueryHandler : IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>
 {
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
@@ -14,7 +14,7 @@ public class GetAllCampaignsQueryHandler: IQueryHandler<GetAllCampaignQuery, IEn
     {
         _campaignQueryRepository = campaignQueryRepository;
     }
-    
+
     public async Task<IEnumerable<AllCampaignResponseDto>> Handle(GetAllCampaignQuery query,
         CancellationToken cancellationToken)
     {
