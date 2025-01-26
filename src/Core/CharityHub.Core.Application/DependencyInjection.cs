@@ -36,7 +36,7 @@ public static class DependencyInjection
 
         // Register Mediator Adapters
         services.AddScoped<IQueryHandler<GetLastTermQuery, LastTermResponseDto>, GetLastTermQueryHandler>();
-        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, IEnumerable<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, List<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
 
 
         // Automatically register all AbstractValidator<T> implementations in the assembly (for FluentValidation)

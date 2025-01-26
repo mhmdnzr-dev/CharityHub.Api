@@ -35,16 +35,10 @@ internal sealed class BaseResponseMiddleware
             }
             catch
             {
-                parsedData = responseBody;
+                parsedData = responseBody; // If deserialization fails, keep the raw response as a string
             }
 
-            if (parsedData is JsonElement jsonElement && jsonElement.TryGetProperty("success", out _))
-            {
-                context.Response.Body = originalBodyStream;
-                await context.Response.WriteAsync(responseBody);
-                return;
-            }
-
+            // Build a base response
             var baseResponse = new BaseResponse<object>
             {
                 Success = context.Response.StatusCode is >= 200 and < 300,
@@ -57,7 +51,11 @@ internal sealed class BaseResponseMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = baseResponse.StatusCode;
 
-            var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false
+            });
             await context.Response.WriteAsync(jsonResponse);
         }
     }

@@ -8,5 +8,5 @@ using Primitives.Repositories;
 
 public interface ICharityQueryRepository : IQueryRepository<Charity>
 {
-    Task<IEnumerable<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
+    Task<List<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
 }

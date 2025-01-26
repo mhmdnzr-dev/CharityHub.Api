@@ -23,9 +23,9 @@ public class CharityController:BaseController
     
     [HttpPost("get-all")]
     [MapToApiVersion("1.0")]
-    public IActionResult Get([FromBody] GetAllCharitiesQuery query)
+    public async Task<IActionResult> Get([FromBody] GetAllCharitiesQuery query)
     {
-        var result = _mediator.Send(query); 
+        var result = await _mediator.Send(query); 
         return Ok(result);  
     }
 }
