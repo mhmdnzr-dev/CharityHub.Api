@@ -28,35 +28,42 @@ internal sealed class BaseResponseMiddleware
             var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
             responseBodyStream.Seek(0, SeekOrigin.Begin);
 
-            object parsedData;
-            try
+            if (!context.Items.ContainsKey("SkipBaseResponse")) // Bypass wrapping if flagged
             {
-                parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody);
+                object parsedData;
+                try
+                {
+                    parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody);
+                }
+                catch
+                {
+                    parsedData = responseBody; // If deserialization fails, keep the raw response as a string
+                }
+
+                var baseResponse = new BaseResponse<object>
+                {
+                    Success = context.Response.StatusCode is >= 200 and < 300,
+                    Data = parsedData,
+                    ErrorMessage = context.Response.StatusCode >= 400 ? "An error occurred." : null,
+                    StatusCode = context.Response.StatusCode
+                };
+
+                context.Response.Body = originalBodyStream;
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = baseResponse.StatusCode;
+
+                var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+                await context.Response.WriteAsync(jsonResponse);
             }
-            catch
+            else
             {
-                parsedData = responseBody; // If deserialization fails, keep the raw response as a string
+                // Restore original response without wrapping
+                context.Response.Body = originalBodyStream;
+                await responseBodyStream.CopyToAsync(originalBodyStream);
             }
-
-            // Build a base response
-            var baseResponse = new BaseResponse<object>
-            {
-                Success = context.Response.StatusCode is >= 200 and < 300,
-                Data = parsedData,
-                ErrorMessage = context.Response.StatusCode >= 400 ? "An error occurred." : null,
-                StatusCode = context.Response.StatusCode
-            };
-
-            context.Response.Body = originalBodyStream;
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = baseResponse.StatusCode;
-
-            var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false
-            });
-            await context.Response.WriteAsync(jsonResponse);
         }
     }
 }

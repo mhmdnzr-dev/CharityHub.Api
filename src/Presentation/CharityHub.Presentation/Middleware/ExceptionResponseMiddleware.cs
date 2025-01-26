@@ -30,6 +30,9 @@ internal sealed class ExceptionResponseMiddleware
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        // Flag the response to skip BaseResponseMiddleware wrapping
+        context.Items["SkipBaseResponse"] = true;
+
         var response = new BaseResponse<string>
         {
             Success = false,
@@ -41,7 +44,10 @@ internal sealed class ExceptionResponseMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = response.StatusCode;
 
-        var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
         return context.Response.WriteAsync(jsonResponse);
     }
 }
