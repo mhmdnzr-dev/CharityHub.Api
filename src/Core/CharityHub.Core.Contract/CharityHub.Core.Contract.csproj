@@ -22,6 +22,7 @@
 
 
 	<ItemGroup>
+	  <Folder Include="Campaign\Commands\" />
 	  <Folder Include="Charity\Commands\" />
 	</ItemGroup>
 </Project>
