@@ -121,7 +121,10 @@ public class IdentityService : IIdentityService
             throw new Exception("User not found.");
         }
 
-        user.Activate();
+        if (user.IsActive == false)
+        {
+            user.Activate();
+        }
 
         // Query the pending OTP for the user
         var pendingOtp = await _queryDbContext.OTPs
