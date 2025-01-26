@@ -30,4 +30,5 @@ public sealed class Charity : BaseEntity
     public string ContactName { get; private set; }
     public string ContactPhone { get; private set; }
     public ICollection<Campaign> Campaigns { get; private set; } = new HashSet<Campaign>();
+    public string PhotoUriAddress { get; set; }
 }

@@ -13,6 +13,8 @@ public sealed class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser
     public DbSet<OTP> OTPs { get; set; }
     public DbSet<Term> Terms { get; set; }
 
+    public DbSet<Charity> Charities { get; set; }
+    public DbSet<Campaign> Campaigns { get; set; }
     #endregion
 
     #region Ctor
