@@ -10,19 +10,75 @@ using DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 using Core.Domain.Entities;
+using Core.Domain.Entities.Identity;
+
+using Microsoft.AspNetCore.Identity;
 
 public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 {
     private readonly ILogger<DatabaseSeeder> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public DatabaseSeeder(ILogger<DatabaseSeeder> logger)
+    public DatabaseSeeder(ILogger<DatabaseSeeder> logger, UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
+        _userManager = userManager;
     }
 
 
     public async Task SeedAsync(CharityHubCommandDbContext context, CancellationToken cancellationToken = default)
     {
+        if (!await context.Users.AnyAsync(cancellationToken))
+        {
+            _logger.LogInformation("Seeding users...");
+
+            // Create sample users
+            var users = new List<ApplicationUser>
+            {
+                new ApplicationUser
+                {
+                    UserName = "john.doe@example.com",
+                    Email = "john.doe@example.com",
+                },
+                new ApplicationUser
+                {
+                    UserName = "jane.smith@example.com",
+                    Email = "jane.smith@example.com",
+                },
+                new ApplicationUser
+                {
+                    UserName = "admin@example.com", Email = "admin@example.com"
+                }
+            };
+
+            // Create users with UserManager (which hashes the password)
+            foreach (var user in users)
+            {
+                if (await _userManager.FindByEmailAsync(user.Email) == null)
+                {
+                    var result =
+                        await _userManager.CreateAsync(user,
+                            "Password123!"); // You can change the default password here
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation($"User {user.UserName} created.");
+                    }
+                    else
+                    {
+                        _logger.LogError(
+                            $"Error creating user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    }
+
+                    if (!user.IsActive)
+                    {
+                        user.Activate();
+                    }
+                }
+            }
+
+            _logger.LogInformation("Users seeding completed.");
+        }
+
         if (!await context.Socials.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding social platforms...");
@@ -45,7 +101,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
         if (!await context.Charities.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding charities...");
-            
+
             var charities = new List<Charity>
             {
                 Charity.Create(
@@ -59,7 +115,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     managerName: "جان دو",
                     logoId: 10,
                     bannerId: 20,
-                    socialId: 1,  // Example Social ID (make sure the ID exists in the Social table)
+                    socialId: 1, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "جین اسمیت",
                     contactPhone: "+987654321"
                 ),
@@ -74,7 +130,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     managerName: "آلیس جانسون",
                     logoId: 15,
                     bannerId: 25,
-                    socialId: 2,  // Example Social ID (make sure the ID exists in the Social table)
+                    socialId: 2, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "باب ویلیامز",
                     contactPhone: "+5544332211"
                 )
@@ -85,8 +141,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             _logger.LogInformation("Charities seeding completed.");
         }
-        
-         
+
+
         if (!await context.Campaigns.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding campaigns...");
@@ -94,8 +150,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             var campaigns = new List<Campaign>
             {
                 Campaign.Create(
-                    title: "Help Orphans",
-                    description: "Providing shelter and education for orphans.",
+                    title: "کمک به یتیمان",
+                    description: "تأمین پناهگاه و آموزش برای یتیمان.",
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(6),
                     totalAmount: 50000m,
@@ -104,8 +160,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     charityId: 1
                 ),
                 Campaign.Create(
-                    title: "Food for Homeless",
-                    description: "Providing meals for homeless people in the city.",
+                    title: "غذا برای بی خانمان ها",
+                    description: "تأمین وعده های غذایی برای افراد بی خانمان در شهر.",
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(3),
                     totalAmount: 20000m,
@@ -114,8 +170,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     charityId: 2
                 ),
                 Campaign.Create(
-                    title: "Education for Refugees",
-                    description: "Ensuring education resources for displaced children.",
+                    title: "آموزش برای پناهندگان",
+                    description: "تأمین منابع آموزشی برای کودکان آواره.",
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(12),
                     totalAmount: 75000m,
@@ -124,6 +180,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     charityId: 1
                 )
             };
+
 
             await context.Campaigns.AddRangeAsync(campaigns, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
@@ -141,9 +198,9 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             {
                 Donation.Create(userId: 1, campaignId: campaigns[0].Id, amount: 100m),
                 Donation.Create(userId: 2, campaignId: campaigns[0].Id, amount: 200m),
-                Donation.Create(userId: 3, campaignId: campaigns[1].Id, amount: 50m),
-                Donation.Create(userId: 4, campaignId: campaigns[2].Id, amount: 500m),
-                Donation.Create(userId: 5, campaignId: campaigns[2].Id, amount: 1000m)
+                Donation.Create(userId: 1, campaignId: campaigns[1].Id, amount: 50m),
+                Donation.Create(userId: 1, campaignId: campaigns[2].Id, amount: 500m),
+                Donation.Create(userId: 2, campaignId: campaigns[2].Id, amount: 1000m)
             };
 
             await context.Donations.AddRangeAsync(donations, cancellationToken);
@@ -151,27 +208,28 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             _logger.LogInformation("Donations seeding completed.");
         }
-        
-        
+
+
         if (!await context.Categories.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding categories...");
 
             var categories = new List<Category>
             {
-                Category.Create("Health"),
-                Category.Create("Education"),
-                Category.Create("Food"),
-                Category.Create("Shelter")
+                Category.Create("سلامت"),
+                Category.Create("آموزش"),
+                Category.Create("غذا"),
+                Category.Create("پناهگاه")
             };
+
 
             await context.Categories.AddRangeAsync(categories, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Categories seeding completed.");
         }
-        
-       
+
+
         if (!await context.Transactions.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding transactions...");
@@ -183,17 +241,17 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             {
                 // Sample transactions
                 Transaction.Create(
-                    userId: users[0].Id,  // Assuming user 1 exists
+                    userId: users[0].Id, // Assuming user 1 exists
                     campaignId: campaigns[0].Id, // Assuming campaign 1 exists
                     amount: 100.00m
                 ),
                 Transaction.Create(
-                    userId: users[1].Id,  // Assuming user 2 exists
+                    userId: users[1].Id, // Assuming user 2 exists
                     campaignId: campaigns[1].Id, // Assuming campaign 2 exists
                     amount: 50.00m
                 ),
                 Transaction.Create(
-                    userId: users[2].Id,  // Assuming user 3 exists
+                    userId: users[2].Id, // Assuming user 3 exists
                     campaignId: campaigns[2].Id, // Assuming campaign 3 exists
                     amount: 200.00m
                 )
