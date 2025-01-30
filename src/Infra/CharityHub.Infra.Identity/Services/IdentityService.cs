@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 
 namespace CharityHub.Infra.Identity.Services;
 
+using System.Text;
+
 using CharityHub.Core.Domain.Enums;
 
 using Core.Domain.Entities;
@@ -62,7 +64,8 @@ public class IdentityService : IIdentityService
 
         var otpCode = "522368"; // TODO: use it in prod: GenerateOtpCode()
         var result = new SendOtpResponse();
-        result.IsSMSSent = true; // TODO: use it in prod: result.IsSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
+        result.IsSMSSent =
+            true; // TODO: use it in prod: result.IsSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);
 
         var user = await _userManager.FindByNameAsync(request.PhoneNumber);
         var isUserExist = user != null;
@@ -75,11 +78,7 @@ public class IdentityService : IIdentityService
         }
         else
         {
-            var newUser = new ApplicationUser
-            {
-                UserName = request.PhoneNumber,
-                PhoneNumber = request.PhoneNumber
-            };
+            var newUser = new ApplicationUser { UserName = request.PhoneNumber, PhoneNumber = request.PhoneNumber };
 
 
             var createNewUserResult = await _userManager.CreateAsync(newUser);
@@ -101,11 +100,8 @@ public class IdentityService : IIdentityService
     }
 
 
-
-
     public async Task<VerifyOtpResponse> VerifyOTPAndGenerateTokenAsync(VerifyOtpRequest request)
     {
-
         var isValidPhoneNumber = PhoneNumberHelpers.IsValidIranianMobileNumber(request.PhoneNumber);
         if (!isValidPhoneNumber)
         {
@@ -171,10 +167,20 @@ public class IdentityService : IIdentityService
 
         var token = await _tokenService.GenerateTokenAsync(user);
         result.Token = token;
+        result.PhoneNumber = user.PhoneNumber;
+
+        if (user.FristName != null || user.LastName != null)
+        {
+            result.Name = $"{user.FristName} {user.LastName}";
+        }
+        else
+        {
+            result.Name = null;
+        }
+
 
         return result;
     }
-
 
 
     private async Task AssignRoleToUserAsync(ApplicationUser user, string roleName)
@@ -192,8 +198,6 @@ public class IdentityService : IIdentityService
     }
 
 
-
-
     private async Task CreateOtpAsync(OTP otp)
     {
         _commandDbContext.OTPs.Add(otp);
@@ -206,5 +210,4 @@ public class IdentityService : IIdentityService
         Random random = new Random();
         return random.Next(100000, 999999).ToString();
     }
-
 }

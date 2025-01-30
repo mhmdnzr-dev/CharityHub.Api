@@ -6,4 +6,3 @@ public class VerifyOtpResponse
     public string? PhoneNumber { get; set; }
 }
 
-// dto response schema in swagger
