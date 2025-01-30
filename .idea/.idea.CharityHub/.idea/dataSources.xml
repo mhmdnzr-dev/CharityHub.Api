@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="CharityHubDb@185.137.27.36" uuid="b89ba1fe-3679-48f5-a964-2d29086b8dfe">
+    <data-source source="LOCAL" name="Microsoft SQL Server (JetBrains)" uuid="7759fd73-5c1b-4d77-91c3-9e702b076df6">
       <driver-ref>sqlserver.jb</driver-ref>
       <synchronize>true</synchronize>
       <configured-by-url>true</configured-by-url>
       <jdbc-driver>com.jetbrains.jdbc.sqlserver.SqlServerDriver</jdbc-driver>
-      <jdbc-url>Server=185.137.27.36;Database=CharityHubDb;User Id=sa;Password=sql@2022;TrustServerCertificate=True;</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
-      </jdbc-additional-properties>
+      <jdbc-url>Server=localhost,1434;Database=CharityHubDb;User Id=sa;Password=Hello&amp;Run1234;TrustServerCertificate=True;</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

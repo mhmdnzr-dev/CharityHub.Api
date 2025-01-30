@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CharityHub.Infra.Sql.Migrations
 {
     [DbContext(typeof(CharityHubCommandDbContext))]
-    [Migration("20250124140903_init")]
-    partial class init
+    [Migration("20250130194850_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,8 +136,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nchar(10)")
+                        .HasColumnType("nchar")
                         .IsFixedLength();
 
                     b.HasKey("Id");
@@ -316,8 +315,16 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FristName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
