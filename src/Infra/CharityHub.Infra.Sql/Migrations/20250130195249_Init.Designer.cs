@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CharityHub.Infra.Sql.Migrations
 {
     [DbContext(typeof(CharityHubCommandDbContext))]
-    [Migration("20250130194850_Init")]
+    [Migration("20250130195249_Init")]
     partial class Init
     {
         /// <inheritdoc />
