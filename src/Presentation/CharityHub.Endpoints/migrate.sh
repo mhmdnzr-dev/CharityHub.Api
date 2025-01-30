@@ -19,12 +19,5 @@ dotnet ef migrations add "$MIGRATION_NAME" --context CharityHubCommandDbContext 
 echo "Updating database for Command DbContext..."
 dotnet ef database update --context CharityHubCommandDbContext
 
-# Add Migration for Query DbContext
-echo "Adding migration for Query DbContext..."
-dotnet ef migrations add "$MIGRATION_NAME" --context CharityHubQueryDbContext --output-dir Migrations/QueryDb/Data
-
-# Update Database for Query DbContext
-echo "Updating database for Query DbContext..."
-dotnet ef database update --context CharityHubQueryDbContext
 
 echo "Migration and update process completed successfully!"

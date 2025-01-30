@@ -16,7 +16,6 @@ public sealed class Charity : BaseEntity
     public ApplicationUser ApplicationUser { get; private set; }
 
     public string Address { get; private set; }
-
     public int? CityId { get; private set; }
     public string Telephone { get; private set; }
     public string ManagerName { get; private set; }
@@ -29,5 +28,65 @@ public sealed class Charity : BaseEntity
 
     public string ContactName { get; private set; }
     public string ContactPhone { get; private set; }
-    public ICollection<Campaign> Campaigns { get; private set; } = new HashSet<Campaign>();
+
+    private readonly List<Campaign> _campaigns = new();
+    public IReadOnlyCollection<Campaign> Campaigns => _campaigns.AsReadOnly();
+
+    // ** Private constructor for EF Core **
+    private Charity() { }
+
+    // ** Factory Method to Ensure Valid Charities **
+    public static Charity Create(
+        string name,
+        string description,
+        string website,
+        int createdByUserId,
+        string address,
+        int? cityId,
+        string telephone,
+        string managerName,
+        int logoId,
+        int bannerId,
+        int socialId,
+        string contactName,
+        string contactPhone)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Charity name is required.", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentException("Charity description is required.", nameof(description));
+
+        if (string.IsNullOrWhiteSpace(telephone))
+            throw new ArgumentException("Charity telephone is required.", nameof(telephone));
+
+        if (string.IsNullOrWhiteSpace(contactName))
+            throw new ArgumentException("Charity contact name is required.", nameof(contactName));
+
+        return new Charity
+        {
+            Name = name.Trim(),
+            Description = description.Trim(),
+            Website = website.Trim(),
+            CreatedByUserId = createdByUserId,
+            Address = address.Trim(),
+            CityId = cityId,
+            Telephone = telephone.Trim(),
+            ManagerName = managerName.Trim(),
+            LogoId = logoId,
+            BannerId = bannerId,
+            SocialId = socialId,
+            ContactName = contactName.Trim(),
+            ContactPhone = contactPhone.Trim()
+        };
+    }
+
+    // ** Method to Add a Campaign to the Charity **
+    public void AddCampaign(Campaign campaign)
+    {
+        if (campaign == null)
+            throw new ArgumentNullException(nameof(campaign), "Campaign cannot be null.");
+
+        _campaigns.Add(campaign);
+    }
 }

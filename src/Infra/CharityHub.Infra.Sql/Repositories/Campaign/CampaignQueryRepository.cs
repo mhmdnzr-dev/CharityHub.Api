@@ -37,7 +37,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
     public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
     {
         var campaign = await _queryDbContext.Campaigns
-            .Include(c => c.Charity) // Join the Charity table to Campaign
+            .Include(c => c.Charity)
             .FirstOrDefaultAsync(c => c.Id == query.Id);
 
         if (campaign == null)
@@ -51,7 +51,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             DonorCount = 0,
             RemainingDayCount = 0, 
             StartDateTime = campaign.StartDate,
-            ChargedAmountProgressPercentage = (int)((campaign.ChargedAmount ?? 0) / campaign.TotalAmount * 100), // Assuming TotalAmount is the target amount
+            ChargedAmountProgressPercentage = campaign.ChargedAmount / campaign.TotalAmount * 100, 
             TotalAmount = campaign.TotalAmount
         };
 

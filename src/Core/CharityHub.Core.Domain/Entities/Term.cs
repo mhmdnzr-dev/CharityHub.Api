@@ -4,5 +4,5 @@ using ValueObjects;
 
 public sealed class Term : BaseEntity
 {
-    public required string Description { get; set; }
+    public string Description { get; private set; }
 }
