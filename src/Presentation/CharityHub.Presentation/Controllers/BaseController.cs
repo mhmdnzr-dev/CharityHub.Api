@@ -12,4 +12,14 @@ public abstract class BaseController : ControllerBase
     {
         _mediator = mediator;
     }
+
+    protected string GetTokenFromHeader()
+    {
+        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+        if (authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authorizationHeader.Substring("Bearer ".Length).Trim();
+        }
+        return null; // Or handle the case where the token is not available
+    }
 }

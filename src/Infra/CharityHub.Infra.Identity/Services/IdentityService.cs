@@ -183,6 +183,21 @@ public class IdentityService : IIdentityService
         return result;
     }
 
+    public  ProfileResponse GetUserProfileByToken(ProfileRequest request)
+    {
+        // Extract user details from the token using ITokenService.
+        var userDetailsFromToken = _tokenService.GetUserDetailsFromToken(request.Token);
+
+        // Map the claims to the ProfileResponse object.
+        var profileResponse = new ProfileResponse
+        {
+            FirstName = userDetailsFromToken.FindFirst("FirstName")!.Value,
+            LastName = userDetailsFromToken.FindFirst("LastName")!.Value,
+            PhoneNumber = userDetailsFromToken.FindFirst("PhoneNumber")!.Value
+        };
+
+        return profileResponse;
+    }
 
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {
