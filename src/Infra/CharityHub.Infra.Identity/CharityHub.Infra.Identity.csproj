@@ -21,5 +21,11 @@
 		<ProjectReference Include="..\CharityHub.Infra.Sql\CharityHub.Infra.Sql.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\Identity\Requests\" />
+	  <Folder Include="Models\Identity\Responses\" />
+	  <Folder Include="Models\Token\" />
+	</ItemGroup>
+
 
 </Project>

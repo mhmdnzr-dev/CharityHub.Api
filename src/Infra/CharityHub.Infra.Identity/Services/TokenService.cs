@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CharityHub.Infra.Identity.Services;
 
-
+using Models;
 
 public class TokenService : ITokenService
 {
@@ -24,7 +24,7 @@ public class TokenService : ITokenService
         _options = options;
         _userManager = userManager;
     }
-    
+
     public async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
         if (user == null)
@@ -58,6 +58,59 @@ public class TokenService : ITokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public async Task<UserWithRolesDtoModel> GetUserByTokenAsync(string token)
+    {
+        if (string.IsNullOrEmpty(token))
+            throw new ArgumentNullException(nameof(token), "Token cannot be null or empty.");
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_options.Value.Key);
+
+        try
+        {
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _options.Value.Issuer,
+                ValidAudience = _options.Value.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero // Prevents allowing expired tokens due to default clock skew
+            };
+
+            var principal = tokenHandler.ValidateToken(token, parameters, out var validatedToken);
+            if (validatedToken is not JwtSecurityToken jwtToken)
+                throw new SecurityTokenException("Invalid token");
+
+            var userId = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                throw new SecurityTokenException("User ID claim not found in token.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new SecurityTokenException("User not found.");
+
+            // Retrieve user roles
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserWithRolesDtoModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FristName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Roles = roles.ToList()
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new SecurityTokenException("Token validation failed.", ex);
+        }
+    }
+    
     public ClaimsPrincipal GetUserDetailsFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();

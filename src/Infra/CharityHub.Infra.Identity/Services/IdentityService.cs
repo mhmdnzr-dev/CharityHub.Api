@@ -183,17 +183,17 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public  ProfileResponse GetUserProfileByToken(ProfileRequest request)
+    public  async Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request)
     {
         // Extract user details from the token using ITokenService.
-        var userDetailsFromToken = _tokenService.GetUserDetailsFromToken(request.Token);
+        var userWithRoles = await _tokenService.GetUserByTokenAsync(request.Token);
 
         // Map the claims to the ProfileResponse object.
         var profileResponse = new ProfileResponse
         {
-            FirstName = userDetailsFromToken.FindFirst("FirstName")!.Value,
-            LastName = userDetailsFromToken.FindFirst("LastName")!.Value,
-            PhoneNumber = userDetailsFromToken.FindFirst("PhoneNumber")!.Value
+            FirstName = userWithRoles.FirstName,
+            LastName = userWithRoles.LastName,
+            PhoneNumber = userWithRoles.PhoneNumber,
         };
 
         return profileResponse;

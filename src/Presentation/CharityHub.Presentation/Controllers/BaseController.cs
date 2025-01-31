@@ -15,11 +15,20 @@ public abstract class BaseController : ControllerBase
 
     protected string GetTokenFromHeader()
     {
-        var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
-        if (authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
         {
-            return authorizationHeader.Substring("Bearer ".Length).Trim();
+            var token = authorizationHeader.ToString();
+
+            if (!string.IsNullOrWhiteSpace(token) && token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                return token.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            return token.Trim(); // Return the original token if "Bearer " is not found
         }
-        return null; // Or handle the case where the token is not available
+
+        return null; // Return null if the Authorization header is missing
     }
+
+
 }
