@@ -18,6 +18,8 @@ using Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
+using Models.Token.Requests;
+
 using Sql.Data.DbContexts;
 
 using Utils.Extensions.Extensions;
@@ -166,8 +168,14 @@ public class IdentityService : IIdentityService
         await _commandDbContext.SaveChangesAsync();
 
 
-        var token = await _tokenService.GenerateTokenAsync(user);
-        result.Token = token;
+        var tokenResponse = await _tokenService.GenerateTokenAsync(new GenerateTokenRequest
+        {
+            User = user
+        });
+        
+        
+        result.Token = tokenResponse.Token;
+        
         result.PhoneNumber = user.PhoneNumber;
 
         if (user.FristName != null || user.LastName != null)
@@ -186,7 +194,10 @@ public class IdentityService : IIdentityService
     public  async Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request)
     {
         // Extract user details from the token using ITokenService.
-        var userWithRoles = await _tokenService.GetUserByTokenAsync(request.Token);
+        var userWithRoles = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest
+        {
+            Token = request.Token,
+        });
 
         // Map the claims to the ProfileResponse object.
         var profileResponse = new ProfileResponse

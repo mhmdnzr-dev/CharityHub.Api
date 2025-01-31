@@ -5,10 +5,12 @@ using CharityHub.Core.Domain.Entities.Identity;
 namespace CharityHub.Infra.Identity.Interfaces;
 
 using Models;
+using Models.Token.Requests;
+using Models.Token.Responses;
 
 public interface ITokenService
 {
-    Task<string> GenerateTokenAsync(ApplicationUser user);
-    Task<UserWithRolesDtoModel> GetUserByTokenAsync(string token);
+    Task<GenerateTokenResponse> GenerateTokenAsync(GenerateTokenRequest request);
+    Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request);
     ClaimsPrincipal GetUserDetailsFromToken(string token);
 }

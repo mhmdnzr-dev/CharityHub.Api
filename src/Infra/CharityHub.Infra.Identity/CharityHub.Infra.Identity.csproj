@@ -22,9 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\Identity\Requests\" />
-	  <Folder Include="Models\Identity\Responses\" />
-	  <Folder Include="Models\Token\" />
+	  <Folder Include="Models\Identity\" />
 	</ItemGroup>
 
 

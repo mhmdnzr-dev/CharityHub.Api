@@ -1,6 +1,6 @@
-namespace CharityHub.Infra.Identity.Models;
+namespace CharityHub.Infra.Identity.Models.Token.Responses;
 
-public class UserWithRolesDtoModel
+public class GetUserByTokenResponse
 {
     public int Id { get; set; }
     public string? UserName { get; set; }

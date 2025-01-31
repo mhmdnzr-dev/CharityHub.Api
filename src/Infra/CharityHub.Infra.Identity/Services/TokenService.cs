@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 namespace CharityHub.Infra.Identity.Services;
 
 using Models;
+using Models.Token.Requests;
+using Models.Token.Responses;
 
 public class TokenService : ITokenService
 {
@@ -25,21 +27,21 @@ public class TokenService : ITokenService
         _userManager = userManager;
     }
 
-    public async Task<string> GenerateTokenAsync(ApplicationUser user)
+    public async Task<GenerateTokenResponse> GenerateTokenAsync(GenerateTokenRequest request)
     {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user), "User cannot be null.");
+        if (request.User == null)
+            throw new ArgumentNullException(nameof(request.User), "User cannot be null.");
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.PhoneNumber, user.PhoneNumber), // Replace email with phone number
+            new Claim(JwtRegisteredClaimNames.Sub, request.User.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.PhoneNumber, request.User.PhoneNumber), // Replace email with phone number
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Name, user.UserName)
+            new Claim(ClaimTypes.Name, request.User.UserName)
         };
 
         // Add user roles as claims
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userManager.GetRolesAsync(request.User);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         // Generate signing key
@@ -54,14 +56,14 @@ public class TokenService : ITokenService
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: creds
         );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var result = new GenerateTokenResponse { Token = new JwtSecurityTokenHandler().WriteToken(token), };
+        return result;
     }
 
-    public async Task<UserWithRolesDtoModel> GetUserByTokenAsync(string token)
+    public async Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request)
     {
-        if (string.IsNullOrEmpty(token))
-            throw new ArgumentNullException(nameof(token), "Token cannot be null or empty.");
+        if (string.IsNullOrEmpty(request.Token))
+            throw new ArgumentNullException(nameof(request.Token), "Token cannot be null or empty.");
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_options.Value.Key);
@@ -80,7 +82,7 @@ public class TokenService : ITokenService
                 ClockSkew = TimeSpan.Zero // Prevents allowing expired tokens due to default clock skew
             };
 
-            var principal = tokenHandler.ValidateToken(token, parameters, out var validatedToken);
+            var principal = tokenHandler.ValidateToken(request.Token, parameters, out var validatedToken);
             if (validatedToken is not JwtSecurityToken jwtToken)
                 throw new SecurityTokenException("Invalid token");
 
@@ -95,7 +97,7 @@ public class TokenService : ITokenService
             // Retrieve user roles
             var roles = await _userManager.GetRolesAsync(user);
 
-            return new UserWithRolesDtoModel
+            return new GetUserByTokenResponse
             {
                 Id = user.Id,
                 UserName = user.UserName,
@@ -110,7 +112,7 @@ public class TokenService : ITokenService
             throw new SecurityTokenException("Token validation failed.", ex);
         }
     }
-    
+
     public ClaimsPrincipal GetUserDetailsFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
