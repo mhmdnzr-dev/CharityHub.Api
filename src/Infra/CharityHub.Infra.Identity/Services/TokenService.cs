@@ -34,7 +34,7 @@ public class TokenService : ITokenService
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, request.User.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, request.User.Id.ToString()), // Use NameIdentifier for consistency
             new Claim(JwtRegisteredClaimNames.PhoneNumber, request.User.PhoneNumber), // Replace email with phone number
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Name, request.User.UserName)
@@ -56,9 +56,10 @@ public class TokenService : ITokenService
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: creds
         );
-        var result = new GenerateTokenResponse { Token = new JwtSecurityTokenHandler().WriteToken(token), };
-        return result;
+
+        return new GenerateTokenResponse { Token = new JwtSecurityTokenHandler().WriteToken(token) };
     }
+
 
     public async Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request)
     {
@@ -86,16 +87,14 @@ public class TokenService : ITokenService
             if (validatedToken is not JwtSecurityToken jwtToken)
                 throw new SecurityTokenException("Invalid token");
 
-            var userId = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (string.IsNullOrEmpty(userId))
                 throw new SecurityTokenException("User ID claim not found in token.");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 throw new SecurityTokenException("User not found.");
-
-            // Retrieve user roles
-            var roles = await _userManager.GetRolesAsync(user);
 
             return new GetUserByTokenResponse
             {
@@ -104,7 +103,9 @@ public class TokenService : ITokenService
                 FirstName = user.FristName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
-                Roles = roles.ToList()
+                Issuer = jwtToken.Issuer,
+                Audience = jwtToken.Audiences.FirstOrDefault(),
+                Expiration = jwtToken.ValidTo
             };
         }
         catch (Exception ex)

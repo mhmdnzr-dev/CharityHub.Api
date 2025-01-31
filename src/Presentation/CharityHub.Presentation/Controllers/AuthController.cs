@@ -50,11 +50,11 @@ public class AuthController : BaseController
 
     [HttpGet("get-user-profile")]
     [MapToApiVersion("1.0")]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
         var token = GetTokenFromHeader();
         var query = new ProfileRequest { Token = token };
-        var result = _identityService.GetUserProfileByToken(query);
+        var result =await  _identityService.GetUserProfileByToken(query);
         return Ok(result);
     }
 
