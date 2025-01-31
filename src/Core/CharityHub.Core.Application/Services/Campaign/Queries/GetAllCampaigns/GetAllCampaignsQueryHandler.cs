@@ -1,12 +1,11 @@
 namespace CharityHub.Core.Application.Services.Campaign.Queries.GetAllCampaigns;
 
 using Contract.Campaign.Queries;
-using Contract.Campaign.Queries.GetAllCamaigns;
-using Contract.Charity.Queries;
-using Contract.Charity.Queries.GetAllCharities;
+using Contract.Campaign.Queries.GetAllCampaigns;
 using Contract.Primitives.Handlers;
+using Contract.Primitives.Models;
 
-public class GetAllCampaignsQueryHandler : IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>
+public class GetAllCampaignsQueryHandler : IQueryHandler<GetAllCampaignQuery, PagedData<AllCampaignResponseDto>>
 {
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
@@ -15,7 +14,7 @@ public class GetAllCampaignsQueryHandler : IQueryHandler<GetAllCampaignQuery, IE
         _campaignQueryRepository = campaignQueryRepository;
     }
 
-    public async Task<IEnumerable<AllCampaignResponseDto>> Handle(GetAllCampaignQuery query,
+    public async Task<PagedData<AllCampaignResponseDto>> Handle(GetAllCampaignQuery query,
         CancellationToken cancellationToken)
     {
         var result = await _campaignQueryRepository.GetAllCampaignsAsync(query);

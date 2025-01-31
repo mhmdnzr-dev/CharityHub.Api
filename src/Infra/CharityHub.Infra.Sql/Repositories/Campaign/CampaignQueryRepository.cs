@@ -3,9 +3,10 @@ namespace CharityHub.Infra.Sql.Repositories.Campaign;
 using Charities;
 
 using Core.Contract.Campaign.Queries;
-using Core.Contract.Campaign.Queries.GetAllCamaigns;
+using Core.Contract.Campaign.Queries.GetAllCampaigns;
 using Core.Contract.Campaign.Queries.GetCampaignById;
 using Core.Contract.Charity.Queries;
+using Core.Contract.Primitives.Models;
 using Core.Domain.Entities;
 
 using Data.DbContexts;
@@ -18,21 +19,27 @@ using Premitives;
 public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CampaignQueryRepository> logger)
     : QueryRepository<Campaign>(queryDbContext), ICampaignQueryRepository
 {
-    public async Task<IEnumerable<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query)
+    public async Task<PagedData<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query)
     {
-        var result = await _queryDbContext.Campaigns
-            .Include(c => c.Charity) 
+        var totalCount = await _queryDbContext.Campaigns.CountAsync();
+
+        var campaigns = await _queryDbContext.Campaigns
+            .Include(c => c.Charity)
+            .OrderBy(c => c.StartDate) // Ensure ordering for consistent pagination
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(c => new AllCampaignResponseDto
             {
                 Name = c.Title,
-                CharityName = c.Charity.Name, 
+                CharityName = c.Charity.Name,
                 ContributionAmount = c.ChargedAmount,
                 StartDateTime = c.StartDate
             })
             .ToArrayAsync();
 
-        return result;
+        return new PagedData<AllCampaignResponseDto>(campaigns, totalCount, query.PageSize, query.Page);
     }
+
 
     public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
     {

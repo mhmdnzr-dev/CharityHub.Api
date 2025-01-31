@@ -11,7 +11,6 @@ internal sealed class CategoryWriteConfiguration : BaseEntityConfiguration<Categ
         base.Configure(entity);
 
         entity.Property(c => c.Name)
-            .IsRequired()
-            .IsFixedLength();
+            .IsRequired();
     }
 }

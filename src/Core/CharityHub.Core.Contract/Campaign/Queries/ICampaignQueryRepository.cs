@@ -4,14 +4,15 @@ using Charity.Queries.GetCharityById;
 
 using Domain.Entities;
 
-using GetAllCamaigns;
+using GetAllCampaigns;
 
 using GetCampaignById;
 
+using Primitives.Models;
 using Primitives.Repositories;
 
 public interface ICampaignQueryRepository : IQueryRepository<Campaign>
 {
-    Task<IEnumerable<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query);
+    Task<PagedData<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query);
     Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query);
 }

@@ -33,21 +33,28 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Seeding users...");
 
             // Create sample users
-            var users = new List<ApplicationUser>
+            List<ApplicationUser> users = new()
             {
-                new ApplicationUser
+                new()
                 {
                     UserName = "john.doe@example.com",
                     Email = "john.doe@example.com",
+                    FristName = "test",
+                    LastName = "testy",
                 },
-                new ApplicationUser
+                new()
                 {
                     UserName = "jane.smith@example.com",
                     Email = "jane.smith@example.com",
+                    FristName = "test",
+                    LastName = "testy",
                 },
-                new ApplicationUser
+                new()
                 {
-                    UserName = "admin@example.com", Email = "admin@example.com"
+                    UserName = "admin@example.com", 
+                    Email = "admin@example.com",
+                    FristName = "test",
+                    LastName = "testy",
                 }
             };
 

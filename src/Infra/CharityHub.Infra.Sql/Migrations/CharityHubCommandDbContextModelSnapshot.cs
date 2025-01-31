@@ -133,8 +133,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nchar")
-                        .IsFixedLength();
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

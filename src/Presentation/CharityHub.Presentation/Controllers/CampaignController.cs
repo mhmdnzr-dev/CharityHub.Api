@@ -1,6 +1,6 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Contract.Campaign.Queries.GetAllCamaigns;
+using Core.Contract.Campaign.Queries.GetAllCampaigns;
 using Core.Contract.Campaign.Queries.GetCampaignById;
 
 using MediatR;

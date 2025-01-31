@@ -1,7 +1,6 @@
 namespace CharityHub.Core.Application.Services.Campaign.Queries.GetCampaignById;
 
 using Contract.Campaign.Queries;
-using Contract.Campaign.Queries.GetAllCamaigns;
 using Contract.Campaign.Queries.GetCampaignById;
 using Contract.Primitives.Handlers;
 

@@ -1,6 +1,4 @@
-namespace CharityHub.Core.Contract.Campaign.Queries.GetAllCamaigns;
-
-using System.Threading.Channels;
+namespace CharityHub.Core.Contract.Campaign.Queries.GetAllCampaigns;
 
 public class AllCampaignResponseDto
 {

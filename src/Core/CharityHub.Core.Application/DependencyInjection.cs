@@ -13,11 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CharityHub.Core.Application;
 
 using Contract.Campaign.Queries;
-using Contract.Campaign.Queries.GetAllCamaigns;
+using Contract.Campaign.Queries.GetAllCampaigns;
 using Contract.Campaign.Queries.GetCampaignById;
 using Contract.Charity.Queries;
 using Contract.Charity.Queries.GetAllCharities;
 using Contract.Charity.Queries.GetCharityById;
+using Contract.Primitives.Models;
 
 using Infra.Sql.Repositories.Campaign;
 using Infra.Sql.Repositories.Charities;
@@ -54,7 +55,7 @@ public static class DependencyInjection
 
         #region Campaign Query Repostories DI
         services.AddScoped<ICampaignQueryRepository, CampaignQueryRepository>();
-        services.AddScoped<IQueryHandler<GetAllCampaignQuery, IEnumerable<AllCampaignResponseDto>>, GetAllCampaignsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllCampaignQuery, PagedData<AllCampaignResponseDto>>, GetAllCampaignsQueryHandler>();
         services.AddScoped<IQueryHandler<GetCampaignByIdQuery, CampaignByIdResponseDto>, GetCampaignByIdQueryHandler>();
 
         #endregion
