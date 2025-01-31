@@ -1,50 +1,56 @@
-# Base image for running the application in production or debug mode
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-# Build stage for restoring dependencies and compiling all projects
+# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy solution and all project files to leverage layer caching for dependencies
-COPY CharityHub.sln .
+# Copy the solution file and restore dependencies
+COPY ["CharityHub.sln", "./"]
 
-COPY src/Presentation/CharityHub.Endpoints/appsettings.json src/Presentation/CharityHub.Endpoints/
-COPY src/Presentation/CharityHub.Endpoints/appsettings.Development.json src/Presentation/CharityHub.Endpoints/
+# Copy all .csproj files for the entire solution
+COPY ["src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj", "src/Presentation/CharityHub.Endpoints/"]
+COPY ["src/Core/CharityHub.Core.Application/CharityHub.Core.Application.csproj", "src/Core/CharityHub.Core.Application/"]
+COPY ["src/Core/CharityHub.Core.Contract/CharityHub.Core.Contract.csproj", "src/Core/CharityHub.Core.Contract/"]
+COPY ["src/Core/CharityHub.Core.Domain/CharityHub.Core.Domain.csproj", "src/Core/CharityHub.Core.Domain/"]
+COPY ["src/Core/CharityHub.Core.DomainService/CharityHub.Core.DomainService.csproj", "src/Core/CharityHub.Core.DomainService/"]
+COPY ["src/Core/CharityHub.Core.Presistance/CharityHub.Core.Presistance.csproj", "src/Core/CharityHub.Core.Presistance/"]
+COPY ["src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj", "src/Infra/CharityHub.Infra.Identity/"]
+COPY ["src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj", "src/Infra/CharityHub.Infra.Sql/"]
+COPY ["src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj", "src/Presentation/CharityHub.Presentation/"]
+COPY ["src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj", "src/Utils/CharityHub.Utils.Extensions/"]
+COPY ["CharityHub.AspireHost/CharityHub.AspireHost.csproj", "CharityHub.AspireHost/"]
 
+# Copy the test project file
+COPY ["test/CharityHub.Tests/CharityHub.Tests.csproj", "test/CharityHub.Tests/"]
 
-COPY CharityHub.AspireHost/CharityHub.AspireHost.csproj CharityHub.AspireHost/
+# Restore dependencies for the entire solution
+RUN dotnet restore "CharityHub.sln" --use-current-runtime
 
-COPY src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj src/Presentation/CharityHub.Endpoints/
-
-COPY src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj src/Presentation/CharityHub.Presentation/
-
-
-
-
-COPY src/Core/CharityHub.Core.Application/CharityHub.Core.Application.csproj src/Core/CharityHub.Core.Application/
-COPY src/Core/CharityHub.Core.Contract/CharityHub.Core.Contract.csproj src/Core/CharityHub.Core.Contract/
-COPY src/Core/CharityHub.Core.Domain/CharityHub.Core.Domain.csproj src/Core/CharityHub.Core.Domain/
-COPY src/Core/CharityHub.Core.DomainService/CharityHub.Core.DomainService.csproj src/Core/CharityHub.Core.DomainService/
-COPY src/Core/CharityHub.Core.Presistance/CharityHub.Core.Presistance.csproj src/Core/CharityHub.Core.Presistance/
-COPY src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj src/Infra/CharityHub.Infra.Identity/
-COPY src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj src/Infra/CharityHub.Infra.Sql/
-
-COPY src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj src/Utils/CharityHub.Utils.Extensions/
-COPY test/CharityHub.Tests/CharityHub.Tests.csproj test/CharityHub.Tests/
-
-
-# Restore dependencies for all projects
-RUN dotnet restore "CharityHub.AspireHost/CharityHub.AspireHost.csproj"
-
-# Copy all source code into the container
+# Copy the entire source code and build
 COPY . .
+RUN dotnet build "CharityHub.sln" -c $BUILD_CONFIGURATION -o /app/build 
 
-# Build the main project and tests
-WORKDIR "/src/CharityHub.AspireHost"
-RUN dotnet build "CharityHub.AspireHost.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-WORKDIR "/src/test/CharityHub.Tests"
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
+WORKDIR /app
+
+# Copy the published application
+COPY --from=publish /app/publish .
+
+# Ensure configuration files are copied
+COPY --from=build /src/src/Presentation/CharityHub.Endpoints/appsettings.json /app/
+COPY --from=build /src/src/Presentation/CharityHub.Endpoints/appsettings.Development.json /app/
+
+# Copy the test folder and project into the final image
+COPY --from=build /src/test/CharityHub.Tests /test
+
+ENTRYPOINT ["dotnet", "CharityHub.Endpoints.dll"]

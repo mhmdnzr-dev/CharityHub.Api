@@ -3,26 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: charityhub
+    container_name: CharityHub
+    image: charityhubapi-charityhub  # Image name in lowercase
     ports:
       - "8080:8080"
       - "8081:8081"
-  
     networks:
-      - charityhub-network
-
-  # Optionally, you can also define other services such as databases if needed.
-  # Example:
-  # db:
-  #   image: mysql:5.7
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: rootpassword
-  #     MYSQL_DATABASE: charityhub_db
-  #   ports:
-  #     - "3306:3306"
-  #   networks:
-  #     - charityhub-network
+      - CharityHubNetwork
 
 networks:
-  charityhub-network:
+  CharityHubNetwork:
     driver: bridge
