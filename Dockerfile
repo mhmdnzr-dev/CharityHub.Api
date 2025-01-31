@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
+# Install required workloads (like aspire)
+RUN dotnet workload install aspire
+
 # Copy the solution file and restore dependencies
 COPY ["CharityHub.sln", "./"]
 
@@ -22,10 +25,15 @@ COPY ["src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj", "s
 COPY ["src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj", "src/Infra/CharityHub.Infra.Sql/"]
 COPY ["src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj", "src/Presentation/CharityHub.Presentation/"]
 COPY ["src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj", "src/Utils/CharityHub.Utils.Extensions/"]
-COPY ["CharityHub.AspireHost/CharityHub.AspireHost.csproj", "CharityHub.AspireHost/"]
+
+# Fix the path for CharityHub.AspireHost - Use relative path here
+COPY ["CharityHub.AspireHost/CharityHub.AspireHost.csproj", "src/CharityHub.AspireHost/"]
 
 # Copy the test project file
 COPY ["test/CharityHub.Tests/CharityHub.Tests.csproj", "test/CharityHub.Tests/"]
+
+# Run the workload restore to ensure that required workloads are installed
+RUN dotnet workload restore
 
 # Restore dependencies for the entire solution
 RUN dotnet restore "CharityHub.sln" --use-current-runtime
