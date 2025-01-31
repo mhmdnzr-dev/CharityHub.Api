@@ -26,8 +26,7 @@ COPY ["src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj", "src/Infra/C
 COPY ["src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj", "src/Presentation/CharityHub.Presentation/"]
 COPY ["src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj", "src/Utils/CharityHub.Utils.Extensions/"]
 
-# Fix the path for CharityHub.AspireHost - Use relative path here
-COPY ["CharityHub.AspireHost/CharityHub.AspireHost.csproj", "src/CharityHub.AspireHost/"]
+
 
 # Copy the test project file
 COPY ["test/CharityHub.Tests/CharityHub.Tests.csproj", "test/CharityHub.Tests/"]

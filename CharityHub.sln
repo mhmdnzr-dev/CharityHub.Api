@@ -33,8 +33,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Utils.Extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Tests", "test\CharityHub.Tests\CharityHub.Tests.csproj", "{9444650A-C41B-4693-9650-1568C3149285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.AspireHost", "CharityHub.AspireHost\CharityHub.AspireHost.csproj", "{6FF0911C-2E81-4A93-BE72-19BCD8B50797}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BB88FE07-DFB6-49A8-9925-506CEB163608}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
@@ -91,10 +89,6 @@ Global
 		{9444650A-C41B-4693-9650-1568C3149285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9444650A-C41B-4693-9650-1568C3149285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9444650A-C41B-4693-9650-1568C3149285}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FF0911C-2E81-4A93-BE72-19BCD8B50797}.Release|Any CPU.Build.0 = Release|Any CPU
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Release|Any CPU.ActiveCfg = Release|Any CPU
