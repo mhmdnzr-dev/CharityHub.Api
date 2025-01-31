@@ -1,8 +1,8 @@
-namespace CharityHub.Core.Application.Services.Campaign.Queries.GetCampaignById;
+namespace CharityHub.Core.Application.Services.Campaigns.Queries.GetCampaignById;
 
-using Contract.Campaign.Queries;
-using Contract.Campaign.Queries.GetCampaignById;
-using Contract.Primitives.Handlers;
+using CharityHub.Core.Contract.Campaign.Queries;
+using CharityHub.Core.Contract.Campaign.Queries.GetCampaignById;
+using CharityHub.Core.Contract.Primitives.Handlers;
 
 public class GetCampaignByIdQueryHandler: IQueryHandler<GetCampaignByIdQuery, CampaignByIdResponseDto>
 {

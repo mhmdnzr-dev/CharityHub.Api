@@ -3,6 +3,7 @@ namespace CharityHub.Infra.Sql.Repositories.Charities;
 using Core.Contract.Charity.Queries;
 using Core.Contract.Charity.Queries.GetAllCharities;
 using Core.Contract.Charity.Queries.GetCharityById;
+using Core.Contract.Primitives.Models;
 using Core.Domain.Entities;
 
 using Data.DbContexts;
@@ -15,27 +16,21 @@ using Premitives;
 public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CharityQueryRepository> logger)
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
-    public async Task<IEnumerable<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
+    public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
     {
         #region Query Data
 
-        var charities = _queryDbContext.Charities.AsQueryable();
+        var charities = _queryDbContext.Charities
+            .Where(c => c.IsActive) // Directly filter active charities
+            .AsQueryable();
+
         var campaigns = _queryDbContext.Campaigns.AsQueryable();
 
         #endregion
 
-        #region Filter Active Charities
+        #region Result Query
 
-        if (charities.Any())
-        {
-            charities = charities.Where(c => c.IsActive);
-        }
-
-        #endregion
-
-        #region Result
-
-        var result = from charity in charities
+        var resultQuery = from charity in charities
             join campaign in campaigns
                 on charity.Id equals campaign.CharityId into campaignGroup // Left join
             from campaign in campaignGroup.DefaultIfEmpty() // Include charities without campaigns
@@ -51,8 +46,19 @@ public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
 
         #endregion
 
-        // Materialize the result into a list
-        return await result.ToArrayAsync();
+        #region Pagination
+
+        var totalCount = await resultQuery.CountAsync(); // Get total count before pagination
+
+        var paginatedResult = await resultQuery
+            .OrderBy(c => c.Name) // Ensure consistent ordering
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToArrayAsync();
+
+        #endregion
+
+        return new PagedData<AllCharitiesResponseDto>(paginatedResult, totalCount, query.PageSize, query.Page);
     }
 
 

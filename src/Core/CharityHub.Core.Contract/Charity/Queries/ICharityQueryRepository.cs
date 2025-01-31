@@ -6,10 +6,11 @@ using GetAllCharities;
 
 using GetCharityById;
 
+using Primitives.Models;
 using Primitives.Repositories;
 
 public interface ICharityQueryRepository : IQueryRepository<Charity>
 {
-    Task<IEnumerable<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
+    Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
     Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery query);
 }

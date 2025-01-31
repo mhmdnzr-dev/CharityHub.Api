@@ -24,9 +24,11 @@ using Contract.Primitives.Models;
 using Infra.Sql.Repositories.Campaign;
 using Infra.Sql.Repositories.Charities;
 
-using Services.Campaign.Queries.GetAllCampaigns;
 using Services.Campaign.Queries.GetCampaignById;
 using Services.Campaign.Queries.GetCampaignsByCharityId;
+using Services.Campaigns.Queries.GetAllCampaigns;
+using Services.Campaigns.Queries.GetCampaignById;
+using Services.Campaigns.Queries.GetCampaignsByCharityId;
 using Services.Charities.Queries.GetAllCharities;
 using Services.Charities.Queries.GetCharityById;
 
@@ -51,7 +53,7 @@ public static class DependencyInjection
         
         #region Charity Query Repositories DI
         services.AddScoped<ICharityQueryRepository, CharityQueryRepository>();
-        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, IEnumerable<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllCharitiesQuery, PagedData<AllCharitiesResponseDto>>, GetAllCharitiesQueryHandler>();
         services.AddScoped<IQueryHandler<GetCharityByIdQuery, CharityByIdResponseDto>, GetCharityByIdQueryHandler>();
         #endregion
 
