@@ -60,9 +60,18 @@ public class AuthController : BaseController
 
     [HttpGet("last-term")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> GetTerm([FromQuery] GetLastTermQuery query)
+    public async Task<IActionResult> Get([FromQuery] GetLastTermQuery query)
     {
         var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+    
+    [HttpPost("logout")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+    {
+        var result = await _identityService.LogoutAsync(request);
         return Ok(result);
     }
 }

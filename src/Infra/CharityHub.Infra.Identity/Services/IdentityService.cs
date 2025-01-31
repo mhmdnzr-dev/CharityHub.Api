@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace CharityHub.Infra.Identity.Services;
 
+using System.Security.Claims;
 using System.Text;
 
 using CharityHub.Core.Domain.Enums;
@@ -180,6 +181,45 @@ public class IdentityService : IIdentityService
 
 
         return result;
+    }
+
+
+    public async Task<bool> LogoutAsync(LogoutRequest request)
+    {
+        
+        // Extract user details from the token
+        var userDetails = _tokenService.GetUserDetailsFromToken(request.Token);
+        if (userDetails is null)
+        {
+            _logger.LogWarning("Logout failed: Invalid or expired token.");
+            throw new Exception("Invalid or expired token.");   
+        }
+
+        // Get user ID from the claims
+        var userId = userDetails.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning("Logout failed: User ID not found in token.");
+           throw new Exception("User ID not found in token.");    
+        }
+
+        // Convert userId to int (if necessary)
+        if (!int.TryParse(userId, out int parsedUserId))
+        {
+            _logger.LogWarning("Logout failed: User ID format is invalid.");
+            throw new Exception("User ID format is invalid.");
+        }
+
+    
+        // Remove refresh tokens (if applicable)
+        var userTokens = _commandDbContext.UserTokens.Where(t => t.UserId == parsedUserId);
+        _commandDbContext.UserTokens.RemoveRange(userTokens);
+
+        // Save changes to persist logout actions
+        await _commandDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"User {parsedUserId} successfully logged out.");
+        return true;
     }
 
 

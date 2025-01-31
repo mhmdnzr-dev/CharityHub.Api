@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CharityHub.Infra.Sql.Data.DbContexts;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
@@ -16,11 +17,15 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     #region DbSets
 
     public DbSet<ApplicationUserTerm> ApplicationUserTerms { get; set; }
-
+   
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<OTP> OTPs { get; set; }
     public DbSet<Social> Socials { get; set; }
+    
     public DbSet<Term> Terms { get; set; }
+    
     public DbSet<CampaignCategory> CampaignCategories { get; set; }
 
     public DbSet<Category> Categories { get; set; }

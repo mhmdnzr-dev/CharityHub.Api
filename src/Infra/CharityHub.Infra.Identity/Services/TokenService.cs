@@ -24,7 +24,7 @@ public class TokenService : ITokenService
         _options = options;
         _userManager = userManager;
     }
-
+    
     public async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
         if (user == null)

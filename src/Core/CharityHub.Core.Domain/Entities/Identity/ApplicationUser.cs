@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 namespace CharityHub.Core.Domain.Entities.Identity;
 public sealed class ApplicationUser : IdentityUser<int>
 {
-    public string FristName { get; set; }
-    public string LastName { get; set; }
+    public string? FristName { get; set; }
+    public string? LastName { get; set; }
     
     public bool IsActive { get; private set; }
     

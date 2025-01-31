@@ -236,6 +236,23 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Categories seeding completed.");
         }
 
+        if (!await context.Terms.AnyAsync(cancellationToken))
+        {
+            _logger.LogInformation("Seeding terms...");
+
+            var terms = new List<Term>
+            {
+                Term.Create("شرایط استفاده"),
+                Term.Create("خط مشی حریم خصوصی"),
+                Term.Create("قوانین و مقررات")
+            };
+
+            await context.Terms.AddRangeAsync(terms, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Terms seeding completed.");
+        }
+
 
         if (!await context.Transactions.AnyAsync(cancellationToken))
         {
