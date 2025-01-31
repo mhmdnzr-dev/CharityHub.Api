@@ -2,6 +2,7 @@ namespace CharityHub.Presentation.Controllers;
 
 using Core.Contract.Campaign.Queries.GetAllCampaigns;
 using Core.Contract.Campaign.Queries.GetCampaignById;
+using Core.Contract.Campaign.Queries.GetCampaignsByCharityId;
 
 using MediatR;
 
@@ -32,6 +33,14 @@ public class CampaignController : BaseController
     [HttpGet("get-by-id")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Get([FromQuery] GetCampaignByIdQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+    [HttpGet("get-by-charity-id")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> Get([FromQuery] GetCampaignsByCharityIdQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);

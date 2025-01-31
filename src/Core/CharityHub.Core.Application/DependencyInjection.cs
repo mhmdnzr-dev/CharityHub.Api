@@ -15,6 +15,7 @@ namespace CharityHub.Core.Application;
 using Contract.Campaign.Queries;
 using Contract.Campaign.Queries.GetAllCampaigns;
 using Contract.Campaign.Queries.GetCampaignById;
+using Contract.Campaign.Queries.GetCampaignsByCharityId;
 using Contract.Charity.Queries;
 using Contract.Charity.Queries.GetAllCharities;
 using Contract.Charity.Queries.GetCharityById;
@@ -25,6 +26,7 @@ using Infra.Sql.Repositories.Charities;
 
 using Services.Campaign.Queries.GetAllCampaigns;
 using Services.Campaign.Queries.GetCampaignById;
+using Services.Campaign.Queries.GetCampaignsByCharityId;
 using Services.Charities.Queries.GetAllCharities;
 using Services.Charities.Queries.GetCharityById;
 
@@ -57,7 +59,7 @@ public static class DependencyInjection
         services.AddScoped<ICampaignQueryRepository, CampaignQueryRepository>();
         services.AddScoped<IQueryHandler<GetAllCampaignQuery, PagedData<AllCampaignResponseDto>>, GetAllCampaignsQueryHandler>();
         services.AddScoped<IQueryHandler<GetCampaignByIdQuery, CampaignByIdResponseDto>, GetCampaignByIdQueryHandler>();
-
+        services.AddScoped<IQueryHandler<GetCampaignsByCharityIdQuery, PagedData<CampaignsByCharityIdResponseDto>>, GetCampaignsByCharityIdQueryHandler>();
         #endregion
         
         // Automatically register all AbstractValidator<T> implementations in the assembly (for FluentValidation)
