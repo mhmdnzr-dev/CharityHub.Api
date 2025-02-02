@@ -11,7 +11,7 @@ using Primitives;
 
 public static class DependencyInjection
 {
-    public static void AddInfra(this IServiceCollection services)
+    public static void AddSql(this IServiceCollection services)
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 

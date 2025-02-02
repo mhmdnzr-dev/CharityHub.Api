@@ -36,6 +36,8 @@ using Services.Categories.GetAllCategories;
 using Services.Charities.Queries.GetAllCharities;
 using Services.Charities.Queries.GetCharityById;
 
+using FileOptions = Configuration.Models.FileOptions;
+
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
@@ -46,6 +48,7 @@ public static class DependencyInjection
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
+        services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
 
 
         #region Category Query Repositores DI

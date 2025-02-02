@@ -47,6 +47,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Presentation", "src\Presentation\CharityHub.Presentation\CharityHub.Presentation.csproj", "{047FC9A8-0F90-4053-8156-BA3C4B064641}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharityHub.Infra.FileManager", "src\Infra\CharityHub.Infra.FileManager\CharityHub.Infra.FileManager.csproj", "{64FD658A-A4A5-4793-BA02-665D4336C860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{047FC9A8-0F90-4053-8156-BA3C4B064641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64FD658A-A4A5-4793-BA02-665D4336C860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64FD658A-A4A5-4793-BA02-665D4336C860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64FD658A-A4A5-4793-BA02-665D4336C860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64FD658A-A4A5-4793-BA02-665D4336C860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,5 +118,6 @@ Global
 		{D00748D7-A9E7-4D3C-96E3-CBB2617630AA} = {C3E0D83C-796A-4E39-BE62-2869365E7FBF}
 		{9444650A-C41B-4693-9650-1568C3149285} = {47F9C06F-1070-4FD2-8B20-F44A4EE89329}
 		{047FC9A8-0F90-4053-8156-BA3C4B064641} = {B8700A87-A480-44ED-971F-0909CDEC72A3}
+		{64FD658A-A4A5-4793-BA02-665D4336C860} = {8941230E-E410-400C-9BD5-6ED9488E6C63}
 	EndGlobalSection
 EndGlobal

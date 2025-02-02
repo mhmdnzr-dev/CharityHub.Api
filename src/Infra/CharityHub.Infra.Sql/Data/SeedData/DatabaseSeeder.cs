@@ -120,8 +120,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     cityId: 100,
                     telephone: "+123456789",
                     managerName: "جان دو",
-                    logoId: 10,
-                    bannerId: 20,
                     socialId: 1, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "جین اسمیت",
                     contactPhone: "+987654321"
@@ -135,8 +133,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     cityId: 200,
                     telephone: "+1122334455",
                     managerName: "آلیس جانسون",
-                    logoId: 15,
-                    bannerId: 25,
                     socialId: 2, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "باب ویلیامز",
                     contactPhone: "+5544332211"

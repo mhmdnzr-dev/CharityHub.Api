@@ -41,6 +41,7 @@ if (true)
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 app.UseOutputCache();
+app.UseStaticFiles(); // To serve static files from wwwroot
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

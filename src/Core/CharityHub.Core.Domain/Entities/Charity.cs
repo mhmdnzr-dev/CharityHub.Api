@@ -48,23 +48,12 @@ public sealed class Charity : BaseEntity
         int? cityId,
         string telephone,
         string managerName,
-        int logoId,
-        int bannerId,
+   
         int socialId,
         string contactName,
         string contactPhone)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Charity name is required.", nameof(name));
 
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Charity description is required.", nameof(description));
-
-        if (string.IsNullOrWhiteSpace(telephone))
-            throw new ArgumentException("Charity telephone is required.", nameof(telephone));
-
-        if (string.IsNullOrWhiteSpace(contactName))
-            throw new ArgumentException("Charity contact name is required.", nameof(contactName));
 
         return new Charity
         {
@@ -76,8 +65,6 @@ public sealed class Charity : BaseEntity
             CityId = cityId,
             Telephone = telephone.Trim(),
             ManagerName = managerName.Trim(),
-            LogoId = logoId,
-            BannerId = bannerId,
             SocialId = socialId,
             ContactName = contactName.Trim(),
             ContactPhone = contactPhone.Trim()
