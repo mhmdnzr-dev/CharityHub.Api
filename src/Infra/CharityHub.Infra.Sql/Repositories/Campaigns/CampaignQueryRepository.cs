@@ -3,7 +3,6 @@ namespace CharityHub.Infra.Sql.Repositories.Campaigns;
 using CharityHub.Core.Contract.Primitives.Models;
 using CharityHub.Core.Domain.Entities;
 using CharityHub.Infra.Sql.Data.DbContexts;
-using CharityHub.Infra.Sql.Premitives;
 
 using Core.Contract.Campaigns.Queries;
 using Core.Contract.Campaigns.Queries.GetAllCampaigns;
@@ -12,6 +11,8 @@ using Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
+using Primitives;
 
 public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CampaignQueryRepository> logger)
     : QueryRepository<Campaign>(queryDbContext), ICampaignQueryRepository

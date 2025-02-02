@@ -1,12 +1,13 @@
 ﻿using CharityHub.Core.Contract.Primitives.Repositories;
 using CharityHub.Infra.Sql.Data.DbContexts;
-using CharityHub.Infra.Sql.Premitives;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CharityHub.Infra.Sql;
+
+using Primitives;
 
 public static class DependencyInjection
 {

@@ -11,7 +11,7 @@ using Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using Premitives;
+using Primitives;
 
 public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CharityQueryRepository> logger)
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository

@@ -1,9 +1,9 @@
-﻿using CharityHub.Core.Contract.Primitives.Repositories;
+﻿namespace CharityHub.Infra.Sql.Primitives;
+
+using CharityHub.Core.Contract.Primitives.Repositories;
 using CharityHub.Infra.Sql.Data.DbContexts;
 
 using Microsoft.EntityFrameworkCore.Storage;
-
-namespace CharityHub.Infra.Sql.Premitives;
 
 public class UnitOfWork : IUnitOfWork
 {

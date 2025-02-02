@@ -12,7 +12,7 @@ using Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using Premitives;
+using Primitives;
 
 public sealed class TermQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<TermQueryRepository> logger)
     : QueryRepository<Term>(queryDbContext), ITermQueryRepository

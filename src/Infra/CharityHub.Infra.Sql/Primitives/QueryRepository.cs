@@ -1,11 +1,10 @@
-﻿using CharityHub.Core.Contract.Primitives.Repositories;
+﻿namespace CharityHub.Infra.Sql.Primitives;
+
+using CharityHub.Core.Contract.Primitives.Repositories;
 using CharityHub.Core.Domain.ValueObjects;
 using CharityHub.Infra.Sql.Data.DbContexts;
 
 using Microsoft.EntityFrameworkCore;
-
-namespace CharityHub.Infra.Sql.Premitives;
-
 
 public class QueryRepository<T>(CharityHubQueryDbContext queryDbContext) : IQueryRepository<T> where T : BaseEntity
 {
