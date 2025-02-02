@@ -70,43 +70,8 @@ public class AuthController : BaseController
     }
 
 
-    /// <summary>
-    /// Retrieves the user profile based on the provided authorization token.
-    /// </summary>
-    /// <returns>A response containing the user profile data.</returns>
-    [HttpGet("get-user-profile")]
-    [MapToApiVersion("1.0")]
-    [Authorize]
-    [OutputCache(PolicyName = "Expire20")]  
-    [SwaggerOperation(Summary = "Get User Profile", Description = "Retrieves the user profile using the provided authorization token.")]
-    [SwaggerResponse(200, "User profile retrieved successfully", typeof(ProfileResponse))] // Replace with your actual response DTO
-    [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
-    [SwaggerResponse(500, "Internal Server Error")]
-    public async Task<IActionResult> Get()
-    {
-        var token = GetTokenFromHeader(); // Assuming this method extracts the token
-        var query = new ProfileRequest { Token = token };
-        var result = await _identityService.GetUserProfileByToken(query);
-        return Ok(result);
-    }
 
-    /// <summary>
-    /// Retrieves the last term based on the provided query parameters.
-    /// </summary>
-    /// <param name="query">The query parameters to filter the last term data.</param>
-    /// <returns>A response containing the last term data.</returns>
-    [HttpGet("last-term")]
-    [MapToApiVersion("1.0")]
-    [OutputCache(PolicyName = "Expire20")]  
-    [SwaggerOperation(Summary = "Get Last Term", Description = "Retrieves the last term based on the provided query parameters.")]
-    [SwaggerResponse(200, "Last term data retrieved successfully", typeof(LastTermResponseDto))] // Replace with your actual response DTO
-    [SwaggerResponse(400, "Bad Request, invalid query parameters")]
-    [SwaggerResponse(500, "Internal Server Error")]
-    public async Task<IActionResult> Get([FromQuery] GetLastTermQuery query)
-    {
-        var result = await _mediator.Send(query);
-        return Ok(result);
-    }
+ 
 
 
     /// <summary>
