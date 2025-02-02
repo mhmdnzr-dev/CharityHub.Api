@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CharityHub.Presentation;
 
+using Filters;
 
 public static class DependencyInjection
 {
@@ -23,6 +24,7 @@ public static class DependencyInjection
                 builder.Expire(TimeSpan.FromSeconds(30)));
         });
     }
+
     public static void AddSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
@@ -55,20 +57,8 @@ public static class DependencyInjection
                 Description = "Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsIn...\""
             });
 
-            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-        {
-            {
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                    {
-                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                Array.Empty<string>()
-            }
-        });
+            // Apply security requirement conditionally based on the presence of [Authorize] attribute
+            options.OperationFilter<AuthorizeCheckOperationFilter>();
         });
     }
 
@@ -76,8 +66,9 @@ public static class DependencyInjection
     {
         services.AddApiVersioning(options =>
         {
-            options.AssumeDefaultVersionWhenUnspecified = true; // در صورت مشخص نشدن نسخه، از نسخه پیش‌فرض استفاده می‌کند.
-            options.DefaultApiVersion = new ApiVersion(1, 0);  // نسخه پیش‌فرض
+            options.AssumeDefaultVersionWhenUnspecified =
+                true; // در صورت مشخص نشدن نسخه، از نسخه پیش‌فرض استفاده می‌کند.
+            options.DefaultApiVersion = new ApiVersion(1, 0); // نسخه پیش‌فرض
             options.ReportApiVersions = true; // گزارش نسخه‌های پشتیبانی‌شده
         });
 
@@ -87,6 +78,7 @@ public static class DependencyInjection
             options.SubstituteApiVersionInUrl = true; // جایگذاری نسخه در URL
         });
     }
+
     public static void AddCORSPolicy(this IServiceCollection services)
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
@@ -100,8 +92,8 @@ public static class DependencyInjection
             {
                 // The allowed origins will be resolved at runtime
                 policy.WithOrigins(allowedDomains)
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
     }
@@ -116,5 +108,4 @@ public static class DependencyInjection
     {
         return builder.UseMiddleware<BaseResponseMiddleware>();
     }
-
 }

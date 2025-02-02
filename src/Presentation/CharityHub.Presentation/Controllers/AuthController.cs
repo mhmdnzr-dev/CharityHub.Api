@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.OutputCaching;
 
 namespace CharityHub.Presentation.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
+
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
@@ -50,6 +52,7 @@ public class AuthController : BaseController
 
     [HttpGet("get-user-profile")]
     [MapToApiVersion("1.0")]
+    [Authorize]
     public async Task<IActionResult> Get()
     {
         var token = GetTokenFromHeader();
@@ -69,6 +72,7 @@ public class AuthController : BaseController
 
     [HttpPost("logout")]
     [MapToApiVersion("1.0")]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         var token = GetTokenFromHeader();
