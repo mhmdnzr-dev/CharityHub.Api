@@ -154,7 +154,7 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<int?>("ApplicationUserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BannerId")
+                    b.Property<int?>("BannerId")
                         .HasColumnType("int");
 
                     b.Property<int?>("CityId")
@@ -170,9 +170,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasColumnType("varchar(15)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smalldatetime")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnType("smalldatetime");
 
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("int");
@@ -183,7 +181,7 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LogoId")
+                    b.Property<int?>("LogoId")
                         .HasColumnType("int");
 
                     b.Property<string>("ManagerName")
@@ -214,7 +212,11 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("BannerId");
+
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LogoId");
 
                     b.HasIndex("SocialId");
 
@@ -435,6 +437,43 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Socials");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.StoredFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StoredFiles");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Term", b =>
@@ -668,11 +707,21 @@ namespace CharityHub.Infra.Sql.Migrations
                         .WithMany("Charities")
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("CharityHub.Core.Domain.Entities.StoredFile", "Banner")
+                        .WithMany()
+                        .HasForeignKey("BannerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("CharityHub.Core.Domain.Entities.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("CharityHub.Core.Domain.Entities.StoredFile", "Logo")
+                        .WithMany()
+                        .HasForeignKey("LogoId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("CharityHub.Core.Domain.Entities.Social", "Social")
                         .WithMany()
@@ -681,6 +730,10 @@ namespace CharityHub.Infra.Sql.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Banner");
+
+                    b.Navigation("Logo");
 
                     b.Navigation("Social");
                 });

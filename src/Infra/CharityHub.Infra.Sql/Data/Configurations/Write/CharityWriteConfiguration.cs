@@ -1,4 +1,5 @@
 ﻿namespace CharityHub.Infra.Sql.Data.Configurations.Write;
+
 using CharityHub.Core.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
@@ -48,22 +49,28 @@ internal sealed class CharityWriteConfiguration : BaseEntityConfiguration<Charit
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure relationship with ApplicationUser (CreatedByUserId)
-        entity.HasOne(c => c.ApplicationUser)  // Navigation property
-            .WithMany()  // Assuming one ApplicationUser can create many Charities (one-to-many)
-            .HasForeignKey(c => c.CreatedByUserId)  // Foreign key property (CreatedByUserId)
-            .IsRequired()  // This relationship is required (not null)
-            .OnDelete(DeleteBehavior.Restrict);  // Set delete behavior (optional)
 
-        // Configure relationship with Campaigns
+        entity.HasOne(c => c.Logo)
+            .WithMany()
+            .HasForeignKey(c => c.LogoId)
+            .OnDelete(DeleteBehavior.NoAction); // No automatic action on delete
+
+        entity.HasOne(c => c.Banner)
+            .WithMany()
+            .HasForeignKey(c => c.BannerId)
+            .OnDelete(DeleteBehavior.NoAction); // No automatic action on delete
+
+
+        entity.HasOne(c => c.ApplicationUser)
+            .WithMany()
+            .HasForeignKey(c => c.CreatedByUserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+
         entity.HasMany(c => c.Campaigns)
             .WithOne(ca => ca.Charity)
             .HasForeignKey(ca => ca.CharityId)
-            .OnDelete(DeleteBehavior.Cascade);  // Optional: Set delete behavior for campaigns
-
-        // Configure CreatedAt property with default value
-        entity.Property(c => c.CreatedAt)
-            .IsRequired()
-            .HasDefaultValueSql("GETUTCDATE()");
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
