@@ -18,6 +18,7 @@ using Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
+using Models.Identity.Requests;
 using Models.Token.Requests;
 
 using Sql.Data.DbContexts;
@@ -168,19 +169,16 @@ public class IdentityService : IIdentityService
         await _commandDbContext.SaveChangesAsync();
 
 
-        var tokenResponse = await _tokenService.GenerateTokenAsync(new GenerateTokenRequest
-        {
-            User = user
-        });
-        
-        
+        var tokenResponse = await _tokenService.GenerateTokenAsync(new GenerateTokenRequest { User = user });
+
+
         result.Token = tokenResponse.Token;
-        
+
         result.PhoneNumber = user.PhoneNumber;
 
-        if (user.FristName != null || user.LastName != null)
+        if (user.FirstName != null || user.LastName != null)
         {
-            result.Name = $"{user.FristName} {user.LastName}";
+            result.Name = $"{user.FirstName} {user.LastName}";
         }
         else
         {
@@ -191,13 +189,11 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public  async Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request)
+    public async Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request)
     {
         // Extract user details from the token using ITokenService.
-        var userWithRoles = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest
-        {
-            Token = request.Token,
-        });
+        var userWithRoles =
+            await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token, });
 
         // Map the claims to the ProfileResponse object.
         var profileResponse = new ProfileResponse
@@ -210,15 +206,68 @@ public class IdentityService : IIdentityService
         return profileResponse;
     }
 
+ 
+    public async Task<bool> UpdateProfileAsync(UpateProfileRequest request, string token)
+    {
+        try
+        {
+            if (token is null)
+            {
+                _logger.LogError("Invalid token");
+                throw new Exception("Invalid token");
+            }
+
+            // Step 1: Validate the token
+            var user = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = token });
+
+            if (user == null)
+            {
+                _logger.LogError("User not found");
+                throw new Exception("User not found");
+            }
+
+            // Step 4: Fetch the existing user from the database
+            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
+            if (existingUser == null)
+            {
+                _logger.LogError("Existing user not found");
+                throw new Exception("Existing user not found");
+            }
+
+            // Update the user's properties
+            existingUser.FirstName = request.FirstName;
+            existingUser.LastName = request.LastName;
+
+            // Step 5: Update the user and preserve the SecurityStamp
+            var result = await _userManager.UpdateAsync(existingUser);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogError("Error updating user profile: {Errors}",
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new Exception($"Error updating user profile: {string.Join(", ", result.Errors)}");
+            }
+
+            // Step 6: Optionally log the update success
+            _logger.LogInformation("User profile updated successfully for user {UserId}", user.Id);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating the user profile.");
+            throw new Exception($"An error occurred while updating the user profile: {ex.Message}");
+        }
+    }
+
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {
-        
         // Extract user details from the token
         var userDetails = _tokenService.GetUserDetailsFromToken(request.Token);
         if (userDetails is null)
         {
             _logger.LogWarning("Logout failed: Invalid or expired token.");
-            throw new Exception("Invalid or expired token.");   
+            throw new Exception("Invalid or expired token.");
         }
 
         // Get user ID from the claims
@@ -226,7 +275,7 @@ public class IdentityService : IIdentityService
         if (string.IsNullOrEmpty(userId))
         {
             _logger.LogWarning("Logout failed: User ID not found in token.");
-           throw new Exception("User ID not found in token.");    
+            throw new Exception("User ID not found in token.");
         }
 
         // Convert userId to int (if necessary)
@@ -236,7 +285,7 @@ public class IdentityService : IIdentityService
             throw new Exception("User ID format is invalid.");
         }
 
-    
+
         // Remove refresh tokens (if applicable)
         var userTokens = _commandDbContext.UserTokens.Where(t => t.UserId == parsedUserId);
         _commandDbContext.UserTokens.RemoveRange(userTokens);

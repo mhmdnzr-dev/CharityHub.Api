@@ -100,7 +100,7 @@ public class TokenService : ITokenService
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                FirstName = user.FristName,
+                FirstName = user.FirstName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 Issuer = jwtToken.Issuer,

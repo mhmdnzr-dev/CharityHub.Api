@@ -39,21 +39,21 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                 {
                     UserName = "john.doe@example.com",
                     Email = "john.doe@example.com",
-                    FristName = "test",
+                    FirstName = "test",
                     LastName = "testy",
                 },
                 new()
                 {
                     UserName = "jane.smith@example.com",
                     Email = "jane.smith@example.com",
-                    FristName = "test",
+                    FirstName = "test",
                     LastName = "testy",
                 },
                 new()
                 {
                     UserName = "admin@example.com", 
                     Email = "admin@example.com",
-                    FristName = "test",
+                    FirstName = "test",
                     LastName = "testy",
                 }
             };
