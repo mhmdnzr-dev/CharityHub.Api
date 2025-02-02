@@ -25,6 +25,7 @@ public static class DependencyInjection
         });
     }
 
+
     public static void AddSwagger(this IServiceCollection services)
 {
     services.AddSwaggerGen(options =>
@@ -46,8 +47,7 @@ public static class DependencyInjection
         options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
         options.DocInclusionPredicate((version, desc) => desc.GroupName == version);
 
- 
-        options.OperationFilter<AuthorizeCheckOperationFilter>();
+    
 
         // پیکربندی احراز هویت Bearer Token (If required)
         options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -60,23 +60,12 @@ public static class DependencyInjection
             Description = "Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsIn...\""
         });
 
-        // Apply security requirement (optional, for JWT authentication)
-        options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-        {
-            {
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                    {
-                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] {}
-            }
-        });
+        // Apply the custom operation filter to check for the [Authorize] attribute
+        options.OperationFilter<AuthorizeCheckOperationFilter>();
     });
 }
+
+
 
     public static void AddVersion(this IServiceCollection services)
     {
