@@ -17,8 +17,6 @@ using Swashbuckle.AspNetCore.Annotations;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
-[OutputCache(PolicyName = "Expire20")]
 public class AuthController : BaseController
 {
     private readonly IIdentityService _identityService;
@@ -79,6 +77,7 @@ public class AuthController : BaseController
     [HttpGet("get-user-profile")]
     [MapToApiVersion("1.0")]
     [Authorize]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get User Profile", Description = "Retrieves the user profile using the provided authorization token.")]
     [SwaggerResponse(200, "User profile retrieved successfully", typeof(ProfileResponse))] // Replace with your actual response DTO
     [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
@@ -98,6 +97,7 @@ public class AuthController : BaseController
     /// <returns>A response containing the last term data.</returns>
     [HttpGet("last-term")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Last Term", Description = "Retrieves the last term based on the provided query parameters.")]
     [SwaggerResponse(200, "Last term data retrieved successfully", typeof(LastTermResponseDto))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]

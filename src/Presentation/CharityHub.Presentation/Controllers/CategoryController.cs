@@ -13,7 +13,6 @@ using Swashbuckle.AspNetCore.Annotations;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-[OutputCache(PolicyName = "Expire20")]
 public class CategoryController: BaseController
 {
     public CategoryController(IMediator mediator) : base(mediator)
@@ -28,6 +27,7 @@ public class CategoryController: BaseController
     /// <returns>A response containing the list of categories.</returns>
     [HttpGet("get-all")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get All Categories", Description = "Retrieves all categories based on the provided query parameters.")]
     [SwaggerResponse(200, "Categories retrieved successfully", typeof(List<AllCategoriesResponseDto>))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]

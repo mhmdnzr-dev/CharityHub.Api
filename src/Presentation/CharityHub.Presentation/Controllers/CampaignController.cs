@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.OutputCaching;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
-[OutputCache(PolicyName = "Expire20")]
 public class CampaignController : BaseController
 {
     public CampaignController(IMediator mediator) : base(mediator)
@@ -31,6 +30,7 @@ public class CampaignController : BaseController
     /// <returns>A list of campaigns matching the query.</returns>
     [HttpGet("get-all")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get all campaigns", Description = "Retrieve a list of campaigns based on query parameters.")]
     [SwaggerResponse(200, "The list of campaigns", typeof(List<AllCampaignResponseDto>))] // Replace CampaignDto with your actual output model
     [SwaggerResponse(400, "Bad Request")]
@@ -48,6 +48,7 @@ public class CampaignController : BaseController
     /// <returns>A response containing the campaign details.</returns>
     [HttpGet("get-by-id")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Campaign by ID", Description = "Retrieves a campaign based on the provided campaign ID.")]
     [SwaggerResponse(200, "Campaign retrieved successfully", typeof(CampaignByIdResponseDto))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]
@@ -67,6 +68,7 @@ public class CampaignController : BaseController
     /// <returns>A response containing the list of campaigns for the specified charity.</returns>
     [HttpGet("get-by-charity-id")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Campaigns by Charity ID", Description = "Retrieves all campaigns associated with a specific charity identified by its charity ID.")]
     [SwaggerResponse(200, "Campaigns retrieved successfully", typeof(PagedData<CampaignsByCharityIdResponseDto>))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]

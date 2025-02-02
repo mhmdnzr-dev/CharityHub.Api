@@ -17,7 +17,6 @@ using Swashbuckle.AspNetCore.Annotations;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
-[OutputCache(PolicyName = "Expire20")]  
 public class CharityController:BaseController
 {
     public CharityController(IMediator mediator) : base(mediator)
@@ -32,6 +31,7 @@ public class CharityController:BaseController
     /// <returns>A response containing the list of charities.</returns>
     [HttpGet("get-all")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get All Charities", Description = "Retrieves all charities based on the provided query parameters.")]
     [SwaggerResponse(200, "Charities retrieved successfully", typeof(PagedData<AllCharitiesResponseDto>))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]
@@ -49,6 +49,7 @@ public class CharityController:BaseController
     /// <returns>A response containing the charity details.</returns>
     [HttpGet("get-by-id")]
     [MapToApiVersion("1.0")]
+    [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Charity by ID", Description = "Retrieves a charity based on the provided charity ID.")]
     [SwaggerResponse(200, "Charity retrieved successfully", typeof(CharityByIdResponseDto))] // Replace with your actual response DTO
     [SwaggerResponse(400, "Bad Request, invalid query parameters")]
