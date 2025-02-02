@@ -31,10 +31,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Migrate the command-side DbContext
-        using var serviceProvider = services.BuildServiceProvider();
-        using var commandContext = serviceProvider.GetRequiredService<CharityHubCommandDbContext>();
-        commandContext.Database.Migrate();
+       
     }
 }
 

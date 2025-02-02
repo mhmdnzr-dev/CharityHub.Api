@@ -1,9 +1,10 @@
 namespace CharityHub.Core.Application.Services.Campaigns.Queries.GetCampaignsByCharityId;
 
-using CharityHub.Core.Contract.Campaign.Queries;
-using CharityHub.Core.Contract.Campaign.Queries.GetCampaignsByCharityId;
 using CharityHub.Core.Contract.Primitives.Handlers;
 using CharityHub.Core.Contract.Primitives.Models;
+
+using Contract.Campaigns.Queries;
+using Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
 public class GetCampaignsByCharityIdQueryHandler: IQueryHandler<GetCampaignsByCharityIdQuery, PagedData<CampaignsByCharityIdResponseDto>>
 {

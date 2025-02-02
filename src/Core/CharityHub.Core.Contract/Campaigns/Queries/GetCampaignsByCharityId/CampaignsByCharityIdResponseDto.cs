@@ -1,4 +1,4 @@
-namespace CharityHub.Core.Contract.Campaign.Queries.GetCampaignsByCharityId;
+namespace CharityHub.Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
 
 public class CampaignsByCharityIdResponseDto

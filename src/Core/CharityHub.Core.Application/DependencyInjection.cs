@@ -12,16 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CharityHub.Core.Application;
 
-using Contract.Campaign.Queries;
-using Contract.Campaign.Queries.GetAllCampaigns;
-using Contract.Campaign.Queries.GetCampaignById;
-using Contract.Campaign.Queries.GetCampaignsByCharityId;
+using Contract.Campaigns.Queries;
+using Contract.Campaigns.Queries.GetAllCampaigns;
+using Contract.Campaigns.Queries.GetCampaignById;
+using Contract.Campaigns.Queries.GetCampaignsByCharityId;
+using Contract.Categories.Queries;
+using Contract.Categories.Queries.GetAllCategories;
 using Contract.Charity.Queries;
 using Contract.Charity.Queries.GetAllCharities;
 using Contract.Charity.Queries.GetCharityById;
 using Contract.Primitives.Models;
 
-using Infra.Sql.Repositories.Campaign;
+using Infra.Sql.Repositories.Campaigns;
+using Infra.Sql.Repositories.Categories;
 using Infra.Sql.Repositories.Charities;
 
 using Services.Campaign.Queries.GetCampaignById;
@@ -29,6 +32,7 @@ using Services.Campaign.Queries.GetCampaignsByCharityId;
 using Services.Campaigns.Queries.GetAllCampaigns;
 using Services.Campaigns.Queries.GetCampaignById;
 using Services.Campaigns.Queries.GetCampaignsByCharityId;
+using Services.Categories.GetAllCategories;
 using Services.Charities.Queries.GetAllCharities;
 using Services.Charities.Queries.GetCharityById;
 
@@ -44,7 +48,11 @@ public static class DependencyInjection
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
 
 
-        
+        #region Category Query Repositores DI
+        services.AddScoped<ICategoryQueryRepository, CategoryQueryRepository>();
+        services.AddScoped<IQueryHandler<GetAllCategoriesQuery, List<AllCategoriesResponseDto>>, GetAllCategoriesQueryHandler>();
+        #endregion
+
        
         #region Term Query Repositores DI
         services.AddScoped<ITermQueryRepository, TermQueryRepository>();
