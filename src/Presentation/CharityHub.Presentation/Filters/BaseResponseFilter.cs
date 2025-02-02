@@ -1,5 +1,5 @@
 ﻿namespace CharityHub.Presentation.Filters;
-internal sealed class BaseResponse<T>
+internal sealed class BaseResponseFilter<T>
 {
     public bool Success { get; set; }
     public T Data { get; set; }

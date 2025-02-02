@@ -26,41 +26,57 @@ public static class DependencyInjection
     }
 
     public static void AddSwagger(this IServiceCollection services)
+{
+    services.AddSwaggerGen(options =>
     {
-        services.AddSwaggerGen(options =>
+        var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+        // تنظیم نسخه‌های API
+        foreach (var description in provider.ApiVersionDescriptions)
         {
-            var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-
-            // تنظیم نسخه‌های API
-            foreach (var description in provider.ApiVersionDescriptions)
+            options.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
             {
-                options.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Title = $"API Version {description.GroupName.ToUpper()}",
-                    Version = description.ApiVersion.ToString(),
-                    Description = $"API Documentation for version {description.ApiVersion}"
-                });
-            }
-
-            // حل تداخل‌ها
-            options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-            options.DocInclusionPredicate((version, desc) => desc.GroupName == version);
-
-            // پیکربندی احراز هویت Bearer Token
-            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                Description = "Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsIn...\""
+                Title = $"API Version {description.GroupName.ToUpper()}",
+                Version = description.ApiVersion.ToString(),
+                Description = $"API Documentation for version {description.ApiVersion}"
             });
+        }
 
-            // Apply security requirement conditionally based on the presence of [Authorize] attribute
-            options.OperationFilter<AuthorizeCheckOperationFilter>();
+        // حل تداخل‌ها
+        options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+        options.DocInclusionPredicate((version, desc) => desc.GroupName == version);
+
+ 
+        options.OperationFilter<AuthorizeCheckOperationFilter>();
+
+        // پیکربندی احراز هویت Bearer Token (If required)
+        options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Description = "Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsIn...\""
         });
-    }
+
+        // Apply security requirement (optional, for JWT authentication)
+        options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
+    });
+}
 
     public static void AddVersion(this IServiceCollection services)
     {

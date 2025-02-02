@@ -40,7 +40,7 @@ internal sealed class BaseResponseMiddleware
                     parsedData = responseBody; // If deserialization fails, keep the raw response as a string
                 }
 
-                var baseResponse = new BaseResponse<object>
+                var baseResponse = new BaseResponseFilter<object>
                 {
                     Success = context.Response.StatusCode is >= 200 and < 300,
                     Data = parsedData,

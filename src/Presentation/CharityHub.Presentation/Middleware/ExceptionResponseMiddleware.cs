@@ -33,7 +33,7 @@ internal sealed class ExceptionResponseMiddleware
         // Flag the response to skip BaseResponseMiddleware wrapping
         context.Items["SkipBaseResponse"] = true;
 
-        var response = new BaseResponse<string>
+        var response = new BaseResponseFilter<string>
         {
             Success = false,
             Data = null,
