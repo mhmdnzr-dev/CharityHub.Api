@@ -3,11 +3,7 @@ using CharityHub.Infra.Sql.Data.DbContexts;
 using CharityHub.Infra.Sql.Data.SeedData;
 using CharityHub.Infra.Sql.Extensions;
 using CharityHub.Presentation;
-using CharityHub.Presentation.Extensions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
