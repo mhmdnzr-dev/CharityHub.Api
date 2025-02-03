@@ -1,13 +1,9 @@
 ﻿namespace CharityHub.Core.Contract;
 
-using System.Reflection;
 
 using Configuration.Models;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using Primitives.Handlers;
 using Primitives.Repositories;
 
 
