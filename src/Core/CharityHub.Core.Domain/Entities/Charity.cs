@@ -1,6 +1,4 @@
-﻿
-
-namespace CharityHub.Core.Domain.Entities;
+﻿namespace CharityHub.Core.Domain.Entities;
 
 using Identity;
 
@@ -20,11 +18,11 @@ public sealed class Charity : BaseEntity
     public string Telephone { get; private set; }
     public string ManagerName { get; private set; }
 
-    public int? LogoId { get; set; }
-    public StoredFile? Logo { get; set; }
+    public int? LogoId { get; private set; }
+    public StoredFile? Logo { get; private set; }
 
-    public int? BannerId { get; set; }
-    public StoredFile? Banner { get; set; }
+    public int? BannerId { get; private set; }
+    public StoredFile? Banner { get; private set; }
 
     public int SocialId { get; private set; }
     public Social Social { get; private set; }
@@ -48,13 +46,10 @@ public sealed class Charity : BaseEntity
         int? cityId,
         string telephone,
         string managerName,
-   
         int socialId,
         string contactName,
         string contactPhone)
     {
-
-
         return new Charity
         {
             Name = name.Trim(),
@@ -71,12 +66,42 @@ public sealed class Charity : BaseEntity
         };
     }
 
-    // ** Method to Add a Campaign to the Charity **
-    public void AddCampaign(Campaign campaign)
+    public void SetBanner(string fileName, string filePath, string fileType)
     {
-        if (campaign == null)
-            throw new ArgumentNullException(nameof(campaign), "Campaign cannot be null.");
+        Banner = new StoredFile(fileName, filePath, fileType);
+        BannerId = Banner.Id;
+    }
+
+    public void SetLogo(string fileName, string filePath, string fileType)
+    {
+        Logo = new StoredFile(fileName, filePath, fileType);
+        LogoId = Logo.Id;
+    }
+    
+    public void SetCampaign(Campaign campaign)
+    {
+        if (_campaigns.Any(c => c.Id == campaign.Id))
+        {
+            throw new InvalidOperationException("This campaign is already associated with the charity.");
+        }
+
+        if (campaign.CharityId != this.Id)
+        {
+            throw new InvalidOperationException("The campaign does not belong to this charity.");
+        }
 
         _campaigns.Add(campaign);
+    }
+    
+    public void RemoveCampaignById(int campaignId)
+    {
+        var campaign = _campaigns.SingleOrDefault(c => c.Id == campaignId);
+
+        if (campaign == null)
+        {
+            throw new InvalidOperationException("The campaign with the given ID was not found for this charity.");
+        }
+
+        _campaigns.Remove(campaign);
     }
 }

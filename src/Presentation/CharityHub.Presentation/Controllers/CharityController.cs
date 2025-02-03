@@ -1,5 +1,6 @@
 namespace CharityHub.Presentation.Controllers;
 
+using Core.Contract.Charity.Commands.CreateCharity;
 using Core.Contract.Charity.Queries;
 using Core.Contract.Charity.Queries.GetAllCharities;
 using Core.Contract.Charity.Queries.GetCharityById;
@@ -58,6 +59,26 @@ public class CharityController:BaseController
     public async Task<IActionResult> Get([FromQuery] GetCharityByIdQuery query)
     {
         var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+    
+    
+
+    /// <summary>
+    /// Creates a new charity with the provided details.
+    /// </summary>
+    /// <param name="command">The request containing the charity details.</param>
+    /// <returns>The created charity's details or an appropriate error response.</returns>
+    [HttpPost("create-charity")]
+    [MapToApiVersion("2.0")]
+    [SwaggerOperation(Summary = "Create a new Charity", Description = "Creates a new charity with the provided name, description, and other details.")]
+    [SwaggerResponse(201, "Charity created successfully", typeof(int))] 
+    [SwaggerResponse(400, "Bad Request, invalid input data")]
+    [SwaggerResponse(500, "Internal Server Error")]
+    public async Task<IActionResult> Get([FromBody] CreateCharityCommand command)
+    {
+        var result = await _mediator.Send(command);
         return Ok(result);
     }
 }

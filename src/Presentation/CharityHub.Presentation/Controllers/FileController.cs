@@ -1,10 +1,11 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Infra.FileManager;
+
+using Infra.FileManager.Interfaces;
+using Infra.FileManager.Models.Requests;
 
 using MediatR;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -30,15 +31,12 @@ public class FileController : BaseController
 
         var fileBytes = Convert.FromBase64String(base64File);
 
-        int fileId = await _fileManagerService.UploadFileAsync(fileBytes, "charities", "png");
-        return Ok(new { FileId = fileId });
+        var result = await _fileManagerService.UploadFileAsync(new UpdateFileRequestModel
+        {
+            Extension = "png", FileBytes = fileBytes, SubDirectory = "Charities"
+        });
+        return Ok(result.IsSuccess);
     }
 
-    [HttpDelete("{fileId}")]
-    [MapToApiVersion("1.0")]
-    public async Task<IActionResult> DeleteFile(int fileId)
-    {
-        bool result = await _fileManagerService.DeleteFileAsync(fileId);
-        return result ? Ok("File deleted") : NotFound("File not found");
-    }
+   
 }

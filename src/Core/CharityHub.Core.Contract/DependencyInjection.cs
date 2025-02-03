@@ -1,30 +1,45 @@
-﻿using CharityHub.Core.Contract.Primitives.Handlers;
+﻿namespace CharityHub.Core.Contract;
+
+using Charity.Commands.CreateCharity;
+
+using CharityHub.Core.Contract.Primitives.Handlers;
+
+using Configuration.Models;
 
 using MediatR;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CharityHub.Core.Contract;
+
 public static class DependencyInjection
 {
-    public static IServiceCollection AddContract(this IServiceCollection services)
+    public static void AddContract(this IServiceCollection services)
     {
-        // Register all query and command handlers automatically
+        using var serviceProvider = services.BuildServiceProvider();
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+        
         services.Scan(scan => scan
-            .FromAssembliesOf(typeof(IQueryHandler<,>), typeof(ICommandHandler<>))  // Scan for handlers of both commands and queries
-            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))  // Register query handlers
+            .FromAssembliesOf(typeof(IQueryHandler<,>), typeof(ICommandHandler<>))  // Scan for handlers
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>))) // Query handlers
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))  // Register command handlers
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>))) // Command handlers
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        // Register Mediator Adapters
-        services.AddScoped(typeof(IRequestHandler<>), typeof(MediatorCommandHandlerAdapter<>));  // For commands
-        services.AddScoped(typeof(IRequestHandler<,>), typeof(MediatorQueryHandlerAdapter<,>));  // For queries
+// MediatR Handler Registrations
+        services.AddTransient(typeof(IRequestHandler<,>), typeof(MediatorQueryHandlerAdapter<,>));
+        services.AddTransient(typeof(IRequestHandler<CreateCharityCommand, int>), typeof(MediatorCommandHandlerAdapter<CreateCharityCommand>));
 
 
 
-        return services;
+
+        
+        services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
+        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
+        services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
     }
 }

@@ -9,11 +9,11 @@ using Serilog.Sinks.MSSqlServer;
 
 namespace CharityHub.Endpoints;
 
+
 using Infra.FileManager;
 
 public static class HostingExtensions
 {
-
     public static IHostBuilder AddSerilog(this IHostBuilder builder)
     {
         builder.UseSerilog((context, services, configurationBuilder) =>
@@ -35,27 +35,23 @@ public static class HostingExtensions
                 .ReadFrom.Services(services)
                 .WriteTo.Console()
                 .WriteTo.MSSqlServer(
-                      connectionString: context.Configuration.GetSection("Serilog:WriteTo").GetChildren()
-                    .First(x => x.GetValue<string>("Name") == "MSSqlServer")
-                    .GetSection("Args").GetValue<string>("connectionString"),
-                    sinkOptions: new MSSqlServerSinkOptions
-                    {
-                        AutoCreateSqlTable = true,
-                        TableName = "Logs"
-                    },
+                    connectionString: context.Configuration.GetSection("Serilog:WriteTo").GetChildren()
+                        .First(x => x.GetValue<string>("Name") == "MSSqlServer")
+                        .GetSection("Args").GetValue<string>("connectionString"),
+                    sinkOptions: new MSSqlServerSinkOptions { AutoCreateSqlTable = true, TableName = "Logs" },
                     columnOptions: columnOptions,
                     restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
                 )
-                .WriteTo.Elasticsearch(new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticSearch:Uri"]))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = "charityhub-logs-{0:yyyy.MM.dd}"
-                });
+                .WriteTo.Elasticsearch(
+                    new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(
+                        new Uri(context.Configuration["ElasticSearch:Uri"]))
+                    {
+                        AutoRegisterTemplate = true, IndexFormat = "charityhub-logs-{0:yyyy.MM.dd}"
+                    });
         });
 
         return builder;
     }
-
 
 
     public static void AddCustomServices(this IServiceCollection services)
@@ -65,13 +61,12 @@ public static class HostingExtensions
         services.AddCORSPolicy();
         services.AddControllers();
         services.AddSwagger();
-        
+
         services.AddFileManager();
         services.AddSql();
         services.AddIdentity();
-        
+
         services.AddContract();
         services.AddApplication();
-
     }
 }

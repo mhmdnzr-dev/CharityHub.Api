@@ -16,16 +16,14 @@ public sealed class Campaign : BaseEntity
     public int CityId { get; private set; }
     public int CharityId { get; private set; }
     public Charity Charity { get; private set; }
-    
 
-    
     private readonly List<Donation> _donations = new();
     public IReadOnlyCollection<Donation> Donations => _donations.AsReadOnly();
 
-    // ** Private constructor for EF Core **
+    // Private constructor for EF Core
     private Campaign() { }
 
-    // ** Factory Method for Controlled Creation **
+    // Factory Method for Controlled Creation
     public static Campaign Create(
         string title,
         string description,
@@ -36,15 +34,6 @@ public sealed class Campaign : BaseEntity
         int cityId,
         int charityId)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title is required.", nameof(title));
-
-        if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Description is required.", nameof(description));
-
-        if (totalAmount < 0)
-            throw new ArgumentException("Total amount cannot be negative.", nameof(totalAmount));
-
         return new Campaign
         {
             Title = title,
@@ -59,18 +48,81 @@ public sealed class Campaign : BaseEntity
         };
     }
 
-    // ** Business Logic: Add Donation to Campaign **
-    public void AddDonation(Donation donation)
+    // Start the campaign (set StartDate and adjust state as needed)
+    public void StartCampaign(DateTime startDate)
     {
-        if (donation is null)
-            throw new ArgumentNullException(nameof(donation));
+        if (StartDate.HasValue)
+        {
+            throw new InvalidOperationException("Campaign has already started.");
+        }
 
-        if (donation.Amount <= 0)
-            throw new InvalidOperationException("Donation amount must be greater than zero.");
-
-        _donations.Add(donation);
-        ChargedAmount += donation.Amount;
+        StartDate = startDate;
     }
 
-   
+    // End the campaign (set EndDate and adjust state as needed)
+    public void EndCampaign(DateTime endDate)
+    {
+        if (EndDate.HasValue)
+        {
+            throw new InvalidOperationException("Campaign has already ended.");
+        }
+
+        if (StartDate == null)
+        {
+            throw new InvalidOperationException("Campaign must be started before it can end.");
+        }
+
+        EndDate = endDate;
+    }
+
+    // Add a donation to the campaign
+    public void AddDonation(Donation donation)
+    {
+        // Example validation: Ensure that the donation is valid and the campaign is still active
+        if (EndDate.HasValue && EndDate.Value < DateTime.UtcNow)
+        {
+            throw new InvalidOperationException("Cannot add donations to a finished campaign.");
+        }
+
+        _donations.Add(donation);
+
+        // Optionally, you could update the ChargedAmount here (e.g., adding the donation amount)
+        ChargedAmount = ChargedAmount.GetValueOrDefault() + donation.Amount;
+    }
+
+    // Adjust the total campaign goal amount
+    public void AdjustTotalAmount(decimal newTotalAmount)
+    {
+        if (ChargedAmount > newTotalAmount)
+        {
+            throw new InvalidOperationException("Total amount cannot be less than the already charged amount.");
+        }
+
+        TotalAmount = newTotalAmount;
+    }
+
+    // Mark campaign as complete (i.e., fully funded)
+    public void MarkAsComplete()
+    {
+        if (ChargedAmount >= TotalAmount)
+        {
+            // Set some internal state or flag to mark the campaign as complete.
+            // You may need to add an additional flag or property like `IsComplete`.
+        }
+        else
+        {
+            throw new InvalidOperationException("Campaign cannot be marked as complete until the total amount is reached.");
+        }
+    }
+
+    // Optionally, remove a donation
+    public void RemoveDonation(Donation donation)
+    {
+        if (!_donations.Remove(donation))
+        {
+            throw new InvalidOperationException("The donation was not found for this campaign.");
+        }
+
+        ChargedAmount -= donation.Amount;  // Decrease the charged amount when a donation is removed.
+    }
 }

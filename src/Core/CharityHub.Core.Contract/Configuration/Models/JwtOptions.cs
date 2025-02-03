@@ -1,4 +1,4 @@
-﻿namespace CharityHub.Core.Application.Configuration.Models;
+﻿namespace CharityHub.Core.Contract.Configuration.Models;
 public class JwtOptions
 {
     public string Issuer { get; set; }

@@ -1,4 +1,4 @@
-﻿using CharityHub.Core.Application.Configuration.Models;
+﻿
 using CharityHub.Infra.Identity.Interfaces;
 
 using Kavenegar;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace CharityHub.Infra.Identity.Services;
 
+using Core.Contract.Configuration.Models;
 
 public class KavenegarOtpService : IOTPService
 {

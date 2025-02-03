@@ -23,6 +23,7 @@ COPY ["src/Core/CharityHub.Core.DomainService/CharityHub.Core.DomainService.cspr
 COPY ["src/Core/CharityHub.Core.Presistance/CharityHub.Core.Presistance.csproj", "src/Core/CharityHub.Core.Presistance/"]
 COPY ["src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj", "src/Infra/CharityHub.Infra.Identity/"]
 COPY ["src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj", "src/Infra/CharityHub.Infra.Sql/"]
+COPY ["src/Infra/CharityHub.Infra.FileManager/CharityHub.Infra.FileManager.csproj", "src/Infra/CharityHub.Infra.FileManager/"]
 COPY ["src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj", "src/Presentation/CharityHub.Presentation/"]
 COPY ["src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj", "src/Utils/CharityHub.Utils.Extensions/"]
 

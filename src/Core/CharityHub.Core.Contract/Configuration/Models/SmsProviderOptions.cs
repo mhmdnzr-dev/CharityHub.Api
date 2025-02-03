@@ -1,4 +1,4 @@
-﻿namespace CharityHub.Core.Application.Configuration.Models;
+﻿namespace CharityHub.Core.Contract.Configuration.Models;
 public class SmsProviderOptions
 {
     public string ApiKey { get; set; }

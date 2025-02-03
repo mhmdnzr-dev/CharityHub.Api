@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 
-using CharityHub.Core.Application.Configuration.Models;
+
 using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Identity.Interfaces;
 
@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CharityHub.Infra.Identity.Services;
+
+using Core.Contract.Configuration.Models;
 
 using Models;
 using Models.Token.Requests;

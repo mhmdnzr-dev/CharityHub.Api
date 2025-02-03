@@ -1,5 +1,9 @@
 ﻿namespace CharityHub.Core.Contract.Primitives.Handlers;
-public interface ICommandHandler<TCommand> where TCommand : ICommand
+
+using MediatR;
+
+public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, int>
+    where TCommand : ICommand
 {
-    Task<int> Handle(TCommand command, CancellationToken cancellationToken);
 }
+

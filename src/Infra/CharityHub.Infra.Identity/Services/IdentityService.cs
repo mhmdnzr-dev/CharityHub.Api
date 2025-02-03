@@ -1,5 +1,4 @@
-﻿using CharityHub.Core.Application.Configuration.Models;
-using CharityHub.Core.Domain.Entities.Identity;
+﻿using CharityHub.Core.Domain.Entities.Identity;
 using CharityHub.Infra.Identity.Interfaces;
 using CharityHub.Infra.Identity.Models;
 
@@ -13,6 +12,7 @@ using System.Text;
 
 using CharityHub.Core.Domain.Enums;
 
+using Core.Contract.Configuration.Models;
 using Core.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
