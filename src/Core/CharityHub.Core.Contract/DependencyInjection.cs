@@ -1,42 +1,46 @@
 ﻿namespace CharityHub.Core.Contract;
 
-using Charity.Commands.CreateCharity;
-
-using CharityHub.Core.Contract.Primitives.Handlers;
+using System.Reflection;
 
 using Configuration.Models;
-
-using MediatR;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Primitives.Handlers;
+using Primitives.Repositories;
+
+
+
 
 public static class DependencyInjection
 {
-    public static void AddContract(this IServiceCollection services)
+    public static void AddContract(this IServiceCollection services, Assembly assembly)
     {
         using var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-        
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        // Register MediatR (scanning for handlers)
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
+
+        // Register all repositories
         services.Scan(scan => scan
-            .FromAssembliesOf(typeof(IQueryHandler<,>), typeof(ICommandHandler<>))  // Scan for handlers
-            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>))) // Query handlers
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandRepository<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>))) // Command handlers
+        );
+
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryRepository<>)))
             .AsImplementedInterfaces()
-            .WithScopedLifetime());
+            .WithScopedLifetime()
+        );
 
-// MediatR Handler Registrations
-        services.AddTransient(typeof(IRequestHandler<,>), typeof(MediatorQueryHandlerAdapter<,>));
-        services.AddTransient(typeof(IRequestHandler<CreateCharityCommand, int>), typeof(MediatorCommandHandlerAdapter<CreateCharityCommand>));
-
-
-
-
-        
+        // Ensure all other dependencies and services
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));

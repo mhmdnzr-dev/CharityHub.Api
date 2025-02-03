@@ -2,7 +2,7 @@ namespace CharityHub.Core.Contract.Charity.Commands.CreateCharity;
 
 using Primitives.Handlers;
 
-public class CreateCharityCommand : ICommand
+public class CreateCharityCommand : ICommand<int>
 {
     public byte[] Base64File { get; set; }
     public string FileExtension { get; set; }

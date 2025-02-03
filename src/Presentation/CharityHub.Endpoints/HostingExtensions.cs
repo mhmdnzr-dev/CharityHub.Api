@@ -9,6 +9,7 @@ using Serilog.Sinks.MSSqlServer;
 
 namespace CharityHub.Endpoints;
 
+using System.Reflection;
 
 using Infra.FileManager;
 
@@ -56,17 +57,18 @@ public static class HostingExtensions
 
     public static void AddCustomServices(this IServiceCollection services)
     {
+       
         services.AddDotnetOutputCache();
         services.AddVersion();
         services.AddCORSPolicy();
         services.AddControllers();
         services.AddSwagger();
-
+    
         services.AddFileManager();
         services.AddSql();
         services.AddIdentity();
 
-        services.AddContract();
+        services.AddContract(Assembly.GetExecutingAssembly());
         services.AddApplication();
     }
 }

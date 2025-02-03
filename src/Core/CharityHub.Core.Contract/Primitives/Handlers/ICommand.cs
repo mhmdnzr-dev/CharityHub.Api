@@ -2,7 +2,4 @@
 
 namespace CharityHub.Core.Contract.Primitives.Handlers;
 
-public interface ICommand : IRequest<int>
-{
-    // Command marker interface with predefined return type
-}
+public interface ICommand<TResponse> : IRequest<TResponse> { }

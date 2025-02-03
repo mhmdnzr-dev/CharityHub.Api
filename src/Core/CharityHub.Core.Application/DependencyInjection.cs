@@ -1,8 +1,5 @@
-﻿using CharityHub.Core.Application.Services.Terms.Queries.GetLastTerm;
-using CharityHub.Core.Contract.Primitives.Handlers;
-using CharityHub.Core.Contract.Terms.Queries;
-using CharityHub.Core.Contract.Terms.Queries.GetLastTerm;
-using CharityHub.Infra.Sql.Repositories.Terms;
+﻿using CharityHub.Core.Contract.Primitives.Handlers;
+
 
 using FluentValidation;
 
@@ -10,38 +7,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CharityHub.Core.Application;
 
-using Contract.Campaigns.Queries;
-using Contract.Campaigns.Queries.GetAllCampaigns;
-using Contract.Campaigns.Queries.GetCampaignById;
-using Contract.Campaigns.Queries.GetCampaignsByCharityId;
-using Contract.Categories.Queries;
-using Contract.Categories.Queries.GetAllCategories;
-using Contract.Charity.Commands;
-using Contract.Charity.Commands.CreateCharity;
-using Contract.Charity.Queries;
-using Contract.Charity.Queries.GetAllCharities;
-using Contract.Charity.Queries.GetCharityById;
-using Contract.Primitives.Models;
-
-using Infra.Sql.Repositories.Campaigns;
-using Infra.Sql.Repositories.Categories;
-using Infra.Sql.Repositories.Charities;
-
+using System.Reflection;
+using Contract.Primitives.Repositories;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Reflection;
 
-using Services.Campaigns.Queries.GetAllCampaigns;
-using Services.Campaigns.Queries.GetCampaignById;
-using Services.Campaigns.Queries.GetCampaignsByCharityId;
-using Services.Categories.GetAllCategories;
-using Services.Charities.Commands.CreateCharity;
-using Services.Charities.Queries.GetAllCharities;
-using Services.Charities.Queries.GetCharityById;
 
 public static class DependencyInjection
 {
     public static void AddApplication(this IServiceCollection services)
     {
-        #region Category Query Repositores DI
+        /*#region Category Query Repositores DI
 
         services.AddScoped<ICategoryQueryRepository, CategoryQueryRepository>();
         services
@@ -85,14 +64,10 @@ public static class DependencyInjection
                 GetCampaignsByCharityIdQueryHandler>();
 
         #endregion
+        */
 
         // Automatically register all AbstractValidator<T> implementations in the assembly (for FluentValidation)
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
-
-        // Register MediatR and ensure it's using the current assembly
-        services.AddMediatR(config =>
-        {
-            config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
-        });
+        
     }
 }
