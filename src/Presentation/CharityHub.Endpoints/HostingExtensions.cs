@@ -68,7 +68,7 @@ public static class HostingExtensions
         services.AddSql();
         services.AddIdentity();
 
-        services.AddContract(Assembly.GetExecutingAssembly());
+        services.AddContract();
         services.AddApplication();
     }
 }

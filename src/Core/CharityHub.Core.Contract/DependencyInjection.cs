@@ -15,7 +15,7 @@ using Primitives.Repositories;
 
 public static class DependencyInjection
 {
-    public static void AddContract(this IServiceCollection services, Assembly assembly)
+    public static void AddContract(this IServiceCollection services)
     {
         using var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
