@@ -32,8 +32,29 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
                 .GetCustomAttributes(true)
                 .Any(attr => attr is AuthorizeAttribute);
         }
-        
+
+        // If the [Authorize] attribute is found on either the controller or action method, add security requirement
+        if (hasAuthorizeAttribute)
+        {
+            operation.Security ??= new List<OpenApiSecurityRequirement>();
+
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+        }
     }
 }
+
 
 

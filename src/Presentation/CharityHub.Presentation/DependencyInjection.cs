@@ -57,20 +57,7 @@ public static class DependencyInjection
                 Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
             });
 
-            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-            {
-                {
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                    {
-                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                        {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    new string[] {}
-                }
-            });
+            
             
             options.OperationFilter<AuthorizeCheckOperationFilter>();
 
