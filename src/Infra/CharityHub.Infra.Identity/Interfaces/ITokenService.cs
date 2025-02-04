@@ -12,5 +12,4 @@ public interface ITokenService
 {
     Task<GenerateTokenResponse> GenerateTokenAsync(GenerateTokenRequest request);
     Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request);
-    ClaimsPrincipal GetUserDetailsFromToken(string token);
 }

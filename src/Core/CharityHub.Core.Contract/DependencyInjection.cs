@@ -17,6 +17,13 @@ public static class DependencyInjection
         using var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
+        // Ensure all other dependencies and services
+        services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
+        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
+        services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
+        
+        
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         // Register MediatR (scanning for handlers)
@@ -37,11 +44,7 @@ public static class DependencyInjection
             .WithScopedLifetime()
         );
 
-        // Ensure all other dependencies and services
-        services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
-        services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
-        services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
-        services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
+
         
         // Add MediatR pipeline behavior for FluentValidation
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));

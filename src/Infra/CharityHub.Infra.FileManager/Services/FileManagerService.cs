@@ -24,29 +24,45 @@ public sealed class FileManagerService : IFileManagerService
 
     public async Task<UpdateFileResponseModel> UploadFileAsync(UpdateFileRequestModel requestModel)
     {
+        // Path to store the uploaded file
         string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), _uploadDirectory);
         string fileName = GenerateFileName(requestModel.Extension);
-        string filePath = Path.Combine(uploadsPath, requestModel.SubDirectory, fileName);
+        string subDirectoryPath = Path.Combine(uploadsPath, requestModel.SubDirectory);
+        string filePath = Path.Combine(subDirectoryPath, fileName);
 
         try
         {
-            Directory.CreateDirectory(Path.Combine(uploadsPath, requestModel.SubDirectory));
+            // Ensure the subdirectory exists, if not create it
+            if (!Directory.Exists(subDirectoryPath))
+            {
+                _logger.LogInformation($"Creating directory: {subDirectoryPath}");
+                Directory.CreateDirectory(subDirectoryPath);
+            }
 
+            // Write the file to the directory
             await File.WriteAllBytesAsync(filePath, requestModel.FileBytes);
+            _logger.LogInformation($"File {fileName} uploaded to {filePath}");
 
-            _logger.LogInformation($"File {fileName} uploaded to {uploadsPath}");
-
+            // Return response model with file details
             var result = new UpdateFileResponseModel { FileName = fileName, FilePath = filePath };
             return result;
         }
+        catch (IOException ioEx)
+        {
+            _logger.LogError(ioEx, "I/O error occurred while uploading the file.");
+            throw new InvalidOperationException("Error uploading file due to I/O issues.", ioEx);
+        }
+        catch (UnauthorizedAccessException uaeEx)
+        {
+            _logger.LogError(uaeEx, "Access denied while uploading the file.");
+            throw new InvalidOperationException("Access denied while uploading file.", uaeEx);
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating directory or saving file: {ex.Message}");
-            _logger.LogError(ex, "Error creating directory or saving file");
-            throw new InvalidOperationException("Error uploading file", ex);
+            _logger.LogError(ex, "Unexpected error occurred during file upload.");
+            throw new InvalidOperationException("Error uploading file.", ex);
         }
     }
-
 
     private string GenerateFileName(string extension)
     {

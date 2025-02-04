@@ -5,6 +5,8 @@ using Contract.Charity.Queries.GetAllCharities;
 using Contract.Charity.Queries.GetCharityById;
 using Contract.Primitives.Handlers;
 
+using Infra.Identity.Interfaces;
+
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -14,11 +16,10 @@ public class GetCharityByIdQueryHandler: QueryHandlerBase<GetCharityByIdQuery, C
     private readonly ICharityQueryRepository _charityQueryRepository;
 
 
-    public GetCharityByIdQueryHandler(IMemoryCache cache, ICharityQueryRepository charityQueryRepository) : base(cache)
+    public GetCharityByIdQueryHandler(IMemoryCache cache, ITokenService tokenService, ICharityQueryRepository charityQueryRepository) : base(cache, tokenService)
     {
         _charityQueryRepository = charityQueryRepository;
     }
-
     public override async Task<CharityByIdResponseDto> Handle(GetCharityByIdQuery query,
         CancellationToken cancellationToken)
     {

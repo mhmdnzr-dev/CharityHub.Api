@@ -107,7 +107,8 @@ public class TokenService : ITokenService
                 PhoneNumber = user.PhoneNumber,
                 Issuer = jwtToken.Issuer,
                 Audience = jwtToken.Audiences.FirstOrDefault(),
-                Expiration = jwtToken.ValidTo
+                Expiration = jwtToken.ValidTo,
+                ClaimsPrincipal = GetUserDetailsFromToken(request.Token)
             };
         }
         catch (Exception ex)
@@ -116,7 +117,7 @@ public class TokenService : ITokenService
         }
     }
 
-    public ClaimsPrincipal GetUserDetailsFromToken(string token)
+    private ClaimsPrincipal GetUserDetailsFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_options.Value.Key);

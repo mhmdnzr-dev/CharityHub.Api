@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using Models.Identity.Requests;
+using Models.Identity.Responses;
 using Models.Token.Requests;
 
 using Sql.Data.DbContexts;
@@ -206,19 +207,19 @@ public class IdentityService : IIdentityService
         return profileResponse;
     }
 
- 
-    public async Task<bool> UpdateProfileAsync(UpateProfileRequest request, string token)
+
+    public async Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request)
     {
         try
         {
-            if (token is null)
+            if (request.Token is null)
             {
                 _logger.LogError("Invalid token");
                 throw new Exception("Invalid token");
             }
 
             // Step 1: Validate the token
-            var user = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = token });
+            var user = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token, });
 
             if (user == null)
             {
@@ -251,7 +252,7 @@ public class IdentityService : IIdentityService
             // Step 6: Optionally log the update success
             _logger.LogInformation("User profile updated successfully for user {UserId}", user.Id);
 
-            return true;
+            return new UpdateProfileResponse { Id = user.Id };
         }
         catch (Exception ex)
         {
@@ -262,38 +263,21 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {
-        // Extract user details from the token
-        var userDetails = _tokenService.GetUserDetailsFromToken(request.Token);
+        var userDetails = _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token });
         if (userDetails is null)
         {
             _logger.LogWarning("Logout failed: Invalid or expired token.");
             throw new Exception("Invalid or expired token.");
         }
 
-        // Get user ID from the claims
-        var userId = userDetails.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
-        {
-            _logger.LogWarning("Logout failed: User ID not found in token.");
-            throw new Exception("User ID not found in token.");
-        }
 
-        // Convert userId to int (if necessary)
-        if (!int.TryParse(userId, out int parsedUserId))
-        {
-            _logger.LogWarning("Logout failed: User ID format is invalid.");
-            throw new Exception("User ID format is invalid.");
-        }
-
-
-        // Remove refresh tokens (if applicable)
-        var userTokens = _commandDbContext.UserTokens.Where(t => t.UserId == parsedUserId);
+        var userTokens = _commandDbContext.UserTokens.Where(t => t.UserId == userDetails.Id);
         _commandDbContext.UserTokens.RemoveRange(userTokens);
 
-        // Save changes to persist logout actions
+
         await _commandDbContext.SaveChangesAsync();
 
-        _logger.LogInformation($"User {parsedUserId} successfully logged out.");
+        _logger.LogInformation($"User {userDetails.Id} successfully logged out.");
         return true;
     }
 

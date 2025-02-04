@@ -1,4 +1,4 @@
-﻿namespace CharityHub.Infra.Identity.Models;
+﻿namespace CharityHub.Infra.Identity.Models.Identity.Responses;
 public class VerifyOtpResponse
 {
     public string Token { get; set; }

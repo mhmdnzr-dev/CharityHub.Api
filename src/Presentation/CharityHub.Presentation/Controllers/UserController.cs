@@ -1,8 +1,9 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Infra.Identity.Interfaces;
-using Infra.Identity.Models;
-using Infra.Identity.Models.Identity.Requests;
+using Core.Contract.Users.Commands.UpdateUserProfiles;
+using Core.Contract.Users.Queries.GetUserProfileDetails;
+
+
 
 using MediatR;
 
@@ -17,13 +18,9 @@ using Swashbuckle.AspNetCore.Annotations;
 [ApiVersion("1.0")]
 public class UserController : BaseController
 {
-    private readonly IIdentityService _identityService;
-
-    public UserController(IMediator mediator, IIdentityService identityService) : base(mediator)
+    public UserController(IMediator mediator) : base(mediator)
     {
-        _identityService = identityService;
     }
-
 
     /// <summary>
     /// Retrieves the user profile based on the provided authorization token.
@@ -36,14 +33,12 @@ public class UserController : BaseController
     [SwaggerOperation(Summary = "Get User Profile",
         Description = "Retrieves the user profile using the provided authorization token.")]
     [SwaggerResponse(200, "User profile retrieved successfully",
-        typeof(ProfileResponse))] // Replace with your actual response DTO
+        typeof(UserProfileDetailResponseDto))] // Replace with your actual response DTO
     [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
     [SwaggerResponse(500, "Internal Server Error")]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] GetUserProfileDetailQuery query)
     {
-        var token = GetTokenFromHeader(); // Assuming this method extracts the token
-        var query = new ProfileRequest { Token = token };
-        var result = await _identityService.GetUserProfileByToken(query);
+        var result = await _mediator.Send(query);
         return Ok(result);
     }
 
@@ -51,20 +46,20 @@ public class UserController : BaseController
     /// <summary>
     /// Updates the user's profile with the provided information.
     /// </summary>
-    /// <param name="request">The profile information to update.</param>
+    /// <param name="command"></param>
     /// <returns>A response indicating whether the update operation was successful.</returns>
     [HttpPut("update-user-profile")]
     [MapToApiVersion("1.0")]
     [Authorize]
-    [SwaggerOperation(Summary = "Update User Profile", Description = "Updates the user's profile with the provided information (first name, last name).")]
-    [SwaggerResponse(200, "Profile updated successfully", typeof(bool))]
+    [SwaggerOperation(Summary = "Update User Profile",
+        Description = "Updates the user's profile with the provided information (first name, last name).")]
+    [SwaggerResponse(200, "Profile updated successfully", typeof(int))]
     [SwaggerResponse(400, "Bad Request, invalid request data")]
     [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
     [SwaggerResponse(500, "Internal Server Error")]
-    public async Task<IActionResult> Put([FromBody] UpateProfileRequest request)
+    public async Task<IActionResult> Put([FromBody] UpdateUserProfileCommand command)
     {
-        var token = GetTokenFromHeader();
-        var result = await _identityService.UpdateProfileAsync(request, token);
+        var result = await _mediator.Send(command);
         return Ok(result);
     }
 }

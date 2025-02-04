@@ -5,6 +5,8 @@ using Contract.Categories.Queries.GetAllCategories;
 
 using Contract.Primitives.Handlers;
 
+using Infra.Identity.Interfaces;
+
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -14,7 +16,7 @@ public class GetAllCategoriesQueryHandler: QueryHandlerBase<GetAllCategoriesQuer
     private readonly ICategoryQueryRepository _categoryQueryRepository;
 
 
-    public GetAllCategoriesQueryHandler(IMemoryCache cache, ICategoryQueryRepository categoryQueryRepository) : base(cache)
+    public GetAllCategoriesQueryHandler(IMemoryCache cache, ITokenService tokenService, ICategoryQueryRepository categoryQueryRepository) : base(cache, tokenService)
     {
         _categoryQueryRepository = categoryQueryRepository;
     }

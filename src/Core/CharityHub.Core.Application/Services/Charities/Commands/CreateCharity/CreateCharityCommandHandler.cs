@@ -31,18 +31,18 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
 
     public CreateCharityCommandHandler(ITokenService tokenService, IFileManagerService fileManagerService,
         IUnitOfWork unitOfWork, ICharityCommandRepository charityCommandRepository,
-        ILogger<CreateCharityCommandHandler> logger, string uploadDirectory) : base(tokenService)
+        ILogger<CreateCharityCommandHandler> logger, IOptions<FileOptions> fileManagerSettings) : base(tokenService)
     {
         _fileManagerService = fileManagerService;
         _unitOfWork = unitOfWork;
         _charityCommandRepository = charityCommandRepository;
         _logger = logger;
-        _uploadDirectory = uploadDirectory;
+        _uploadDirectory = fileManagerSettings.Value.UploadDirectory;
     }
 
     public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
     {
-        const string subDirectory = "Charity";
+        const string subDirectory = "charities";
         var userResponse = await GetUserDetailsAsync();
 
         try

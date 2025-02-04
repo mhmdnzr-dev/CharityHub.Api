@@ -6,6 +6,8 @@ using CharityHub.Core.Contract.Primitives.Models;
 using Contract.Campaigns.Queries;
 using Contract.Campaigns.Queries.GetAllCampaigns;
 
+using Infra.Identity.Interfaces;
+
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -15,7 +17,7 @@ public class GetAllCampaignsQueryHandler : QueryHandlerBase<GetAllCampaignQuery,
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
 
-    public GetAllCampaignsQueryHandler(IMemoryCache cache, ICampaignQueryRepository campaignQueryRepository) : base(cache)
+    public GetAllCampaignsQueryHandler(IMemoryCache cache, ITokenService tokenService, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService)
     {
         _campaignQueryRepository = campaignQueryRepository;
     }
