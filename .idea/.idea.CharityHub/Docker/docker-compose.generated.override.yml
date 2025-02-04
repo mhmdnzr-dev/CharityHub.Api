@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  charityhub:
+    build:
+      context: "/Users/macbookpro/RiderProjects/CharityHub.Api"
+      dockerfile: "Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/CharityHub.Endpoints.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "charityhubapi-charityhub:dev"
+    ports: []
+    volumes:
+    - "/Users/macbookpro/RiderProjects/CharityHub.Api/src/Presentation/CharityHub.Endpoints:/app:rw"
+    - "/Users/macbookpro/RiderProjects/CharityHub.Api:/src:rw"
+    - "/Users/macbookpro/.nuget/packages:/home/app/.nuget/packages"
+    working_dir: "/app"
