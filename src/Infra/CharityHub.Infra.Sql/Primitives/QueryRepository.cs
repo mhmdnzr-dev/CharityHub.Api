@@ -4,7 +4,10 @@ using CharityHub.Core.Contract.Primitives.Repositories;
 using CharityHub.Core.Domain.ValueObjects;
 using CharityHub.Infra.Sql.Data.DbContexts;
 
+using Exceptions;
+
 using Microsoft.EntityFrameworkCore;
+
 
 public class QueryRepository<T>(CharityHubQueryDbContext queryDbContext) : IQueryRepository<T> where T : BaseEntity
 {
@@ -14,12 +17,22 @@ public class QueryRepository<T>(CharityHubQueryDbContext queryDbContext) : IQuer
 
     public T GetById(int id)
     {
-        return _queryDbContext.Set<T>().First(data => data.Id == id);
+        var entity = _queryDbContext.Set<T>().FirstOrDefault(data => data.Id == id);
+        if (entity == null)
+        {
+            throw InfrastructureException.DatabaseError($"{typeof(T).Name} with ID {id} was not found.");
+        }
+        return entity;
     }
 
     public IEnumerable<T> GetAll()
     {
-        return [.. _queryDbContext.Set<T>()];
+        var entities = _queryDbContext.Set<T>().ToList();
+        if (!entities.Any())
+        {
+            throw InfrastructureException.DatabaseError($"No {typeof(T).Name} records found.");
+        }
+        return entities;
     }
 
     #endregion
@@ -28,12 +41,22 @@ public class QueryRepository<T>(CharityHubQueryDbContext queryDbContext) : IQuer
 
     public async Task<T> GetByIdAsync(int id)
     {
-        return await _queryDbContext.Set<T>().FirstAsync(data => data.Id == id);
+        var entity = await _queryDbContext.Set<T>().FirstOrDefaultAsync(data => data.Id == id);
+        if (entity == null)
+        {
+            throw InfrastructureException.DatabaseError($"{typeof(T).Name} with ID {id} was not found.");
+        }
+        return entity;
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await _queryDbContext.Set<T>().ToArrayAsync();
+        var entities = await _queryDbContext.Set<T>().ToListAsync();
+        if (!entities.Any())
+        {
+            throw InfrastructureException.DatabaseError($"No {typeof(T).Name} records found.");
+        }
+        return entities;
     }
 
     #endregion
