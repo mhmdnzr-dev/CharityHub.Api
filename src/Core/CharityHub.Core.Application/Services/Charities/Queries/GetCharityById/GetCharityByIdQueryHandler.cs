@@ -5,16 +5,21 @@ using Contract.Charity.Queries.GetAllCharities;
 using Contract.Charity.Queries.GetCharityById;
 using Contract.Primitives.Handlers;
 
-public class GetCharityByIdQueryHandler: IQueryHandler<GetCharityByIdQuery, CharityByIdResponseDto>
+using Microsoft.Extensions.Caching.Memory;
+
+using Primitives;
+
+public class GetCharityByIdQueryHandler: QueryHandlerBase<GetCharityByIdQuery, CharityByIdResponseDto>
 {
     private readonly ICharityQueryRepository _charityQueryRepository;
 
-    public GetCharityByIdQueryHandler(ICharityQueryRepository charityQueryRepository)
+
+    public GetCharityByIdQueryHandler(IMemoryCache cache, ICharityQueryRepository charityQueryRepository) : base(cache)
     {
         _charityQueryRepository = charityQueryRepository;
     }
 
-    public async Task<CharityByIdResponseDto> Handle(GetCharityByIdQuery query,
+    public override async Task<CharityByIdResponseDto> Handle(GetCharityByIdQuery query,
         CancellationToken cancellationToken)
     {
         var result = await _charityQueryRepository.GetDetailedById(query);

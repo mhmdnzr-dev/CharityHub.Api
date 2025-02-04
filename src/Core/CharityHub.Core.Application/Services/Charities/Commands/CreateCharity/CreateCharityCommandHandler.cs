@@ -12,11 +12,15 @@ using Contract.Configuration.Models;
 using Contract.Primitives.Repositories;
 
 using Infra.FileManager.Models.Requests;
+using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-public class CreateCharityCommandHandler : ICommandHandler<CreateCharityCommand>
+using Primitives;
+
+public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityCommand>
 {
     private readonly IFileManagerService _fileManagerService;
     private readonly IUnitOfWork _unitOfWork;
@@ -24,21 +28,22 @@ public class CreateCharityCommandHandler : ICommandHandler<CreateCharityCommand>
     private readonly ILogger<CreateCharityCommandHandler> _logger;
     private readonly string _uploadDirectory;
 
-    public CreateCharityCommandHandler(IFileManagerService fileManagerService, IUnitOfWork unitOfWork,
-        ICharityCommandRepository charityCommandRepository, ILogger<CreateCharityCommandHandler> logger,
-        IOptions<FileOptions> fileSettings)
+
+    public CreateCharityCommandHandler(ITokenService tokenService, IFileManagerService fileManagerService,
+        IUnitOfWork unitOfWork, ICharityCommandRepository charityCommandRepository,
+        ILogger<CreateCharityCommandHandler> logger, string uploadDirectory) : base(tokenService)
     {
         _fileManagerService = fileManagerService;
         _unitOfWork = unitOfWork;
         _charityCommandRepository = charityCommandRepository;
         _logger = logger;
-
-        _uploadDirectory = fileSettings.Value.UploadDirectory;
+        _uploadDirectory = uploadDirectory;
     }
 
-    public async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
+    public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
     {
         const string subDirectory = "Charity";
+        var userResponse = await GetUserDetailsAsync();
 
         try
         {
@@ -59,7 +64,7 @@ public class CreateCharityCommandHandler : ICommandHandler<CreateCharityCommand>
                 command.Name,
                 command.Description,
                 command.Website,
-                1, // CreatedByUserId
+                userResponse.Id, // CreatedByUserId
                 command.Address,
                 2, // CityId
                 command.Telephone,

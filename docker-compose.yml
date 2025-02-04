@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: CharityHub
-    image: charityhubapi-charityhub  # Image name in lowercase
+    image: charityhub-api 
     ports:
       - "8080:8080"
       - "8081:8081"

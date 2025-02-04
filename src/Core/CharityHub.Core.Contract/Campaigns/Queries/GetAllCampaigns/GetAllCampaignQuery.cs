@@ -1,6 +1,8 @@
 namespace CharityHub.Core.Contract.Campaigns.Queries.GetAllCampaigns;
 
-using CharityHub.Core.Contract.Primitives.Handlers;
+
+
+using Primitives.Models;
 
 public class GetAllCampaignQuery : PagedQuery<AllCampaignResponseDto>
 {

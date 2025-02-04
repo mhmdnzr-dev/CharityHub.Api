@@ -5,16 +5,21 @@ using Contract.Charity.Queries.GetAllCharities;
 using Contract.Primitives.Handlers;
 using Contract.Primitives.Models;
 
-public class GetAllCharitiesQueryHandler : IQueryHandler<GetAllCharitiesQuery, PagedData<AllCharitiesResponseDto>>
+using Microsoft.Extensions.Caching.Memory;
+
+using Primitives;
+
+public class GetAllCharitiesQueryHandler : QueryHandlerBase<GetAllCharitiesQuery, PagedData<AllCharitiesResponseDto>>
 {
     private readonly ICharityQueryRepository _charityQueryRepository;
 
-    public GetAllCharitiesQueryHandler(ICharityQueryRepository charityQueryRepository)
+
+    public GetAllCharitiesQueryHandler(IMemoryCache cache, ICharityQueryRepository charityQueryRepository) : base(cache)
     {
         _charityQueryRepository = charityQueryRepository;
     }
 
-    public async Task<PagedData<AllCharitiesResponseDto>> Handle(GetAllCharitiesQuery query,
+    public override async Task<PagedData<AllCharitiesResponseDto>> Handle(GetAllCharitiesQuery query,
         CancellationToken cancellationToken)
     {
         var result = await _charityQueryRepository.GetAllAsync(query);

@@ -2,12 +2,13 @@
 
 
 using Configuration.Models;
+
+using MediatR;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Primitives.Repositories;
-
-
-
+using Primitives.Validations;
 
 public static class DependencyInjection
 {
@@ -41,5 +42,8 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
         services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
+        
+        // Add MediatR pipeline behavior for FluentValidation
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
     }
 }

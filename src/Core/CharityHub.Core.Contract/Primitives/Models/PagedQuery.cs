@@ -1,6 +1,6 @@
-namespace CharityHub.Core.Contract.Primitives.Handlers;
+namespace CharityHub.Core.Contract.Primitives.Models;
 
-using Models;
+using CharityHub.Core.Contract.Primitives.Handlers;
 
 public abstract class PagedQuery<TResponse> : IQuery<PagedData<TResponse>>
 {

@@ -5,17 +5,21 @@ using Contract.Categories.Queries.GetAllCategories;
 
 using Contract.Primitives.Handlers;
 
+using Microsoft.Extensions.Caching.Memory;
 
-public class GetAllCategoriesQueryHandler: IQueryHandler<GetAllCategoriesQuery, List<AllCategoriesResponseDto>>
+using Primitives;
+
+public class GetAllCategoriesQueryHandler: QueryHandlerBase<GetAllCategoriesQuery, List<AllCategoriesResponseDto>>
 {
     private readonly ICategoryQueryRepository _categoryQueryRepository;
 
-    public GetAllCategoriesQueryHandler(ICategoryQueryRepository categoryQueryRepository)
+
+    public GetAllCategoriesQueryHandler(IMemoryCache cache, ICategoryQueryRepository categoryQueryRepository) : base(cache)
     {
         _categoryQueryRepository = categoryQueryRepository;
     }
 
-    public async Task<List<AllCategoriesResponseDto>> Handle(GetAllCategoriesQuery query,
+    public override async Task<List<AllCategoriesResponseDto>> Handle(GetAllCategoriesQuery query,
         CancellationToken cancellationToken)
     {
         var result = await _categoryQueryRepository.GetAllAsync(query);

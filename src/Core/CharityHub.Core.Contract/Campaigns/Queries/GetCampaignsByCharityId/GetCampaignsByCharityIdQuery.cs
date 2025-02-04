@@ -1,6 +1,8 @@
 namespace CharityHub.Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
-using CharityHub.Core.Contract.Primitives.Handlers;
+
+
+using Primitives.Models;
 
 public class GetCampaignsByCharityIdQuery : PagedQuery<CampaignsByCharityIdResponseDto>
 {
