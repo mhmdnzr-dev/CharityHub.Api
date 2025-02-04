@@ -5,6 +5,7 @@ using Contract.Users.Queries.GetVerifyMobileUsers;
 using Infra.Identity.Interfaces;
 using Infra.Identity.Models;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -13,11 +14,12 @@ public class GetVerifyMobileUserQueryHandler : QueryHandlerBase<GetVerifyMobileU
 {
     private readonly IIdentityService _identityService;
 
-    public GetVerifyMobileUserQueryHandler(IMemoryCache cache, ITokenService tokenService, IIdentityService identityService) : base(cache, tokenService)
+    public GetVerifyMobileUserQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IIdentityService identityService) : base(cache, tokenService, httpContextAccessor)
     {
         _identityService = identityService;
     }
-
+    
+    
     public override async Task<VerifyMobileUserResponseDto> Handle(GetVerifyMobileUserQuery query,
         CancellationToken cancellationToken)
     {

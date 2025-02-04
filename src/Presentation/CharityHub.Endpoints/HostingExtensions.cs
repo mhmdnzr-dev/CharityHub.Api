@@ -57,7 +57,7 @@ public static class HostingExtensions
 
     public static void AddCustomServices(this IServiceCollection services)
     {
-       
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddDotnetOutputCache();
         services.AddVersion();
         services.AddCORSPolicy();

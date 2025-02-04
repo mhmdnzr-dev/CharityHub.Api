@@ -7,6 +7,7 @@ using Contract.Campaigns.Queries.GetCampaignById;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -16,11 +17,10 @@ public class GetCampaignByIdQueryHandler: QueryHandlerBase<GetCampaignByIdQuery,
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
 
-    public GetCampaignByIdQueryHandler(IMemoryCache cache, ITokenService tokenService, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService)
+    public GetCampaignByIdQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService, httpContextAccessor)
     {
         _campaignQueryRepository = campaignQueryRepository;
     }
-
     public override async Task<CampaignByIdResponseDto> Handle(GetCampaignByIdQuery query,
         CancellationToken cancellationToken)
     {

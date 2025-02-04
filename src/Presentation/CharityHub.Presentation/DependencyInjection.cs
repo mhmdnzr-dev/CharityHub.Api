@@ -10,6 +10,8 @@ namespace CharityHub.Presentation;
 
 using Filters;
 
+using Microsoft.OpenApi.Models;
+
 public static class DependencyInjection
 {
     public static void AddDotnetOutputCache(this IServiceCollection services)
@@ -48,15 +50,18 @@ public static class DependencyInjection
             options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             options.DocInclusionPredicate((version, desc) => desc.GroupName == version);
 
-            // Add JWT Bearer authentication to Swagger UI
-            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            // Define the Bearer authentication scheme in Swagger
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
                 Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Please enter JWT with Bearer into field"
             });
 
+          
             
             
             options.OperationFilter<AuthorizeCheckOperationFilter>();

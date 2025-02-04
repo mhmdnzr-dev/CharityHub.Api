@@ -7,6 +7,7 @@ using Contract.Primitives.Models;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -16,7 +17,7 @@ public class GetAllCharitiesQueryHandler : QueryHandlerBase<GetAllCharitiesQuery
     private readonly ICharityQueryRepository _charityQueryRepository;
 
 
-    public GetAllCharitiesQueryHandler(IMemoryCache cache, ITokenService tokenService, ICharityQueryRepository charityQueryRepository) : base(cache, tokenService)
+    public GetAllCharitiesQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICharityQueryRepository charityQueryRepository) : base(cache, tokenService, httpContextAccessor)
     {
         _charityQueryRepository = charityQueryRepository;
     }

@@ -5,6 +5,7 @@ using Contract.Users.Queries.GetUserProfileDetails;
 using Infra.Identity.Interfaces;
 using Infra.Identity.Models.Token.Requests;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -12,7 +13,7 @@ using Primitives;
 public class
     GetUserProfileDetailQueryHandler : QueryHandlerBase<GetUserProfileDetailQuery, UserProfileDetailResponseDto>
 {
-    public GetUserProfileDetailQueryHandler(IMemoryCache cache, ITokenService tokenService) : base(cache, tokenService)
+    public GetUserProfileDetailQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor) : base(cache, tokenService, httpContextAccessor)
     {
     }
 

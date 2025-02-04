@@ -9,6 +9,7 @@ using Contract.Terms.Queries.GetLastTerm;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -18,7 +19,7 @@ public class GetLastTermQueryHandler : QueryHandlerBase<GetLastTermQuery, LastTe
     private readonly ITermQueryRepository _termQueryRepository;
 
 
-    public GetLastTermQueryHandler(IMemoryCache cache, ITokenService tokenService, ITermQueryRepository termQueryRepository) : base(cache, tokenService)
+    public GetLastTermQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ITermQueryRepository termQueryRepository) : base(cache, tokenService, httpContextAccessor)
     {
         _termQueryRepository = termQueryRepository;
     }

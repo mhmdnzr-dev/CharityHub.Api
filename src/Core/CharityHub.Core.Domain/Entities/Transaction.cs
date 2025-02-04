@@ -15,7 +15,7 @@ public sealed class Transaction : BaseEntity
     public int CampaignId { get; private set; }
     public Campaign Campaign { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
+
 
     // ** Private constructor for EF Core **
     private Transaction() { }
@@ -36,8 +36,7 @@ public sealed class Transaction : BaseEntity
         {
             UserId = userId,
             CampaignId = campaignId,
-            Amount = amount,
-            CreatedAt = DateTime.UtcNow
+            Amount = amount
         };
     }
 }

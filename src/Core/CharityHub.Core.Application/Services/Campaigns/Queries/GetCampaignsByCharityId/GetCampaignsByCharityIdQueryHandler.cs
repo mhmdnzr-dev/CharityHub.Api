@@ -8,6 +8,7 @@ using Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -17,7 +18,7 @@ public class GetCampaignsByCharityIdQueryHandler: QueryHandlerBase<GetCampaignsB
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
 
-    public GetCampaignsByCharityIdQueryHandler(IMemoryCache cache, ITokenService tokenService, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService)
+    public GetCampaignsByCharityIdQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService, httpContextAccessor)
     {
         _campaignQueryRepository = campaignQueryRepository;
     }

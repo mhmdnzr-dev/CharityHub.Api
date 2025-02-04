@@ -8,6 +8,7 @@ using Contract.Campaigns.Queries.GetAllCampaigns;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 using Primitives;
@@ -17,7 +18,7 @@ public class GetAllCampaignsQueryHandler : QueryHandlerBase<GetAllCampaignQuery,
     private readonly ICampaignQueryRepository _campaignQueryRepository;
 
 
-    public GetAllCampaignsQueryHandler(IMemoryCache cache, ITokenService tokenService, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService)
+    public GetAllCampaignsQueryHandler(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICampaignQueryRepository campaignQueryRepository) : base(cache, tokenService, httpContextAccessor)
     {
         _campaignQueryRepository = campaignQueryRepository;
     }

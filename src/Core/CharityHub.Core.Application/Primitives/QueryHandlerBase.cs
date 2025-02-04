@@ -14,23 +14,21 @@ public abstract class QueryHandlerBase<TQuery, TResponse> : IQueryHandler<TQuery
 {
     protected readonly IMemoryCache Cache;
     protected readonly ITokenService TokenService;
-    private static IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    protected QueryHandlerBase(IMemoryCache cache, ITokenService tokenService)
+    // Inject IHttpContextAccessor directly into the constructor
+    protected QueryHandlerBase(IMemoryCache cache, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
     {
         Cache = cache;
         TokenService = tokenService;
-    }
-
-    public static void ConfigureHttpContextAccessor(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor;  // Assign it here
     }
 
     public abstract Task<TResponse> Handle(TQuery query, CancellationToken cancellationToken);
 
     protected string GetTokenFromHeader()
     {
+        // Use the injected _httpContextAccessor instead of the static one
         if (_httpContextAccessor?.HttpContext?.Request.Headers.TryGetValue("Authorization", out var authorizationHeader) == true)
         {
             var token = authorizationHeader.ToString();
@@ -56,3 +54,4 @@ public abstract class QueryHandlerBase<TQuery, TResponse> : IQueryHandler<TQuery
         return null;
     }
 }
+

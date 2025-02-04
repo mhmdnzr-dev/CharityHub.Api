@@ -24,4 +24,9 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
 	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Transactions\Commands\" />
+	</ItemGroup>
 </Project>

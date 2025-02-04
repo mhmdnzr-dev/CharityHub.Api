@@ -10,11 +10,6 @@ using System.Linq;
 
 
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Linq;
-
 
 public class AuthorizeCheckOperationFilter : IOperationFilter
 {
@@ -25,7 +20,7 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
             .GetCustomAttributes(true)
             .Any(attr => attr is AuthorizeAttribute);
 
-        // Check on the controller level as well (if the action method doesn't have [Authorize], check the controller)
+        // If the action method doesn't have [Authorize], check if the controller has it
         if (!hasAuthorizeAttribute)
         {
             hasAuthorizeAttribute = context.MethodInfo.DeclaringType
@@ -33,11 +28,13 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
                 .Any(attr => attr is AuthorizeAttribute);
         }
 
-        // If the [Authorize] attribute is found on either the controller or action method, add security requirement
+        // If [Authorize] attribute is found on either the controller or action, add security requirement
         if (hasAuthorizeAttribute)
         {
+            // Initialize security requirements if not already initialized
             operation.Security ??= new List<OpenApiSecurityRequirement>();
 
+            // Add the security requirement for the Bearer token (JWT)
             operation.Security.Add(new OpenApiSecurityRequirement
             {
                 {
@@ -46,15 +43,12 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Id = "Bearer" // The name of the security scheme defined earlier
                         }
                     },
-                    new string[] {}
+                    new string[] { }
                 }
             });
         }
     }
 }
-
-
-
