@@ -24,45 +24,54 @@ public sealed class FileManagerService : IFileManagerService
 
     public async Task<UpdateFileResponseModel> UploadFileAsync(UpdateFileRequestModel requestModel)
     {
-        // Path to store the uploaded file
-        string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), _uploadDirectory);
-        string fileName = GenerateFileName(requestModel.Extension);
+        string uploadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            _uploadDirectory);
         string subDirectoryPath = Path.Combine(uploadsPath, requestModel.SubDirectory);
+        string fileName = GenerateFileName(requestModel.Extension);
         string filePath = Path.Combine(subDirectoryPath, fileName);
 
         try
         {
-            // Ensure the subdirectory exists, if not create it
+            // Ensure that the uploads directory exists and has write permissions
             if (!Directory.Exists(subDirectoryPath))
             {
-                _logger.LogInformation($"Creating directory: {subDirectoryPath}");
-                Directory.CreateDirectory(subDirectoryPath);
+                _logger.LogInformation("Creating directory: {SubDirectoryPath}", subDirectoryPath);
+                Directory.CreateDirectory(subDirectoryPath); // Will throw an exception if it's read-only
             }
 
-            // Write the file to the directory
-            await File.WriteAllBytesAsync(filePath, requestModel.FileBytes);
-            _logger.LogInformation($"File {fileName} uploaded to {filePath}");
+            // Ensure the file system is not in a read-only state before attempting to write
+            if ((new FileInfo(subDirectoryPath).Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+            {
+                _logger.LogError("Directory {SubDirectoryPath} is read-only.", subDirectoryPath);
+                throw new InvalidOperationException("The file system or directory is in a read-only state.");
+            }
 
-            // Return response model with file details
+            // Write the file to the server
+            await File.WriteAllBytesAsync(filePath, requestModel.FileBytes);
+
+            _logger.LogInformation("File {FileName} uploaded successfully to {FilePath}", fileName, filePath);
+
             var result = new UpdateFileResponseModel { FileName = fileName, FilePath = filePath };
+
             return result;
         }
-        catch (IOException ioEx)
+        catch (UnauthorizedAccessException ex)
         {
-            _logger.LogError(ioEx, "I/O error occurred while uploading the file.");
-            throw new InvalidOperationException("Error uploading file due to I/O issues.", ioEx);
+            _logger.LogError(ex, "Access denied while uploading file.");
+            throw new InvalidOperationException("Access denied while uploading file.", ex);
         }
-        catch (UnauthorizedAccessException uaeEx)
+        catch (IOException ex)
         {
-            _logger.LogError(uaeEx, "Access denied while uploading the file.");
-            throw new InvalidOperationException("Access denied while uploading file.", uaeEx);
+            _logger.LogError(ex, "I/O error while uploading file.");
+            throw new InvalidOperationException("I/O error while uploading file.", ex);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred during file upload.");
-            throw new InvalidOperationException("Error uploading file.", ex);
+            _logger.LogError(ex, "Unexpected error while uploading file.");
+            throw new InvalidOperationException("Unexpected error while uploading file.", ex);
         }
     }
+
 
     private string GenerateFileName(string extension)
     {
