@@ -48,6 +48,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
     {
         var totalCount = await _queryDbContext.Campaigns.CountAsync();
 
+        
         var campaigns = await _queryDbContext.Campaigns
             .Include(c => c.Charity)
             .OrderBy(c => c.StartDate) // Ensure ordering for consistent pagination
@@ -59,7 +60,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
                 Title = c.Title,
                 CharityName = c.Charity.Name,
                 RemainingDayCount = CalculateRemainingDays(c.EndDate),
-                ContributionAmount = 0
+                ContributionAmount = c.ChargedAmount
             })
             .ToArrayAsync();
 
@@ -74,13 +75,18 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
                            .FirstOrDefaultAsync(c => c.Id == query.Id)
                        ?? throw new KeyNotFoundException($"Campaign with ID {query.Id} not found.");
 
+        var contributorCount = await _queryDbContext.Transactions
+            .Where(t => t.CampaignId == campaign.Id)
+            .Select(t => t.UserId) // Select only UserIds
+            .Distinct() // Get unique contributors
+            .CountAsync(); // Count them
 
         var campaignDto = new CampaignByIdResponseDto
         {
             Id = campaign.Id,
             Title = campaign.Title,
             Description = campaign.Description,
-            ContributionAmount = 0,
+            ContributionAmount = contributorCount,
             RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
             StartDateTime = campaign.StartDate,
             EndDateTime = campaign.EndDate,
