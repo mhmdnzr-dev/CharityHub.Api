@@ -3,9 +3,13 @@ namespace CharityHub.Core.Contract.Campaigns.Queries.GetCampaignById;
 public class CampaignByIdResponseDto
 {
     public string Title { get; set; }
-    public int DonorCount { get; set; }
     public int RemainingDayCount { get; set; }
     public DateTime? StartDateTime { get; set; }
     public decimal? ChargedAmountProgressPercentage { get; set; }
     public decimal? TotalAmount { get; set; }
+    public int ContributionAmount { get; set; }
+    public DateTime? EndDateTime { get; set; }
+    public decimal? ChargedAmount { get; set; }
+    public string Description { get; set; }
+    public int Id { get; set; }
 }

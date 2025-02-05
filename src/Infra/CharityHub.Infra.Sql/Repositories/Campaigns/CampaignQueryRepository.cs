@@ -26,18 +26,18 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
 
         var campaigns = await _queryDbContext.Campaigns
             .Where(c => c.CharityId == query.Id)
-            .OrderBy(c => c.StartDate) 
+            .OrderBy(c => c.StartDate)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .Select(c => new CampaignsByCharityIdResponseDto
             {
                 Id = c.Id,
-                Name = c.Title,
+                Title = c.Title,
                 Description = c.Description,
                 TotalAmount = c.TotalAmount,
                 ChargedAmount = c.ChargedAmount,
                 CharityName = c.Charity.Name,
-                Percentage = (c.ChargedAmount / c.TotalAmount * 100)
+                ChargedAmountProgressPercentage = (c.ChargedAmount / c.TotalAmount * 100)
             })
             .ToArrayAsync();
 
@@ -55,10 +55,11 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             .Take(query.PageSize)
             .Select(c => new AllCampaignResponseDto
             {
-                Name = c.Title,
+                Id = c.Id,
+                Title = c.Title,
                 CharityName = c.Charity.Name,
-                ContributionAmount = c.ChargedAmount,
-                StartDateTime = c.StartDate
+                RemainingDayCount = CalculateRemainingDays(c.EndDate),
+                ContributionAmount = 0
             })
             .ToArrayAsync();
 
@@ -69,24 +70,34 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
     public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
     {
         var campaign = await _queryDbContext.Campaigns
-            .Include(c => c.Charity)
-            .FirstOrDefaultAsync(c => c.Id == query.Id);
+                           .Include(c => c.Charity)
+                           .FirstOrDefaultAsync(c => c.Id == query.Id)
+                       ?? throw new KeyNotFoundException($"Campaign with ID {query.Id} not found.");
 
-        if (campaign == null)
-        {
-            return new CampaignByIdResponseDto();
-        }
 
         var campaignDto = new CampaignByIdResponseDto
         {
+            Id = campaign.Id,
             Title = campaign.Title,
-            DonorCount = 0,
-            RemainingDayCount = 0,
+            Description = campaign.Description,
+            ContributionAmount = 0,
+            RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
             StartDateTime = campaign.StartDate,
+            EndDateTime = campaign.EndDate,
             ChargedAmountProgressPercentage = campaign.ChargedAmount / campaign.TotalAmount * 100,
+            ChargedAmount = campaign.ChargedAmount,
             TotalAmount = campaign.TotalAmount
         };
 
         return campaignDto;
+    }
+
+
+    private int CalculateRemainingDays(DateTime endDate)
+    {
+        var now = DateTime.UtcNow; // Use provided date or default to UTC now
+        var remainingDays = (endDate - now).TotalDays;
+
+        return remainingDays > 0 ? (int)Math.Ceiling(remainingDays) : 0; // Ensure no negative values
     }
 }

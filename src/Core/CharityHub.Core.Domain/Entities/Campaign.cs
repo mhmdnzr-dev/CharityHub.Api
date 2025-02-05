@@ -8,8 +8,8 @@ public sealed class Campaign : BaseEntity
 {
     public string Title { get; private set; }
     public string Description { get; private set; }
-    public DateTime? StartDate { get; private set; }
-    public DateTime? EndDate { get; private set; }
+    public DateTime StartDate { get; private set; }
+    public DateTime EndDate { get; private set; }
     public decimal? TotalAmount { get; private set; }
     public decimal? ChargedAmount { get; private set; }
     public int PhotoId { get; private set; }
@@ -27,8 +27,8 @@ public sealed class Campaign : BaseEntity
     public static Campaign Create(
         string title,
         string description,
-        DateTime? startDate,
-        DateTime? endDate,
+        DateTime startDate,
+        DateTime endDate,
         decimal? totalAmount,
         int photoId,
         int cityId,
@@ -51,39 +51,18 @@ public sealed class Campaign : BaseEntity
     // Start the campaign (set StartDate and adjust state as needed)
     public void StartCampaign(DateTime startDate)
     {
-        if (StartDate.HasValue)
-        {
-            throw new InvalidOperationException("Campaign has already started.");
-        }
-
         StartDate = startDate;
     }
 
     // End the campaign (set EndDate and adjust state as needed)
     public void EndCampaign(DateTime endDate)
     {
-        if (EndDate.HasValue)
-        {
-            throw new InvalidOperationException("Campaign has already ended.");
-        }
-
-        if (StartDate == null)
-        {
-            throw new InvalidOperationException("Campaign must be started before it can end.");
-        }
-
         EndDate = endDate;
     }
 
     // Add a donation to the campaign
     public void AddDonation(Donation donation)
     {
-        // Example validation: Ensure that the donation is valid and the campaign is still active
-        if (EndDate.HasValue && EndDate.Value < DateTime.UtcNow)
-        {
-            throw new InvalidOperationException("Cannot add donations to a finished campaign.");
-        }
-
         _donations.Add(donation);
 
         // Optionally, you could update the ChargedAmount here (e.g., adding the donation amount)
