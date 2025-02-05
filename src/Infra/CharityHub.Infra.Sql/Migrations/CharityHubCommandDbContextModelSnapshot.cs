@@ -83,7 +83,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
@@ -96,7 +96,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasColumnType("int")
                         .IsFixedLength();
 
-                    b.Property<DateTime?>("StartDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")

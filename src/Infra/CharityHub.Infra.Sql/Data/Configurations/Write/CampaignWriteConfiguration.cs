@@ -19,10 +19,10 @@ internal sealed class CampaignWriteConfiguration : BaseEntityConfiguration<Campa
             .HasMaxLength(1000);
 
         entity.Property(c => c.StartDate)
-            .IsRequired(false);
+            .IsRequired();
 
         entity.Property(c => c.EndDate)
-            .IsRequired(false);
+            .IsRequired();
 
         entity.Property(c => c.TotalAmount)
             .HasColumnType("decimal(18,2)")
