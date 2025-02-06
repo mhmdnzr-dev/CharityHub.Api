@@ -48,7 +48,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
     {
         var totalCount = await _queryDbContext.Campaigns.CountAsync();
 
-        
+
         var campaigns = await _queryDbContext.Campaigns
             .Include(c => c.Charity)
             .OrderBy(c => c.StartDate) // Ensure ordering for consistent pagination
@@ -99,7 +99,7 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
     }
 
 
-    private int CalculateRemainingDays(DateTime endDate)
+    private static int CalculateRemainingDays(DateTime endDate)
     {
         var now = DateTime.UtcNow; // Use provided date or default to UTC now
         var remainingDays = (endDate - now).TotalDays;
