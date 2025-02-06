@@ -7,4 +7,6 @@ public class AllCampaignResponseDto
     public decimal? ContributionAmount { get; set; }
     public int Id { get; set; }
     public int RemainingDayCount { get; set; }
+    public decimal? TotalAmount { get; set; }
+    public decimal? ProgressPercentage { get; set; }
 }
