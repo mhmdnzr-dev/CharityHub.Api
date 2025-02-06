@@ -60,7 +60,9 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
                 Title = c.Title,
                 CharityName = c.Charity.Name,
                 RemainingDayCount = CalculateRemainingDays(c.EndDate),
-                ContributionAmount = c.ChargedAmount
+                ContributionAmount = c.ChargedAmount,
+                TotalAmount = c.TotalAmount,
+                ProgressPercentage = (c.ChargedAmount / c.TotalAmount) * 100
             })
             .ToArrayAsync();
 

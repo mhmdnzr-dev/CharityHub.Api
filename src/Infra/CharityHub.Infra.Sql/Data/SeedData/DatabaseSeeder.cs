@@ -1,18 +1,16 @@
 namespace CharityHub.Infra.Sql.Data.SeedData;
 
-using Microsoft.Extensions.Logging;
-
 using System.Threading;
 using System.Threading.Tasks;
-
-using DbContexts;
-
-using Microsoft.EntityFrameworkCore;
 
 using Core.Domain.Entities;
 using Core.Domain.Entities.Identity;
 
+using DbContexts;
+
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 {
@@ -51,10 +49,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                 },
                 new()
                 {
-                    UserName = "admin@example.com", 
-                    Email = "admin@example.com",
-                    FirstName = "test",
-                    LastName = "testy",
+                    UserName = "admin@example.com", Email = "admin@example.com", FirstName = "test", LastName = "testy",
                 }
             };
 
@@ -181,8 +176,10 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     photoId: 8,
                     cityId: 120,
                     charityId: 1
-                )
+                ),
             };
+
+
 
 
             await context.Campaigns.AddRangeAsync(campaigns, cancellationToken);
@@ -205,6 +202,15 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                 Donation.Create(userId: 1, campaignId: campaigns[2].Id, amount: 500m),
                 Donation.Create(userId: 2, campaignId: campaigns[2].Id, amount: 1000m)
             };
+
+            foreach (var donation in donations)
+            {
+                var campaign = campaigns.FirstOrDefault(c => c.Id == donation.CampaignId);
+                if (campaign is not null)
+                {
+                    campaign.AddDonation(donation);
+                }
+            }
 
             await context.Donations.AddRangeAsync(donations, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
@@ -238,9 +244,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             var terms = new List<Term>
             {
-                Term.Create("شرایط استفاده"),
-                Term.Create("خط مشی حریم خصوصی"),
-                Term.Create("قوانین و مقررات")
+                Term.Create("شرایط استفاده"), Term.Create("خط مشی حریم خصوصی"), Term.Create("قوانین و مقررات")
             };
 
             await context.Terms.AddRangeAsync(terms, cancellationToken);
