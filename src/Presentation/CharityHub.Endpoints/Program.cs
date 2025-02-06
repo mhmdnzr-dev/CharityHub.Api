@@ -3,6 +3,7 @@ using CharityHub.Infra.Sql.Data.DbContexts;
 using CharityHub.Infra.Sql.Data.SeedData;
 using CharityHub.Infra.Sql.Extensions;
 using CharityHub.Presentation;
+
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,7 @@ app.UseOutputCache();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UsePagedDataResponseMiddleware();
 app.UseBaseResponseMiddleware();
 app.UseExceptionResponseMiddleware();
 app.MapControllers();

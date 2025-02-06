@@ -3,8 +3,9 @@
 using CharityHub.Presentation.Filters;
 
 using Microsoft.AspNetCore.Http;
-
 namespace CharityHub.Presentation.Middleware;
+
+
 internal sealed class BaseResponseMiddleware
 {
     private readonly RequestDelegate _next;
@@ -13,8 +14,6 @@ internal sealed class BaseResponseMiddleware
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
     }
-
-
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -30,63 +29,37 @@ internal sealed class BaseResponseMiddleware
             var responseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
             responseBodyStream.Seek(0, SeekOrigin.Begin);
 
-            if (!context.Items.ContainsKey("SkipBaseResponse"))
+            if (!context.Items.ContainsKey("SkipBaseResponse")) // Bypass wrapping if flagged
             {
-                bool isEmptyResponse = false;
-                object? parsedData = null;
+                object parsedData;
 
                 try
                 {
-                    if (!string.IsNullOrWhiteSpace(responseBody))
-                    {
-                        var jsonElement = JsonSerializer.Deserialize<JsonElement>(responseBody);
-
-                        // Check if response is null or an empty array
-                        isEmptyResponse = jsonElement.ValueKind == JsonValueKind.Null ||
-                                          (jsonElement.ValueKind == JsonValueKind.Array && jsonElement.GetArrayLength() == 0);
-
-                        // Check if response is a paged result and Items is null or empty
-                        if (!isEmptyResponse && jsonElement.TryGetProperty("items", out var itemsProperty))
-                        {
-                            isEmptyResponse = itemsProperty.ValueKind == JsonValueKind.Null ||
-                                              (itemsProperty.ValueKind == JsonValueKind.Array && itemsProperty.GetArrayLength() == 0);
-                        }
-
-                        parsedData = isEmptyResponse ? null : jsonElement;
-                    }
-                    else
-                    {
-                        isEmptyResponse = true;
-                    }
+                    // Deserialize once to prevent double serialization
+                    parsedData = JsonSerializer.Deserialize<object>(responseBody);
                 }
                 catch
                 {
-                    // If deserialization fails, fallback to raw response
-                    parsedData = responseBody;
+                    parsedData = responseBody; // Keep raw response if deserialization fails
                 }
 
-                if (isEmptyResponse)
-                {
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    parsedData = null;
-                }
-
-                var statusCode = context.Response.StatusCode;
                 var baseResponse = new BaseResponseFilter<object>
                 {
-                    Success = statusCode is >= 200 and < 300 && !isEmptyResponse,
+                    Success = context.Response.StatusCode is >= 200 and < 300,
                     Data = parsedData,
-                    ErrorMessage = isEmptyResponse ? "Not found!" : (statusCode >= 400 ? "An error occurred." : null),
-                    StatusCode = statusCode
+                    ErrorMessage = context.Response.StatusCode >= 400 ? "An error occurred." : null,
+                    StatusCode = context.Response.StatusCode
                 };
+
+                context.Response.Body = originalBodyStream;
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = baseResponse.StatusCode;
 
                 var jsonResponse = JsonSerializer.Serialize(baseResponse, new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
 
-                context.Response.Body = originalBodyStream;
-                context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(jsonResponse);
             }
             else
@@ -97,5 +70,5 @@ internal sealed class BaseResponseMiddleware
             }
         }
     }
-
 }
+

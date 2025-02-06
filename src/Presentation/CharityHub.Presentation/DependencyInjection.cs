@@ -61,9 +61,9 @@ public static class DependencyInjection
                 Description = "Please enter JWT with Bearer into field"
             });
 
-          
-            
-            
+
+
+
             options.OperationFilter<AuthorizeCheckOperationFilter>();
 
         });
@@ -110,6 +110,11 @@ public static class DependencyInjection
     public static IApplicationBuilder UseExceptionResponseMiddleware(this IApplicationBuilder builder)
     {
         return builder.UseMiddleware<ExceptionResponseMiddleware>();
+    }
+
+    public static IApplicationBuilder UsePagedDataResponseMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<PagedDataResponseMiddleware>();
     }
 
 
