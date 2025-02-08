@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CharityHub.Infra.Sql.Migrations
 {
     [DbContext(typeof(CharityHubCommandDbContext))]
-    [Migration("20250205093930_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250208120715_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -437,6 +437,11 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Socials");
@@ -549,7 +554,7 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.HasIndex("CampaignId");
+                    b.HasKey("CampaignId", "CategoryId");
 
                     b.HasIndex("CategoryId");
 
@@ -791,15 +796,15 @@ namespace CharityHub.Infra.Sql.Migrations
             modelBuilder.Entity("CharityHub.Core.Domain.ValueObjects.CampaignCategory", b =>
                 {
                     b.HasOne("CharityHub.Core.Domain.Entities.Campaign", "Campaign")
-                        .WithMany()
+                        .WithMany("CampaignCategories")
                         .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CharityHub.Core.Domain.Entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("CampaignCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Campaign");
@@ -879,7 +884,14 @@ namespace CharityHub.Infra.Sql.Migrations
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Campaign", b =>
                 {
+                    b.Navigation("CampaignCategories");
+
                     b.Navigation("Donations");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("CampaignCategories");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Charity", b =>

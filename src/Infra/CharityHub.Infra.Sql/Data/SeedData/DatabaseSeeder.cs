@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Core.Domain.Entities;
 using Core.Domain.Entities.Identity;
+using Core.Domain.ValueObjects;
 
 using DbContexts;
 
@@ -87,11 +88,11 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             var socials = new List<Social>
             {
-                Social.Create("Facebook", "FB"),
-                Social.Create("Twitter", "TW"),
-                Social.Create("Instagram", "IG"),
-                Social.Create("LinkedIn", "LI"),
-                Social.Create("YouTube", "YT")
+                Social.Create("Facebook", "FB", "https://facebook.com"),
+                Social.Create("Twitter", "TW", "https://twitter.com"),
+                Social.Create("Instagram", "IG", "https://instagram.com"),
+                Social.Create("LinkedIn", "LI", "https://linkedin.com"),
+                Social.Create("YouTube", "YT", "https://youtube.com")
             };
 
             await context.Socials.AddRangeAsync(socials, cancellationToken);
@@ -103,6 +104,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
         if (!await context.Charities.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding charities...");
+            var socials = await context.Socials.ToListAsync(cancellationToken); // Fetch seeded campaigns
+            var users = await context.ApplicationUsers.ToListAsync(cancellationToken); // Fetch seeded campaigns
 
             var charities = new List<Charity>
             {
@@ -110,12 +113,12 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     name: "بنیاد کمک جهانی",
                     description: "کمک به مردم در سراسر جهان.",
                     website: "https://globalaid.org",
-                    createdByUserId: 1,
+                    createdByUserId: users[0].Id,
                     address: "خیابان خیریه 123",
-                    cityId: 100,
+                    cityId: 1,
                     telephone: "+123456789",
                     managerName: "جان دو",
-                    socialId: 1, // Example Social ID (make sure the ID exists in the Social table)
+                    socialId: socials[0].Id, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "جین اسمیت",
                     contactPhone: "+987654321"
                 ),
@@ -123,12 +126,12 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     name: "اولویت آموزش",
                     description: "تامین منابع آموزشی برای کودکان محروم.",
                     website: "https://educationfirst.org",
-                    createdByUserId: 2,
+                    createdByUserId: users[1].Id,
                     address: "خیابان دانش 456",
-                    cityId: 200,
+                    cityId: 1,
                     telephone: "+1122334455",
                     managerName: "آلیس جانسون",
-                    socialId: 2, // Example Social ID (make sure the ID exists in the Social table)
+                    socialId: socials[1].Id, // Example Social ID (make sure the ID exists in the Social table)
                     contactName: "باب ویلیامز",
                     contactPhone: "+5544332211"
                 )
@@ -139,7 +142,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             _logger.LogInformation("Charities seeding completed.");
         }
-
 
         if (!await context.Campaigns.AnyAsync(cancellationToken))
         {
@@ -180,8 +182,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             };
 
 
-
-
             await context.Campaigns.AddRangeAsync(campaigns, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 
@@ -193,6 +193,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Seeding donations...");
 
             var campaigns = await context.Campaigns.ToListAsync(cancellationToken);
+
 
             var donations = new List<Donation>
             {
@@ -208,7 +209,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                 var campaign = campaigns.FirstOrDefault(c => c.Id == donation.CampaignId);
                 if (campaign is not null)
                 {
-                    campaign.AddDonation(donation);
+                    campaign.AddDonation(donation); // Assuming AddDonation is a method on Campaign
                 }
             }
 
@@ -286,5 +287,33 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             _logger.LogInformation("Transactions seeding completed.");
         }
+
+        if (!await context.CampaignCategories.AnyAsync(cancellationToken))
+        {
+            _logger.LogInformation("Seeding campaign categories...");
+
+            var categories = await context.Categories.ToListAsync(cancellationToken);
+            var campaigns = await context.Campaigns.ToListAsync(cancellationToken);
+
+            if (campaigns.Count < 3 || categories.Count < 4)
+            {
+                _logger.LogError("Not enough campaigns or categories to seed campaign categories.");
+                return;
+            }
+
+            var campaignCategories = new List<CampaignCategory>
+            {
+                CampaignCategory.Create(campaigns[0].Id, categories[3].Id),
+                CampaignCategory.Create(campaigns[0].Id, categories[1].Id),
+                CampaignCategory.Create(campaigns[1].Id, categories[2].Id),
+                CampaignCategory.Create(campaigns[2].Id, categories[1].Id)
+            };
+
+            await context.CampaignCategories.AddRangeAsync(campaignCategories, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Campaign categories seeding completed.");
+        }
+
     }
 }

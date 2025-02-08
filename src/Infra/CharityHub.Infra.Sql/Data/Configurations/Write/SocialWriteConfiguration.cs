@@ -18,5 +18,9 @@ internal sealed class SocialWriteConfiguration : BaseEntityConfiguration<Social>
         entity.Property(s => s.Abbreviation)
             .IsRequired()
             .HasMaxLength(10);
+
+        entity.Property(s => s.Url)
+            .IsRequired()
+            .HasMaxLength(256);
     }
 }

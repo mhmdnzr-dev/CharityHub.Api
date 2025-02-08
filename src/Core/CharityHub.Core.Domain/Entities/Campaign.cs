@@ -20,6 +20,11 @@ public sealed class Campaign : BaseEntity
     private readonly List<Donation> _donations = new();
     public IReadOnlyCollection<Donation> Donations => _donations.AsReadOnly();
 
+
+    private readonly List<CampaignCategory> _campaignCategories = new();
+    public IReadOnlyCollection<CampaignCategory> CampaignCategories => _campaignCategories.AsReadOnly();
+
+
     // Private constructor for EF Core
     private Campaign() { }
 

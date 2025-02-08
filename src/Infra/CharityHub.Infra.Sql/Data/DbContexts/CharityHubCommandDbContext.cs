@@ -80,11 +80,16 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     }
     private void UpdateTimestamps()
     {
-        var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (e.State == EntityState.Added || e.State == EntityState.Modified));
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.Entity is BaseEntity && (e.State == EntityState.Added || e.State == EntityState.Modified))
+            .ToList(); // Convert to list to avoid collection modified exception during iteration
 
         foreach (var entityEntry in entries)
         {
             var entity = (BaseEntity)entityEntry.Entity;
+
+            // Skip entities that are mapper tables (like CampaignCategory) that don't have CreatedAt/ModifiedAt
+            if (entityEntry.Entity is CampaignCategory) continue;
 
             if (entityEntry.State == EntityState.Added)
             {
@@ -97,4 +102,6 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
             }
         }
     }
+
+
 }

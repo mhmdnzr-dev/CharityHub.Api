@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CharityHub.Infra.Sql.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,6 +79,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Abbreviation = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "smalldatetime", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "smalldatetime", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
@@ -401,18 +402,19 @@ namespace CharityHub.Infra.Sql.Migrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_CampaignCategories", x => new { x.CampaignId, x.CategoryId });
                     table.ForeignKey(
                         name: "FK_CampaignCategories_Campaigns_CampaignId",
                         column: x => x.CampaignId,
                         principalTable: "Campaigns",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_CampaignCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -524,11 +526,6 @@ namespace CharityHub.Infra.Sql.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CampaignCategories_CampaignId",
-                table: "CampaignCategories",
-                column: "CampaignId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CampaignCategories_CategoryId",

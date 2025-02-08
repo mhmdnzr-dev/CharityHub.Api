@@ -2,13 +2,18 @@
 
 namespace CharityHub.Core.Domain.Entities;
 
-using System.ComponentModel.DataAnnotations;
-
 using ValueObjects;
 
 public sealed class Category : BaseEntity
 {
     public string Name { get; private set; }
+
+
+
+
+    private readonly List<CampaignCategory> _campaignCategories = new();
+    public IReadOnlyCollection<CampaignCategory> CampaignCategories => _campaignCategories.AsReadOnly();
+
 
     // ** Private constructor for EF Core **
     private Category() { }
