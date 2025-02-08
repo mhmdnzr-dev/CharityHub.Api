@@ -6,12 +6,11 @@ public class CreateCharityCommand : ICommand<int>
 {
     public byte[] Base64File { get; set; }
     public string FileExtension { get; set; }
-    
+
 
     public string Name { get; set; }
     public string Description { get; set; }
     public string Website { get; set; }
-    public int CreatedByUserId { get; set; }
     public string Address { get; set; }
     public int? CityId { get; set; }
     public string Telephone { get; set; }
