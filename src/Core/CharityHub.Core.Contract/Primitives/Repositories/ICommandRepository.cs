@@ -1,6 +1,6 @@
-﻿using CharityHub.Core.Domain.ValueObjects;
+﻿namespace CharityHub.Core.Contract.Primitives.Repositories;
 
-namespace CharityHub.Core.Contract.Primitives.Repositories;
+using Domain.Entities.Common;
 
 public interface ICommandRepository<T> where T : BaseEntity
 {

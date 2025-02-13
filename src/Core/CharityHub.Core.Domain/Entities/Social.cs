@@ -1,6 +1,7 @@
 ﻿namespace CharityHub.Core.Domain.Entities;
 
-using ValueObjects;
+using Common;
+
 public sealed class Social : BaseEntity
 {
     public string Name { get; private set; }

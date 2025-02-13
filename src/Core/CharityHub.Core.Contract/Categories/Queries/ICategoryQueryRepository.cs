@@ -1,7 +1,6 @@
 namespace CharityHub.Core.Contract.Categories.Queries;
 
 using Domain.Entities;
-using Domain.ValueObjects;
 
 using GetAllCategories;
 

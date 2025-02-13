@@ -1,9 +1,8 @@
 ﻿namespace CharityHub.Core.Domain.Entities;
 
+using Common;
+
 using Identity;
-
-using ValueObjects;
-
 
 public sealed class Transaction : BaseEntity
 {

@@ -1,8 +1,8 @@
 ﻿namespace CharityHub.Core.Domain.Entities;
 
-using Identity;
+using Common;
 
-using ValueObjects;
+using Identity;
 
 public sealed class ApplicationUserTerm : BaseEntity
 {

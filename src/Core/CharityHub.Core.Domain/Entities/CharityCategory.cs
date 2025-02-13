@@ -1,6 +1,4 @@
-﻿using CharityHub.Core.Domain.Entities;
-
-namespace CharityHub.Core.Domain.ValueObjects;
+﻿namespace CharityHub.Core.Domain.Entities;
 
 
 public class CharityCategory

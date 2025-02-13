@@ -2,12 +2,13 @@
 
 using CharityHub.Core.Domain.Entities;
 using CharityHub.Core.Domain.Entities.Identity;
-using CharityHub.Core.Domain.ValueObjects;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CharityHub.Infra.Sql.Data.DbContexts;
+
+using Core.Domain.Entities.Common;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Diagnostics;

@@ -1,4 +1,4 @@
-﻿namespace CharityHub.Core.Domain.ValueObjects;
+﻿namespace CharityHub.Core.Domain.Entities.Common;
 
 using System.ComponentModel.DataAnnotations;
 

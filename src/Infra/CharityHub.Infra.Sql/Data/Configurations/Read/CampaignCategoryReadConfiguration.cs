@@ -1,23 +1,27 @@
 ﻿namespace CharityHub.Infra.Sql.Data.Configurations.Read;
-using CharityHub.Core.Domain.ValueObjects;
+
+using Core.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 internal class CampaignCategoryReadConfiguration : IEntityTypeConfiguration<CampaignCategory>
 {
-    public void Configure(EntityTypeBuilder<CampaignCategory> builder)
+    public void Configure(EntityTypeBuilder<CampaignCategory> entity)
     {
-        builder.HasNoKey();
+        // Define the composite primary key
+        entity.HasKey(cc => new { cc.CampaignId, cc.CategoryId });
 
-        builder.HasOne(cc => cc.Campaign)
-            .WithMany()
+        // Define the foreign key relationship with Campaign
+        entity.HasOne(cc => cc.Campaign)
+            .WithMany(c => c.CampaignCategories)
             .HasForeignKey(cc => cc.CampaignId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
 
-        builder.HasOne(cc => cc.Category)
-            .WithMany()
+        // Define the foreign key relationship with Category
+        entity.HasOne(cc => cc.Category)
+            .WithMany(c => c.CampaignCategories)
             .HasForeignKey(cc => cc.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
     }
 }

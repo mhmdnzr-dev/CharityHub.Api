@@ -1,8 +1,8 @@
 ﻿namespace CharityHub.Core.Domain.Entities;
 
-using Enums;
+using Common;
 
-using ValueObjects;
+using Enums;
 
 public sealed class OTP : BaseEntity
 {

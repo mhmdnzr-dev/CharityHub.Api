@@ -1,6 +1,4 @@
-﻿namespace CharityHub.Core.Domain.ValueObjects;
-
-using CharityHub.Core.Domain.Entities;
+﻿namespace CharityHub.Core.Domain.Entities;
 
 public sealed class CampaignCategory
 {

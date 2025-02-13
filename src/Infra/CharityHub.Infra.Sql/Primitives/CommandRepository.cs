@@ -1,8 +1,9 @@
 ﻿namespace CharityHub.Infra.Sql.Primitives;
 
 using CharityHub.Core.Contract.Primitives.Repositories;
-using CharityHub.Core.Domain.ValueObjects;
 using CharityHub.Infra.Sql.Data.DbContexts;
+
+using Core.Domain.Entities.Common;
 
 using EFCore.BulkExtensions;
 

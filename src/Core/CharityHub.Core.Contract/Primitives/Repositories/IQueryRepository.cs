@@ -1,6 +1,6 @@
 ﻿namespace CharityHub.Core.Contract.Primitives.Repositories;
 
-using CharityHub.Core.Domain.ValueObjects;
+using Domain.Entities.Common;
 
 public interface IQueryRepository<T> where T : BaseEntity
 {

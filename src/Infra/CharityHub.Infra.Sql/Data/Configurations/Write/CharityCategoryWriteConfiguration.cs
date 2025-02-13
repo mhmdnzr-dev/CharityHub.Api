@@ -1,5 +1,6 @@
 ﻿namespace CharityHub.Infra.Sql.Data.Configurations.Write;
-using CharityHub.Core.Domain.ValueObjects;
+
+using Core.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

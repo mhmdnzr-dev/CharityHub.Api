@@ -1,8 +1,6 @@
 ﻿namespace CharityHub.Core.Domain.Entities;
 
-using ValueObjects;
-
-
+using Common;
 
 public sealed class Campaign : BaseEntity
 {
