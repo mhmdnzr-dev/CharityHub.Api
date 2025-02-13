@@ -1,5 +1,6 @@
 namespace CharityHub.Core.Application.Services.Transactions.Queries.GetUserTransactions;
 
+using Contract.Primitives.Models;
 using Contract.Transactions.Queries;
 using Contract.Transactions.Queries.GetUserTransactions;
 
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Primitives;
 
 public class
-    GetUserTransactionQueryHandler : QueryHandlerBase<GetUserTransactionQuery, IEnumerable<UserTransactionsResponseDto>>
+    GetUserTransactionQueryHandler : QueryHandlerBase<GetUserTransactionQuery, PagedData<UserTransactionsResponseDto>>
 {
     private readonly ITransactionQueryRepository _transactionQueryRepository;
 
@@ -20,7 +21,7 @@ public class
     {
         _transactionQueryRepository = transactionQueryRepository;
     }
-    public override async Task<IEnumerable<UserTransactionsResponseDto>> Handle(GetUserTransactionQuery query,
+    public override async Task<PagedData<UserTransactionsResponseDto>> Handle(GetUserTransactionQuery query,
         CancellationToken cancellationToken)
     {
         var token = GetTokenFromHeader();

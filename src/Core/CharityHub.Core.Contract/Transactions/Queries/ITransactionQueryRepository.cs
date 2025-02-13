@@ -6,9 +6,10 @@ using Domain.Entities;
 
 using GetUserTransactions;
 
+using Primitives.Models;
 using Primitives.Repositories;
 
 public interface ITransactionQueryRepository : IQueryRepository<Transaction>
 {
-    Task<IEnumerable<UserTransactionsResponseDto>> GetTransactionsByUserId(GetUserTransactionQuery query, int userId);
+    Task<PagedData<UserTransactionsResponseDto>> GetTransactionsByUserId(GetUserTransactionQuery query, int userId);
 }
