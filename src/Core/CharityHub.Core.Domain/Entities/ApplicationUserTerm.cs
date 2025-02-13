@@ -23,7 +23,7 @@ public sealed class ApplicationUserTerm : BaseEntity
     }
 
     // Factory method to add a new ApplicationUserTerm
-    public static ApplicationUserTerm Add(int userId, int termId)
+    public static ApplicationUserTerm Create(int userId, int termId)
     {
         if (userId <= 0)
         {

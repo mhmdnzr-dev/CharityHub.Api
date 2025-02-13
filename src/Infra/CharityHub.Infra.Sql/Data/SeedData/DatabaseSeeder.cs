@@ -35,27 +35,38 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             {
                 new()
                 {
-                    UserName = "john.doe@example.com",
+                    UserName = "09203216120",
                     Email = "john.doe@example.com",
                     FirstName = "test",
                     LastName = "testy",
+                    PhoneNumber = "09203216120",
                 },
                 new()
                 {
-                    UserName = "jane.smith@example.com",
+                    UserName = "09203216121",
                     Email = "jane.smith@example.com",
                     FirstName = "test",
                     LastName = "testy",
+                    PhoneNumber = "09203216121"
                 },
                 new()
                 {
-                    UserName = "admin@example.com", Email = "admin@example.com", FirstName = "test", LastName = "testy",
+                    UserName = "09203216130",
+                    Email = "admin@example.com",
+                    FirstName = "test",
+                    LastName = "testy",
+                    PhoneNumber = "09203216130"
                 }
             };
 
             // Create users with UserManager (which hashes the password)
             foreach (var user in users)
             {
+                if (!user.IsActive)
+                {
+                    user.Activate();
+                }
+
                 if (await _userManager.FindByEmailAsync(user.Email) == null)
                 {
                     var result =
@@ -253,6 +264,20 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Terms seeding completed.");
         }
 
+        if (!context.ApplicationUserTerms.Any())
+        {
+            var user = context.ApplicationUsers.ToList();
+            var terms = context.Terms.OrderByDescending(data => data.CreatedAt).FirstOrDefault();
+
+            var userTerms = new List<ApplicationUserTerm>
+            {
+                ApplicationUserTerm.Create(user[0].Id, terms.Id),
+                ApplicationUserTerm.Create(user[1].Id, terms.Id),
+                ApplicationUserTerm.Create(user[2].Id, terms.Id)
+            };
+            await context.ApplicationUserTerms.AddRangeAsync(userTerms, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         if (!await context.Transactions.AnyAsync(cancellationToken))
         {
@@ -313,6 +338,5 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             _logger.LogInformation("Campaign categories seeding completed.");
         }
-
     }
 }

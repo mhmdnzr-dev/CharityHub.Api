@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CharityHub.Infra.Sql.Migrations
 {
     [DbContext(typeof(CharityHubCommandDbContext))]
-    [Migration("20250213092049_InitialMigration")]
+    [Migration("20250213093031_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -115,6 +115,21 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.HasIndex("CharityId");
 
                     b.ToTable("Campaigns");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.CampaignCategory", b =>
+                {
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CampaignId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CampaignCategories");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Category", b =>
@@ -224,6 +239,21 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.HasIndex("SocialId");
 
                     b.ToTable("Charities");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.CharityCategory", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharityId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CharityId");
+
+                    b.ToTable("CharityCategories");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Donation", b =>
@@ -546,36 +576,6 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("CharityHub.Core.Domain.ValueObjects.CampaignCategory", b =>
-                {
-                    b.Property<int>("CampaignId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CampaignId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("CampaignCategories");
-                });
-
-            modelBuilder.Entity("CharityHub.Core.Domain.ValueObjects.CharityCategory", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CharityId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("CharityId");
-
-                    b.ToTable("CharityCategories");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -709,6 +709,25 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Navigation("Charity");
                 });
 
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.CampaignCategory", b =>
+                {
+                    b.HasOne("CharityHub.Core.Domain.Entities.Campaign", "Campaign")
+                        .WithMany("CampaignCategories")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CharityHub.Core.Domain.Entities.Category", "Category")
+                        .WithMany("CampaignCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Campaign");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Charity", b =>
                 {
                     b.HasOne("CharityHub.Core.Domain.Entities.Identity.ApplicationUser", null)
@@ -744,6 +763,25 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Navigation("Logo");
 
                     b.Navigation("Social");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.CharityCategory", b =>
+                {
+                    b.HasOne("CharityHub.Core.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CharityHub.Core.Domain.Entities.Charity", "Charity")
+                        .WithMany()
+                        .HasForeignKey("CharityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Charity");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Donation", b =>
@@ -791,44 +829,6 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Navigation("Campaign");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CharityHub.Core.Domain.ValueObjects.CampaignCategory", b =>
-                {
-                    b.HasOne("CharityHub.Core.Domain.Entities.Campaign", "Campaign")
-                        .WithMany("CampaignCategories")
-                        .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CharityHub.Core.Domain.Entities.Category", "Category")
-                        .WithMany("CampaignCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Campaign");
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("CharityHub.Core.Domain.ValueObjects.CharityCategory", b =>
-                {
-                    b.HasOne("CharityHub.Core.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CharityHub.Core.Domain.Entities.Charity", "Charity")
-                        .WithMany()
-                        .HasForeignKey("CharityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Charity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

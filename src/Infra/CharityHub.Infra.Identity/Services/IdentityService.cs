@@ -164,7 +164,7 @@ public class IdentityService : IIdentityService
         }
 
 
-        var userTerm = ApplicationUserTerm.Add(user.Id, term.Id);
+        var userTerm = ApplicationUserTerm.Create(user.Id, term.Id);
         _commandDbContext.ApplicationUserTerms.Add(userTerm);
 
         await _commandDbContext.SaveChangesAsync();
