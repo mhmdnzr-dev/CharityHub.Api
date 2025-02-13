@@ -94,7 +94,9 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             EndDateTime = campaign.EndDate,
             ChargedAmountProgressPercentage = campaign.ChargedAmount / campaign.TotalAmount * 100,
             ChargedAmount = campaign.ChargedAmount,
-            TotalAmount = campaign.TotalAmount
+            TotalAmount = campaign.TotalAmount,
+            CharityName = campaign.Charity.Name,
+            CharityId = campaign.CharityId
         };
 
         return campaignDto;

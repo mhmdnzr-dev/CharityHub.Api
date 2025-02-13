@@ -12,4 +12,6 @@ public class CampaignByIdResponseDto
     public decimal? ChargedAmount { get; set; }
     public string Description { get; set; }
     public int Id { get; set; }
+    public string CharityName { get; set; }
+    public int CharityId { get; set; }
 }
