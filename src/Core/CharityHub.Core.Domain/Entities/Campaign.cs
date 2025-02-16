@@ -2,6 +2,8 @@
 
 using Common;
 
+using Enums;
+
 public sealed class Campaign : BaseEntity
 {
     public string Title { get; private set; }
@@ -14,6 +16,8 @@ public sealed class Campaign : BaseEntity
     public int CityId { get; private set; }
     public int CharityId { get; private set; }
     public Charity Charity { get; private set; }
+
+    public CampaignStatus CampaignStatus { get; set; }
 
     private readonly List<Donation> _donations = new();
     public IReadOnlyCollection<Donation> Donations => _donations.AsReadOnly();
@@ -47,7 +51,8 @@ public sealed class Campaign : BaseEntity
             ChargedAmount = 0, // Default initial charged amount
             PhotoId = photoId,
             CityId = cityId,
-            CharityId = charityId
+            CharityId = charityId,
+            CampaignStatus = CampaignStatus.Pending
         };
     }
 
@@ -55,12 +60,14 @@ public sealed class Campaign : BaseEntity
     public void StartCampaign(DateTime startDate)
     {
         StartDate = startDate;
+        CampaignStatus = CampaignStatus.Processing;
     }
 
     // End the campaign (set EndDate and adjust state as needed)
     public void EndCampaign(DateTime endDate)
     {
         EndDate = endDate;
+        CampaignStatus = ChargedAmount >= TotalAmount ? CampaignStatus.Succeeded : CampaignStatus.Failed;
     }
 
     // Add a donation to the campaign
@@ -88,12 +95,12 @@ public sealed class Campaign : BaseEntity
     {
         if (ChargedAmount >= TotalAmount)
         {
-            // Set some internal state or flag to mark the campaign as complete.
-            // You may need to add an additional flag or property like `IsComplete`.
+            EndCampaign(DateTime.UtcNow);
         }
         else
         {
-            throw new InvalidOperationException("Campaign cannot be marked as complete until the total amount is reached.");
+            throw new InvalidOperationException(
+                "Campaign cannot be marked as complete until the total amount is reached.");
         }
     }
 
@@ -105,6 +112,6 @@ public sealed class Campaign : BaseEntity
             throw new InvalidOperationException("The donation was not found for this campaign.");
         }
 
-        ChargedAmount -= donation.Amount;  // Decrease the charged amount when a donation is removed.
+        ChargedAmount -= donation.Amount; // Decrease the charged amount when a donation is removed.
     }
 }

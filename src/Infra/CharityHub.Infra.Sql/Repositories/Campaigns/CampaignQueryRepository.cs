@@ -29,15 +29,16 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             .OrderBy(c => c.StartDate)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(c => new CampaignsByCharityIdResponseDto
+            .Select(campaign => new CampaignsByCharityIdResponseDto
             {
-                Id = c.Id,
-                Title = c.Title,
-                Description = c.Description,
-                TotalAmount = c.TotalAmount,
-                ChargedAmount = c.ChargedAmount,
-                CharityName = c.Charity.Name,
-                ChargedAmountProgressPercentage = (c.ChargedAmount / c.TotalAmount * 100)
+                Id = campaign.Id,
+                Title = campaign.Title,
+                Description = campaign.Description,
+                TotalAmount = campaign.TotalAmount,
+                ChargedAmount = campaign.ChargedAmount,
+                CharityName = campaign.Charity.Name,
+                ChargedAmountProgressPercentage = (campaign.ChargedAmount / campaign.TotalAmount * 100),
+                CampaignStatus = campaign.CampaignStatus,
             })
             .ToArrayAsync();
 
@@ -54,15 +55,16 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             .OrderBy(c => c.StartDate) // Ensure ordering for consistent pagination
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(c => new AllCampaignResponseDto
+            .Select(campaign => new AllCampaignResponseDto
             {
-                Id = c.Id,
-                Title = c.Title,
-                CharityName = c.Charity.Name,
-                RemainingDayCount = CalculateRemainingDays(c.EndDate),
-                ContributionAmount = c.ChargedAmount,
-                TotalAmount = c.TotalAmount,
-                ProgressPercentage = (c.ChargedAmount / c.TotalAmount) * 100
+                Id = campaign.Id,
+                Title = campaign.Title,
+                CharityName = campaign.Charity.Name,
+                RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
+                ContributionAmount = campaign.ChargedAmount,
+                TotalAmount = campaign.TotalAmount,
+                ProgressPercentage = (campaign.ChargedAmount / campaign.TotalAmount) * 100,
+                CampaignStatus = campaign.CampaignStatus
             })
             .ToArrayAsync();
 
@@ -96,7 +98,8 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             ChargedAmount = campaign.ChargedAmount,
             TotalAmount = campaign.TotalAmount,
             CharityName = campaign.Charity.Name,
-            CharityId = campaign.CharityId
+            CharityId = campaign.CharityId,
+            CampaignStatus = campaign.CampaignStatus
         };
 
         return campaignDto;

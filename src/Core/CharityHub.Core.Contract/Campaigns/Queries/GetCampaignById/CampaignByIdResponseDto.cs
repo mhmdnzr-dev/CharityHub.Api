@@ -1,5 +1,7 @@
 namespace CharityHub.Core.Contract.Campaigns.Queries.GetCampaignById;
 
+using Domain.Enums;
+
 public class CampaignByIdResponseDto
 {
     public string Title { get; set; }
@@ -14,4 +16,5 @@ public class CampaignByIdResponseDto
     public int Id { get; set; }
     public string CharityName { get; set; }
     public int CharityId { get; set; }
+    public CampaignStatus CampaignStatus { get; set; }
 }
