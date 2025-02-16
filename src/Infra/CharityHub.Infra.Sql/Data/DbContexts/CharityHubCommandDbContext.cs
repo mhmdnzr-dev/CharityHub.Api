@@ -22,6 +22,7 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     
     public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<Message> Messages { get; set; }
     public DbSet<OTP> OTPs { get; set; }
     public DbSet<Social> Socials { get; set; }
     

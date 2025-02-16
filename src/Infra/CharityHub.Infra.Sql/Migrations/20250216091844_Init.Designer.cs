@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CharityHub.Infra.Sql.Migrations
 {
     [DbContext(typeof(CharityHubCommandDbContext))]
-    [Migration("20250213093031_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250216091844_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -399,6 +399,44 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("smalldatetime");
+
+                    b.Property<DateTime?>("SeenDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.OTP", b =>
@@ -799,6 +837,17 @@ namespace CharityHub.Infra.Sql.Migrations
                         .IsRequired();
 
                     b.Navigation("Campaign");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CharityHub.Core.Domain.Entities.Message", b =>
+                {
+                    b.HasOne("CharityHub.Core.Domain.Entities.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -19,6 +19,7 @@ public sealed class CharityHubQueryDbContext : IdentityDbContext<ApplicationUser
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Social> Socials { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     #endregion
 

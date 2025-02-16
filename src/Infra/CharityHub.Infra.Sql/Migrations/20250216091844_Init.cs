@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CharityHub.Infra.Sql.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -223,6 +223,31 @@ namespace CharityHub.Infra.Sql.Migrations
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    IsSeen = table.Column<bool>(type: "bit", nullable: false),
+                    SeenDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "smalldatetime", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "smalldatetime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -583,6 +608,11 @@ namespace CharityHub.Infra.Sql.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Messages_UserId",
+                table: "Messages",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OTPs_UserId",
                 table: "OTPs",
                 column: "UserId");
@@ -627,6 +657,9 @@ namespace CharityHub.Infra.Sql.Migrations
 
             migrationBuilder.DropTable(
                 name: "Donations");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "OTPs");

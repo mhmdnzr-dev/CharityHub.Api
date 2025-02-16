@@ -92,6 +92,27 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Users seeding completed.");
         }
 
+        if (!await context.Messages.AnyAsync(cancellationToken))
+        {
+            _logger.LogInformation("Seeding Message...");
+            var users = await context.ApplicationUsers.ToListAsync(cancellationToken);
+
+            var messages = new List<Message>
+            {
+                Message.Create(users[0].Id, "sample message 1"),
+                Message.Create(users[0].Id, "sample message 2"),
+                Message.Create(users[0].Id, "sample message 3"),
+                Message.Create(users[1].Id, "sample message 4"),
+                Message.Create(users[1].Id, "sample message 5"),
+                Message.Create(users[1].Id, "sample message 6"),
+            };
+            
+            await context.Messages.AddRangeAsync(messages, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Messages platforms seeding completed.");
+        }
+
         if (!await context.Socials.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding social platforms...");
@@ -114,8 +135,8 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
         if (!await context.Charities.AnyAsync(cancellationToken))
         {
             _logger.LogInformation("Seeding charities...");
-            var socials = await context.Socials.ToListAsync(cancellationToken); // Fetch seeded campaigns
-            var users = await context.ApplicationUsers.ToListAsync(cancellationToken); // Fetch seeded campaigns
+            var socials = await context.Socials.ToListAsync(cancellationToken);
+            var users = await context.ApplicationUsers.ToListAsync(cancellationToken);
 
             var charities = new List<Charity>
             {
@@ -284,7 +305,7 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
             _logger.LogInformation("Seeding transactions...");
 
             var users = await context.Users.ToListAsync(cancellationToken); // Fetch seeded users
-            var campaigns = await context.Campaigns.ToListAsync(cancellationToken); // Fetch seeded campaigns
+            var campaigns = await context.Campaigns.ToListAsync(cancellationToken);
 
             var transactions = new List<Transaction>
             {
