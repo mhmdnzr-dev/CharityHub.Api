@@ -36,9 +36,22 @@ public class CommandRepository<T>(CharityHubCommandDbContext commandDbContext)
 
     public void Delete(int id)
     {
-        _commandDbContext.Set<T>()
-            .Where(e => e.Id == id)
-            .ExecuteUpdate(setters => setters.SetProperty(e => e.IsActive, false));
+        var dbSet = _commandDbContext.Set<T>();
+        var entity = dbSet.Find(id);
+
+        var entityType = typeof(T);
+
+        // Ensure the entity has an "IsActive" property before updating
+        var isActiveProperty = entityType.GetProperty("IsActive");
+        if (isActiveProperty == null)
+            throw new InvalidOperationException($"Entity {entityType.Name} does not have an 'IsActive' property.");
+
+        // Set "IsActive" to false
+        isActiveProperty.SetValue(entity, false);
+
+        // Perform soft delete
+        _commandDbContext.Update(entity);
+        _commandDbContext.SaveChanges();
     }
 
     #endregion
@@ -65,9 +78,21 @@ public class CommandRepository<T>(CharityHubCommandDbContext commandDbContext)
 
     public async Task DeleteAsync(int id)
     {
-        await _commandDbContext.Set<T>()
-            .Where(e => e.Id == id)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(e => e.IsActive, false));
+        var dbSet = _commandDbContext.Set<T>();
+        var entity = dbSet.Find(id);
+
+        var entityType = typeof(T);
+
+        var isActiveProperty = entityType.GetProperty("IsActive");
+        if (isActiveProperty == null)
+            throw new InvalidOperationException($"Entity {entityType.Name} does not have an 'IsActive' property.");
+
+
+        isActiveProperty.SetValue(entity, false);
+
+
+        _commandDbContext.Update(entity);
+        await _commandDbContext.SaveChangesAsync();
     }
 
     #endregion
