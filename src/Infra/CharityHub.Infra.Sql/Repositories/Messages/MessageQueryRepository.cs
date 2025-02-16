@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 
 using Primitives;
 
-
 public class MessageQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<MessageQueryRepository> logger)
     : QueryRepository<Message>(queryDbContext), IMessageQueryRepository
 {
@@ -21,8 +20,14 @@ public class MessageQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
 
         query = query.Where(x => x.UserId == userId);
 
-        var result = await query.Select(x =>
-                new MessageByUserIdDto { IsSeen = x.IsSeen, SeenDate = x.SeenDateTime, Content = x.Content, })
+        var result = await query.Select(message =>
+                new MessageByUserIdDto
+                {
+                    Id = message.Id, 
+                    IsSeen = message.IsSeen,
+                    SeenDate = message.SeenDateTime,
+                    Content = message.Content,
+                })
             .ToArrayAsync();
         return result;
     }

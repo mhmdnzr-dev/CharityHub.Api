@@ -1,5 +1,6 @@
 namespace CharityHub.Presentation.Controllers;
 
+using Core.Contract.Messages.Commands.SeenMessage;
 using Core.Contract.Messages.Queries.GetMessageByUserIdQuery;
 
 using MediatR;
@@ -29,7 +30,7 @@ public class MessageController : BaseController
     [HttpPut("update-seen-message")]
     [MapToApiVersion("1.0")]
     [Authorize]
-    public async Task<IActionResult> Put([FromBody] UpdateSeenMessageCommand command)
+    public async Task<IActionResult> Put([FromBody] SeenMessageCommand command)
     {
         var result = await _mediator.Send(command);
         return Ok(result);

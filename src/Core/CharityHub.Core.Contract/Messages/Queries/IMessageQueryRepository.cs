@@ -1,8 +1,12 @@
 namespace CharityHub.Core.Contract.Messages.Queries;
 
+using Domain.Entities;
+
 using GetMessageByUserIdQuery;
 
-public interface IMessageQueryRepository
+using Primitives.Repositories;
+
+public interface IMessageQueryRepository : IQueryRepository<Message>
 {
     Task<IEnumerable<MessageByUserIdDto>> GetAllByUserId(int userId);
 }

@@ -1,22 +1,20 @@
-namespace CharityHub.Core.Application.Services.Messages.Queries.GetMessagesByUserId;
+namespace CharityHub.Core.Application.Services.Messages.Queries.GetMessages;
 
-using Contract.Messages.Queries;
-using Contract.Messages.Queries.GetMessageByUserIdQuery;
-
-using Infra.Identity.Interfaces;
-using Infra.Identity.Models.Token.Requests;
+using CharityHub.Core.Application.Primitives;
+using CharityHub.Core.Contract.Messages.Queries;
+using CharityHub.Core.Contract.Messages.Queries.GetMessageByUserIdQuery;
+using CharityHub.Infra.Identity.Interfaces;
+using CharityHub.Infra.Identity.Models.Token.Requests;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
-using Primitives;
-
-public class GetMessageByUserIdQueryHandler : QueryHandlerBase<GetMessageByUserIdQuery, IEnumerable<MessageByUserIdDto>>
+public class GetMessageQueryHandler : QueryHandlerBase<GetMessageByUserIdQuery, IEnumerable<MessageByUserIdDto>>
 {
     private readonly IMessageQueryRepository _messageQueryRepository;
 
 
-    public GetMessageByUserIdQueryHandler(IMemoryCache cache, ITokenService tokenService,
+    public GetMessageQueryHandler(IMemoryCache cache, ITokenService tokenService,
         IHttpContextAccessor httpContextAccessor, IMessageQueryRepository messageQueryRepository) : base(cache,
         tokenService, httpContextAccessor)
     {
