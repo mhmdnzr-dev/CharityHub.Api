@@ -8,12 +8,19 @@ using Core.Domain.Entities;
 
 using Data.DbContexts;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using Core.Contract.Configuration.Models;
+
+using Microsoft.EntityFrameworkCore;
 
 using Primitives;
 
-public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CharityQueryRepository> logger)
+public class CharityQueryRepository(
+    CharityHubQueryDbContext queryDbContext,
+    ILogger<CharityQueryRepository> logger,
+    IOptions<FileOptions> options)
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
@@ -21,10 +28,11 @@ public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
         #region Query Data
 
         var charities = _queryDbContext.Charities
-            .Where(c => c.IsActive) // Directly filter active charities
+            .Where(c => c.IsActive)
             .AsQueryable();
 
         var campaigns = _queryDbContext.Campaigns.AsQueryable();
+        var storedFiles = _queryDbContext.StoredFiles.AsQueryable();
 
         #endregion
 
@@ -32,26 +40,31 @@ public class CharityQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
 
         var resultQuery = from charity in charities
             join campaign in campaigns
-                on charity.Id equals campaign.CharityId into campaignGroup // Left join
-            from campaign in campaignGroup.DefaultIfEmpty() // Include charities without campaigns
-            group campaign by new { charity.Id, charity.Name }
+                on charity.Id equals campaign.CharityId into campaignGroup
+            from campaign in campaignGroup.DefaultIfEmpty()
+            join storedFile in storedFiles
+                on charity.LogoId equals storedFile.Id into fileGroup
+            from storedFile in fileGroup.DefaultIfEmpty()
+            group new { campaign, storedFile } by new { charity.Id, charity.Name, storedFile.FilePath }
             into charityGroup
             select new AllCharitiesResponseDto
             {
                 Id = charityGroup.Key.Id,
                 Name = charityGroup.Key.Name,
-                CampaignCount = charityGroup.Count(c => c != null), // Count campaigns
-                PhotoUriAddress = "https://picsum.photos/500"
+                CampaignCount = charityGroup.Count(c => c.campaign != null),
+                PhotoUriAddress = charityGroup.Key.FilePath != null
+                    ? $"{options.Value.UploadDirectory}/{charityGroup.Key.FilePath.Replace("\\", "/")}" // Convert backslashes to forward slashes
+                    : $"{options.Value.UploadDirectory}/default-image.png"
             };
 
         #endregion
 
         #region Pagination
 
-        var totalCount = await resultQuery.CountAsync(); // Get total count before pagination
+        var totalCount = resultQuery.Count();
 
         var paginatedResult = await resultQuery
-            .OrderBy(c => c.Name) // Ensure consistent ordering
+            .OrderBy(c => c.Name)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToArrayAsync();
