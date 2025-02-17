@@ -23,7 +23,6 @@ using Primitives;
 public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityCommand>
 {
     private readonly IFileManagerService _fileManagerService;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly ICharityCommandRepository _charityCommandRepository;
     private readonly ILogger<CreateCharityCommandHandler> _logger;
     private readonly string _uploadDirectory;
@@ -35,7 +34,6 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
         IOptions<FileOptions> uploadDirectory) : base(tokenService, httpContextAccessor)
     {
         _fileManagerService = fileManagerService;
-        _unitOfWork = unitOfWork;
         _charityCommandRepository = charityCommandRepository;
         _logger = logger;
         _uploadDirectory = uploadDirectory.Value.UploadDirectory;
@@ -47,11 +45,11 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
 
         var userDetails = await GetUserDetailsAsync();
 
-        /*if (userDetails == null)
+        if (userDetails == null)
         {
-            _logger.LogError("Failed to retrieve user details for CreatedByUserId: {CreatedByUserId}", command.CreatedByUserId);
+            _logger.LogError("Failed to retrieve user details for CreatedByUserId: {CreatedByUserId}", userDetails?.Id);
             throw new InvalidOperationException("User details could not be found.");
-        }*/
+        }
 
         try
         {
@@ -74,17 +72,17 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
                 Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName));
 
             // Create charity
-            _logger.LogInformation("Creating charity with Name: {CharityName}", command.Name);
+            _logger.LogInformation("Creating charity.");
             var charity = Charity.Create(
                 command.Name,
                 command.Description,
                 command.Website,
-                userDetails.Id, // CreatedByUserId
+                userDetails.Id,
                 command.Address,
-                command.CityId ?? 2, // Use the provided CityId or fallback to 2
+                command.CityId,
                 command.Telephone,
                 command.ManagerName,
-                command.SocialId, // Use the provided SocialId instead of hardcoded 1
+                1,
                 command.ContactName,
                 command.ContactPhone
             );
@@ -99,10 +97,11 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
                 "application/octet-stream"
             );
 
+          
             // Insert charity into repository and commit
             _logger.LogInformation("Inserting charity into repository and committing changes.");
             await _charityCommandRepository.InsertAsync(charity);
-        
+
 
             _logger.LogInformation("Charity successfully created and committed. Charity Id: {CharityId}", charity.Id);
 

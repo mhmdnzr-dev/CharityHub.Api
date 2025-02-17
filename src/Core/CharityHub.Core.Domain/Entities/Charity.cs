@@ -77,6 +77,12 @@ public sealed class Charity : BaseEntity
         Logo = new StoredFile(fileName, filePath, fileType);
         LogoId = Logo.Id;
     }
+
+    public void SetSocial(string name, string abbreviation, string url)
+    {
+        Social = Social.Create(name, abbreviation, url);
+        SocialId = Social.Id;
+    }
     
     public void SetCampaign(Campaign campaign)
     {

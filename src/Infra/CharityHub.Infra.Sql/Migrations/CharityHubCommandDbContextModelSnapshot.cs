@@ -67,6 +67,9 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CampaignStatus")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("ChargedAmount")
                         .HasColumnType("decimal(18,2)");
 
