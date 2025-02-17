@@ -13,16 +13,12 @@ public abstract class CommandHandlerBase<TCommand> : ICommandHandler<TCommand>
     where TCommand : ICommand<int>
 {
     protected readonly ITokenService TokenService;
-    private static IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor; // Non-static field
 
-    protected CommandHandlerBase(ITokenService tokenService)
+    protected CommandHandlerBase(ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
     {
         TokenService = tokenService;
-    }
-
-    public static void ConfigureHttpContextAccessor(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor; // Assign it here
     }
 
     public abstract Task<int> Handle(TCommand request, CancellationToken cancellationToken);

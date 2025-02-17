@@ -7,6 +7,8 @@ using Contract.Primitives.Repositories;
 
 using Infra.Identity.Interfaces;
 
+using Microsoft.AspNetCore.Http;
+
 using Primitives;
 
 public class SeenMessageCommandHandler : CommandHandlerBase<SeenMessageCommand>
@@ -15,11 +17,9 @@ public class SeenMessageCommandHandler : CommandHandlerBase<SeenMessageCommand>
     private readonly IMessageQueryRepository _messageQueryRepository;
 
 
-    public SeenMessageCommandHandler(ITokenService tokenService, IMessageCommandRepository messageCommandRepository,
-        IMessageQueryRepository messageQueryRepository) : base(tokenService)
+    public SeenMessageCommandHandler(ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IMessageCommandRepository messageCommandRepository, IMessageQueryRepository messageQueryRepository) : base(tokenService, httpContextAccessor)
     {
         _messageCommandRepository = messageCommandRepository;
-
         _messageQueryRepository = messageQueryRepository;
     }
 

@@ -55,20 +55,23 @@ public static class HostingExtensions
     }
 
 
-    public static void AddCustomServices(this IServiceCollection services)
+    public static void AddCustomServices(this IServiceCollection services,IConfiguration configuration)
     {
-        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddHttpContextAccessor(); // Correct way to register IHttpContextAccessor
+
         services.AddDotnetOutputCache();
         services.AddVersion();
         services.AddCORSPolicy();
         services.AddControllers();
         services.AddSwagger();
-    
+
         services.AddFileManager();
         services.AddSql();
         services.AddIdentity();
 
-        services.AddContract();
+        services.AddContract(configuration); // Pass IConfiguration here
+
         services.AddApplication();
     }
+
 }

@@ -1,4 +1,4 @@
-﻿namespace CharityHub.Infra.Identity.Models;
+﻿namespace CharityHub.Infra.Identity.Models.Identity.Responses;
 public class SendOtpResponse
 {
     public int NewUserId { get; set; }

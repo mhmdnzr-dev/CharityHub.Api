@@ -9,7 +9,5 @@ public interface IIdentityService
 {
     Task<SendOtpResponse> SendOTPAsync(SendOtpRequest request);
     Task<VerifyOtpResponse> VerifyOTPAndGenerateTokenAsync(VerifyOtpRequest request);
-    Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request);
-    Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request);
     Task<bool> LogoutAsync(LogoutRequest request);
 }

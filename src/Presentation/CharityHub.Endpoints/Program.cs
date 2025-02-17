@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMemoryCache();
 
 // Add Custom Services
-builder.Services.AddCustomServices();
+builder.Services.AddCustomServices(builder.Configuration);
 
 // Register Seeder
 builder.Services.AddSeeder<DatabaseSeeder>();

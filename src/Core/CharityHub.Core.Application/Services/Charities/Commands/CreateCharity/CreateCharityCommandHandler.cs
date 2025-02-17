@@ -29,18 +29,15 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
     private readonly string _uploadDirectory;
 
 
-    public CreateCharityCommandHandler(ITokenService tokenService, IFileManagerService fileManagerService,
-        IUnitOfWork unitOfWork, ICharityCommandRepository charityCommandRepository,
-        ILogger<CreateCharityCommandHandler> logger, IOptions<FileOptions> fileManagerSettings) : base(tokenService)
+    public CreateCharityCommandHandler(ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IFileManagerService fileManagerService, IUnitOfWork unitOfWork, ICharityCommandRepository charityCommandRepository, ILogger<CreateCharityCommandHandler> logger, IOptions<FileOptions> uploadDirectory) : base(tokenService, httpContextAccessor)
     {
         _fileManagerService = fileManagerService;
         _unitOfWork = unitOfWork;
         _charityCommandRepository = charityCommandRepository;
         _logger = logger;
-        _uploadDirectory = fileManagerSettings.Value.UploadDirectory;
+        _uploadDirectory = uploadDirectory.Value.UploadDirectory;
     }
-
-   public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
+    public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
 {
     const string subDirectory = "charities";
 

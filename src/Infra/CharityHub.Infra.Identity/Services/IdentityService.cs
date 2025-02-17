@@ -190,76 +190,9 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-    public async Task<ProfileResponse> GetUserProfileByToken(ProfileRequest request)
-    {
-        // Extract user details from the token using ITokenService.
-        var userWithRoles =
-            await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token, });
 
-        // Map the claims to the ProfileResponse object.
-        var profileResponse = new ProfileResponse
-        {
-            FirstName = userWithRoles.FirstName,
-            LastName = userWithRoles.LastName,
-            PhoneNumber = userWithRoles.PhoneNumber,
-        };
-
-        return profileResponse;
-    }
-
-
-    public async Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request)
-    {
-        try
-        {
-            if (request.Token is null)
-            {
-                _logger.LogError("Invalid token");
-                throw new Exception("Invalid token");
-            }
-
-            // Step 1: Validate the token
-            var user = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token, });
-
-            if (user == null)
-            {
-                _logger.LogError("User not found");
-                throw new Exception("User not found");
-            }
-
-            // Step 4: Fetch the existing user from the database
-            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
-            if (existingUser == null)
-            {
-                _logger.LogError("Existing user not found");
-                throw new Exception("Existing user not found");
-            }
-
-            // Update the user's properties
-            existingUser.FirstName = request.FirstName;
-            existingUser.LastName = request.LastName;
-
-            // Step 5: Update the user and preserve the SecurityStamp
-            var result = await _userManager.UpdateAsync(existingUser);
-
-            if (!result.Succeeded)
-            {
-                _logger.LogError("Error updating user profile: {Errors}",
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
-                throw new Exception($"Error updating user profile: {string.Join(", ", result.Errors)}");
-            }
-
-            // Step 6: Optionally log the update success
-            _logger.LogInformation("User profile updated successfully for user {UserId}", user.Id);
-
-            return new UpdateProfileResponse { Id = user.Id };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while updating the user profile.");
-            throw new Exception($"An error occurred while updating the user profile: {ex.Message}");
-        }
-    }
+   
+    
 
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {

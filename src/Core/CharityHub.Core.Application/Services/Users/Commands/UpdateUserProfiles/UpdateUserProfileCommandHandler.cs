@@ -2,28 +2,55 @@ namespace CharityHub.Core.Application.Services.Users.Commands.UpdateUserProfiles
 
 using Contract.Users.Commands.UpdateUserProfiles;
 
+using Domain.Entities.Identity;
+
 using Infra.Identity.Interfaces;
 using Infra.Identity.Models.Identity.Requests;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 using Primitives;
 
 public class UpdateUserProfileCommandHandler : CommandHandlerBase<UpdateUserProfileCommand>
 {
-    private readonly IIdentityService _identityService;
+ 
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
 
-    public UpdateUserProfileCommandHandler(ITokenService tokenService, IIdentityService identityService) :
-        base(tokenService)
+    public UpdateUserProfileCommandHandler(ITokenService tokenService, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, ILogger<UpdateUserProfileCommandHandler> logger) : base(tokenService, httpContextAccessor)
     {
-        _identityService = identityService;
+        _userManager = userManager;
+        _logger = logger;
     }
-
     public override async Task<int> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
     {
-        var token = GetTokenFromHeader();
-        var result = await _identityService.UpdateProfileAsync(new UpdateProfileRequest
+        var userDetails = await GetUserDetailsAsync();
+
+        var existingUser = await _userManager.FindByIdAsync(userDetails.Id.ToString());
+        if (existingUser == null)
         {
-            Token = token, FirstName = request.FirstName, LastName = request.LastName
-        });
-        return result.Id;
+            _logger.LogError("User not found");
+            throw new Exception("User not found");
+        }
+
+        existingUser.FirstName = request.FirstName;
+        existingUser.LastName = request.LastName;
+
+        var result = await _userManager.UpdateAsync(existingUser);
+
+        if (!result.Succeeded)
+        {
+            _logger.LogError("Error updating user profile: {Errors}",
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw new Exception($"Error updating user profile: {string.Join(", ", result.Errors)}");
+        }
+
+        // Step 6: Optionally log the update success
+        _logger.LogInformation("User profile updated successfully for user {UserId}", existingUser.Id);
+
+
+        return userDetails.Id;
     }
 }

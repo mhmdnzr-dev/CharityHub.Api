@@ -5,6 +5,8 @@ using CharityHub.Core.Contract.Users.Queries.GetRegisterMobileUsers;
 using CharityHub.Infra.Identity.Interfaces;
 using CharityHub.Infra.Identity.Models;
 
+using Infra.Identity.Models.Identity.Requests;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 

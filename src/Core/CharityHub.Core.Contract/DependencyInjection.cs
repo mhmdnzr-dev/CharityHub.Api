@@ -12,21 +12,17 @@ using Primitives.Validations;
 
 public static class DependencyInjection
 {
-    public static void AddContract(this IServiceCollection services)
+    public static void AddContract(this IServiceCollection services, IConfiguration configuration)
     {
-        using var serviceProvider = services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-
-        // Ensure all other dependencies and services
+        // Bind configuration options properly
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
         services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
-        
-        
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        // Register MediatR (scanning for handlers)
+        // Register MediatR handlers correctly
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
 
         // Register all repositories
@@ -44,9 +40,8 @@ public static class DependencyInjection
             .WithScopedLifetime()
         );
 
-
-        
         // Add MediatR pipeline behavior for FluentValidation
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
     }
+
 }

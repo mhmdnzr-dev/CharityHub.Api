@@ -5,6 +5,7 @@ using Contract.Users.Queries.GetRegisterMobileUsers;
 
 using Infra.Identity.Interfaces;
 using Infra.Identity.Models;
+using Infra.Identity.Models.Identity.Requests;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
