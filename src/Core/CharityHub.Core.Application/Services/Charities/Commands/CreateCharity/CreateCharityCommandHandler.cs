@@ -29,7 +29,10 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
     private readonly string _uploadDirectory;
 
 
-    public CreateCharityCommandHandler(ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IFileManagerService fileManagerService, IUnitOfWork unitOfWork, ICharityCommandRepository charityCommandRepository, ILogger<CreateCharityCommandHandler> logger, IOptions<FileOptions> uploadDirectory) : base(tokenService, httpContextAccessor)
+    public CreateCharityCommandHandler(ITokenService tokenService, IHttpContextAccessor httpContextAccessor,
+        IFileManagerService fileManagerService, IUnitOfWork unitOfWork,
+        ICharityCommandRepository charityCommandRepository, ILogger<CreateCharityCommandHandler> logger,
+        IOptions<FileOptions> uploadDirectory) : base(tokenService, httpContextAccessor)
     {
         _fileManagerService = fileManagerService;
         _unitOfWork = unitOfWork;
@@ -37,90 +40,88 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
         _logger = logger;
         _uploadDirectory = uploadDirectory.Value.UploadDirectory;
     }
+
     public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
-{
-    const string subDirectory = "charities";
-
-    var userDetails = await GetUserDetailsAsync();
-
-    /*if (userDetails == null)
     {
-        _logger.LogError("Failed to retrieve user details for CreatedByUserId: {CreatedByUserId}", command.CreatedByUserId);
-        throw new InvalidOperationException("User details could not be found.");
-    }*/
+        const string subDirectory = "charities";
 
-    try
-    {
-        _logger.LogInformation("Handling CreateCharityCommand. Starting file upload for charity logo.");
+        var userDetails = await GetUserDetailsAsync();
 
-        // Ensure that the file is not null or empty
-        if (command.Base64File == null || command.Base64File.Length == 0)
+        /*if (userDetails == null)
         {
-            _logger.LogError("No file provided for charity logo upload.");
-            throw new InvalidOperationException("No file provided for logo upload.");
+            _logger.LogError("Failed to retrieve user details for CreatedByUserId: {CreatedByUserId}", command.CreatedByUserId);
+            throw new InvalidOperationException("User details could not be found.");
+        }*/
+
+        try
+        {
+            _logger.LogInformation("Handling CreateCharityCommand. Starting file upload for charity logo.");
+
+            // Ensure that the file is not null or empty
+            if (command.Base64File == null || command.Base64File.Length == 0)
+            {
+                _logger.LogError("No file provided for charity logo upload.");
+                throw new InvalidOperationException("No file provided for logo upload.");
+            }
+
+            // Upload file
+            var fileServiceResponse = await _fileManagerService.UploadFileAsync(new UpdateFileRequestModel
+            {
+                SubDirectory = subDirectory, Extension = command.FileExtension, FileBytes = command.Base64File
+            });
+
+            _logger.LogInformation("File upload successful. File path: {FilePath}",
+                Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName));
+
+            // Create charity
+            _logger.LogInformation("Creating charity with Name: {CharityName}", command.Name);
+            var charity = Charity.Create(
+                command.Name,
+                command.Description,
+                command.Website,
+                userDetails.Id, // CreatedByUserId
+                command.Address,
+                command.CityId ?? 2, // Use the provided CityId or fallback to 2
+                command.Telephone,
+                command.ManagerName,
+                command.SocialId, // Use the provided SocialId instead of hardcoded 1
+                command.ContactName,
+                command.ContactPhone
+            );
+
+            _logger.LogInformation("Charity created successfully. Charity Id: {CharityId}", charity.Id);
+
+            // Set logo
+            _logger.LogInformation("Setting logo for charity with FileName: {FileName}", fileServiceResponse.FileName);
+            charity.SetLogo(
+                fileServiceResponse.FileName,
+                Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName),
+                "application/octet-stream"
+            );
+
+            // Insert charity into repository and commit
+            _logger.LogInformation("Inserting charity into repository and committing changes.");
+            await _charityCommandRepository.InsertAsync(charity);
+        
+
+            _logger.LogInformation("Charity successfully created and committed. Charity Id: {CharityId}", charity.Id);
+
+            return charity.Id;
         }
-
-        // Upload file
-        var fileServiceResponse = await _fileManagerService.UploadFileAsync(new UpdateFileRequestModel
+        catch (IOException ioEx)
         {
-            SubDirectory = subDirectory, 
-            Extension = command.FileExtension, 
-            FileBytes = command.Base64File
-        });
-
-        _logger.LogInformation("File upload successful. File path: {FilePath}",
-            Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName));
-
-        // Create charity
-        _logger.LogInformation("Creating charity with Name: {CharityName}", command.Name);
-        var charity = Charity.Create(
-            command.Name,
-            command.Description,
-            command.Website,
-            userDetails.Id, // CreatedByUserId
-            command.Address,
-            command.CityId ?? 2, // Use the provided CityId or fallback to 2
-            command.Telephone,
-            command.ManagerName,
-            command.SocialId, // Use the provided SocialId instead of hardcoded 1
-            command.ContactName,
-            command.ContactPhone
-        );
-
-        _logger.LogInformation("Charity created successfully. Charity Id: {CharityId}", charity.Id);
-
-        // Set logo
-        _logger.LogInformation("Setting logo for charity with FileName: {FileName}", fileServiceResponse.FileName);
-        charity.SetLogo(
-            fileServiceResponse.FileName,
-            Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName),
-            "application/octet-stream"
-        );
-
-        // Insert charity into repository and commit
-        _logger.LogInformation("Inserting charity into repository and committing changes.");
-        await _charityCommandRepository.InsertAsync(charity);
-        await _unitOfWork.CommitAsync();
-
-        _logger.LogInformation("Charity successfully created and committed. Charity Id: {CharityId}", charity.Id);
-
-        return charity.Id;
+            _logger.LogError(ioEx, "File upload failed due to I/O error.");
+            throw new InvalidOperationException("File upload failed due to I/O error.", ioEx);
+        }
+        catch (UnauthorizedAccessException uaeEx)
+        {
+            _logger.LogError(uaeEx, "Access denied during file upload or charity creation.");
+            throw new InvalidOperationException("Access denied during file upload or charity creation.", uaeEx);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while creating charity.");
+            throw; // Re-throw the exception after logging
+        }
     }
-    catch (IOException ioEx)
-    {
-        _logger.LogError(ioEx, "File upload failed due to I/O error.");
-        throw new InvalidOperationException("File upload failed due to I/O error.", ioEx);
-    }
-    catch (UnauthorizedAccessException uaeEx)
-    {
-        _logger.LogError(uaeEx, "Access denied during file upload or charity creation.");
-        throw new InvalidOperationException("Access denied during file upload or charity creation.", uaeEx);
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error occurred while creating charity.");
-        throw; // Re-throw the exception after logging
-    }
-}
-
 }

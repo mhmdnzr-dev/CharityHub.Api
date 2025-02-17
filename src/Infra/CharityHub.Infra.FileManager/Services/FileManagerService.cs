@@ -22,55 +22,75 @@ public sealed class FileManagerService : IFileManagerService
         _uploadDirectory = fileSettings.Value.UploadDirectory;
     }
 
-    public async Task<UpdateFileResponseModel> UploadFileAsync(UpdateFileRequestModel requestModel)
+public async Task<UpdateFileResponseModel> UploadFileAsync(UpdateFileRequestModel requestModel)
+{
+    try
     {
-        string uploadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            _uploadDirectory);
-        string subDirectoryPath = Path.Combine(uploadsPath, requestModel.SubDirectory);
+        // Use a platform-friendly upload directory
+        string baseUploadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "uploads");
+
+        // Construct full file path
+        string subDirectoryPath = Path.Combine(baseUploadPath, requestModel.SubDirectory);
         string fileName = GenerateFileName(requestModel.Extension);
         string filePath = Path.Combine(subDirectoryPath, fileName);
 
-        try
-        {
-            // Ensure that the uploads directory exists and has write permissions
-            if (!Directory.Exists(subDirectoryPath))
-            {
-                _logger.LogInformation("Creating directory: {SubDirectoryPath}", subDirectoryPath);
-                Directory.CreateDirectory(subDirectoryPath); // Will throw an exception if it's read-only
-            }
+        // Ensure the directory exists and is writable
+        EnsureDirectoryWritable(subDirectoryPath);
 
-            // Ensure the file system is not in a read-only state before attempting to write
-            if ((new FileInfo(subDirectoryPath).Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-            {
-                _logger.LogError("Directory {SubDirectoryPath} is read-only.", subDirectoryPath);
-                throw new InvalidOperationException("The file system or directory is in a read-only state.");
-            }
+        // Write file to disk
+        await File.WriteAllBytesAsync(filePath, requestModel.FileBytes);
 
-            // Write the file to the server
-            await File.WriteAllBytesAsync(filePath, requestModel.FileBytes);
+        _logger.LogInformation("File {FileName} uploaded successfully to {FilePath}", fileName, filePath);
 
-            _logger.LogInformation("File {FileName} uploaded successfully to {FilePath}", fileName, filePath);
-
-            var result = new UpdateFileResponseModel { FileName = fileName, FilePath = filePath };
-
-            return result;
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logger.LogError(ex, "Access denied while uploading file.");
-            throw new InvalidOperationException("Access denied while uploading file.", ex);
-        }
-        catch (IOException ex)
-        {
-            _logger.LogError(ex, "I/O error while uploading file.");
-            throw new InvalidOperationException("I/O error while uploading file.", ex);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error while uploading file.");
-            throw new InvalidOperationException("Unexpected error while uploading file.", ex);
-        }
+        return new UpdateFileResponseModel { FileName = fileName, FilePath = filePath };
     }
+    catch (UnauthorizedAccessException ex)
+    {
+        _logger.LogError(ex, "Access denied while uploading file.");
+        throw new InvalidOperationException("Access denied while uploading file.", ex);
+    }
+    catch (IOException ex)
+    {
+        _logger.LogError(ex, "I/O error while uploading file.");
+        throw new InvalidOperationException("I/O error while uploading file.", ex);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Unexpected error while uploading file.");
+        throw new InvalidOperationException("Unexpected error while uploading file.", ex);
+    }
+}
+
+/// <summary>
+/// Ensures the given directory exists and is writable.
+/// </summary>
+private void EnsureDirectoryWritable(string directoryPath)
+{
+    if (!Directory.Exists(directoryPath))
+    {
+        _logger.LogInformation("Creating directory: {DirectoryPath}", directoryPath);
+        Directory.CreateDirectory(directoryPath);
+    }
+
+    try
+    {
+        // Test if the directory is writable
+        string testFile = Path.Combine(directoryPath, "testfile.tmp");
+        File.WriteAllText(testFile, "test");
+        File.Delete(testFile);
+    }
+    catch (UnauthorizedAccessException)
+    {
+        _logger.LogError("Directory {DirectoryPath} is not writable. Check permissions.", directoryPath);
+        throw new InvalidOperationException($"The directory {directoryPath} is not writable. Check permissions.");
+    }
+    catch (IOException)
+    {
+        _logger.LogError("Directory {DirectoryPath} is in a read-only file system.", directoryPath);
+        throw new InvalidOperationException($"The directory {directoryPath} is in a read-only file system.");
+    }
+}
+
 
 
     private string GenerateFileName(string extension)
