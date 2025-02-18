@@ -122,4 +122,13 @@ public static class DependencyInjection
     {
         return builder.UseMiddleware<BaseResponseMiddleware>();
     }
+    
+    public static IApplicationBuilder UseStaticFileResponseMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<StaticFileMiddleware>();
+    }
+
+
+
+    
 }

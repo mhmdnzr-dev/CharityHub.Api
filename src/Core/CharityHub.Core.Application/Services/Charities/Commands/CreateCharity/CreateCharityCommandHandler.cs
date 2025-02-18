@@ -41,8 +41,6 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
 
     public override async Task<int> Handle(CreateCharityCommand command, CancellationToken cancellationToken)
     {
-        const string subDirectory = "charities";
-
         var userDetails = await GetUserDetailsAsync();
 
         if (userDetails == null)
@@ -65,11 +63,11 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
             // Upload file
             var fileServiceResponse = await _fileManagerService.UploadFileAsync(new UpdateFileRequestModel
             {
-                SubDirectory = subDirectory, Extension = command.FileExtension, FileBytes = command.Base64File
+                Extension = command.FileExtension, FileBytes = command.Base64File
             });
 
             _logger.LogInformation("File upload successful. File path: {FilePath}",
-                Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName));
+                Path.Combine(_uploadDirectory, fileServiceResponse.FileName));
 
             // Create charity
             _logger.LogInformation("Creating charity.");
@@ -93,11 +91,11 @@ public class CreateCharityCommandHandler : CommandHandlerBase<CreateCharityComma
             _logger.LogInformation("Setting logo for charity with FileName: {FileName}", fileServiceResponse.FileName);
             charity.SetLogo(
                 fileServiceResponse.FileName,
-                Path.Combine(_uploadDirectory, subDirectory, fileServiceResponse.FileName),
+                Path.Combine(_uploadDirectory, fileServiceResponse.FileName),
                 "application/octet-stream"
             );
 
-          
+
             // Insert charity into repository and commit
             _logger.LogInformation("Inserting charity into repository and committing changes.");
             await _charityCommandRepository.InsertAsync(charity);

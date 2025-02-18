@@ -33,7 +33,7 @@ public class FileController : BaseController
 
         var result = await _fileManagerService.UploadFileAsync(new UpdateFileRequestModel
         {
-            Extension = "png", FileBytes = fileBytes, SubDirectory = "Charities"
+            Extension = "png", FileBytes = fileBytes,
         });
         return Ok(result.IsSuccess);
     }

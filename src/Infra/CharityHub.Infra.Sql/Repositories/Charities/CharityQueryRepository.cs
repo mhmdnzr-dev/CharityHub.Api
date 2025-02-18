@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 using Core.Contract.Configuration.Models;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 using Primitives;
@@ -20,11 +21,19 @@ using Primitives;
 public class CharityQueryRepository(
     CharityHubQueryDbContext queryDbContext,
     ILogger<CharityQueryRepository> logger,
-    IOptions<FileOptions> options)
+    IOptions<FileOptions> options,
+    IHttpContextAccessor httpContextAccessor) // Inject HTTP Context
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
     {
+        #region Base URL Detection
+
+        string baseUrl =
+            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
+
+        #endregion
+
         #region Query Data
 
         var charities = _queryDbContext.Charities
@@ -53,14 +62,15 @@ public class CharityQueryRepository(
                 Name = charityGroup.Key.Name,
                 CampaignCount = charityGroup.Count(c => c.campaign != null),
                 PhotoUriAddress = charityGroup.Key.FilePath != null
-                    ? $"{options.Value.UploadDirectory}/{charityGroup.Key.FilePath.Replace("\\", "/")}" // Convert backslashes to forward slashes
-                    : $"{options.Value.UploadDirectory}/default-image.png"
+                    ? $"{baseUrl}{charityGroup.Key.FilePath.Replace("\\", "/")}" // Ensure correct URL
+                    : $"{baseUrl}/uploads/default-image.png"
             };
 
         #endregion
 
         #region Pagination
 
+  
         var totalCount = resultQuery.Count();
 
         var paginatedResult = await resultQuery
