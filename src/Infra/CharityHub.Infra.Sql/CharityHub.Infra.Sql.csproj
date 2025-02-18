@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="EFCore.BulkExtensions" Version="8.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.1" />
 
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
@@ -29,12 +30,4 @@
 	  <ProjectReference Include="..\..\Core\CharityHub.Core.Contract\CharityHub.Core.Contract.csproj" />
 	  <ProjectReference Include="..\..\Core\CharityHub.Core.Domain\CharityHub.Core.Domain.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-	    <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\9.0.2\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
-	
-
 </Project>
