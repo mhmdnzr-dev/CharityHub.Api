@@ -57,6 +57,13 @@ COPY --from=publish /app/publish .
 # Ensure configuration files are copied
 COPY --from=build /src/src/Presentation/CharityHub.Endpoints/appsettings.json /app/
 COPY --from=build /src/src/Presentation/CharityHub.Endpoints/appsettings.Development.json /app/
+COPY --from=build /src/src/Presentation/CharityHub.Endpoints/appsettings.Production.json /app/
+
+# ✅ Copy `uploads` directly from the local machine
+COPY src/Presentation/CharityHub.Endpoints/uploads /app/uploads
+
+# ✅ Ensure the folder exists (fixes "File Not Found" issues)
+RUN mkdir -p /app/uploads
 
 # Copy the test folder and project into the final image
 COPY --from=build /src/test/CharityHub.Tests /test
