@@ -33,7 +33,7 @@ await app.Services.SeedAsync<CharityHubCommandDbContext>();
 
 var isDevMode = app.Environment.IsDevelopment();
 
-if (isDevMode)
+if (false)
 {
     app.UseSwagger();
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
