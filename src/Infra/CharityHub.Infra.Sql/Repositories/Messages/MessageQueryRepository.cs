@@ -26,6 +26,7 @@ public class MessageQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
                     Id = message.Id, 
                     IsSeen = message.IsSeen,
                     SeenDate = message.SeenDateTime,
+                    Title=message.Content,
                     Content = message.Content,
                 })
             .ToArrayAsync();
