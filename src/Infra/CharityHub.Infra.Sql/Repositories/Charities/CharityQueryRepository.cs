@@ -54,7 +54,7 @@ public class CharityQueryRepository(
                 Id = charityGroup.Key.Id,
                 Name = charityGroup.Key.Name,
                 CampaignCount = charityGroup.Count(c => c.campaign != null),
-                PhotoUriAddress = charityGroup.Key.FilePath != null
+                LogoUriAddress = charityGroup.Key.FilePath != null
                     ? $"{charityGroup.Key.FilePath.Replace("\\", "/")}" // Ensure correct URL
                     : $"/uploads/default-charity.png"
             };
@@ -116,7 +116,7 @@ public class CharityQueryRepository(
         {
             Name = query.Charity.Name,
             Description = query.Charity.Description,
-            PhotoUriAddress = !string.IsNullOrEmpty(query.LogoFilePath)
+            LogoUriAddress = !string.IsNullOrEmpty(query.LogoFilePath)
                 ? $"{query.LogoFilePath.Replace("\\", "/")}"
                 : $"/uploads/default-charity.png",
             BannerUriAddress = !string.IsNullOrEmpty(query.BannerFilePath)

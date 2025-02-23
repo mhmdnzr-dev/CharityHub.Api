@@ -1,8 +1,8 @@
 namespace CharityHub.Infra.Sql.Repositories.Campaigns;
 
 using CharityHub.Core.Contract.Primitives.Models;
-using CharityHub.Core.Domain.Entities;
-using CharityHub.Infra.Sql.Data.DbContexts;
+using Core.Domain.Entities;
+using Data.DbContexts;
 
 using Core.Contract.Campaigns.Queries;
 using Core.Contract.Campaigns.Queries.GetAllCampaigns;
@@ -35,11 +35,19 @@ public class CampaignQueryRepository(
         #region Fetch Paginated Campaigns with Logo & Banner
 
         var campaignsQuery = from campaign in _queryDbContext.Campaigns
-            where campaign.CharityId == query.Id
+            where campaign.CharityId == query.Id && campaign.IsActive
             orderby campaign.StartDate
+
             join bannerFile in _queryDbContext.StoredFiles
                 on campaign.BannerId equals bannerFile.Id into bannerFileGroup
             from bannerFile in bannerFileGroup.DefaultIfEmpty()
+
+            join charity in _queryDbContext.Charities
+                on campaign.CharityId equals charity.Id
+
+            join logoFile in _queryDbContext.StoredFiles
+                on charity.LogoId equals logoFile.Id into logoFileGroup
+            from logoFile in logoFileGroup.DefaultIfEmpty()
             select new CampaignsByCharityIdResponseDto
             {
                 Id = campaign.Id,
@@ -47,17 +55,17 @@ public class CampaignQueryRepository(
                 Description = campaign.Description,
                 TotalAmount = campaign.TotalAmount,
                 ChargedAmount = campaign.ChargedAmount,
-                CharityName = campaign.Charity.Name,
+                CharityName = charity.Name,
                 ChargedAmountProgressPercentage = (campaign.TotalAmount > 0)
                     ? (campaign.ChargedAmount / campaign.TotalAmount * 100)
                     : 0,
                 CampaignStatus = campaign.CampaignStatus,
-
-
-                // Campaign Banner
                 BannerUriAddress = bannerFile != null
                     ? $"{bannerFile.FilePath.Replace("\\", "/")}"
-                    : $"/uploads/default-campaign.png"
+                    : $"/uploads/default-campaign.png",
+                CharityLogoUriAddress = logoFile != null
+                    ? $"{logoFile.FilePath.Replace("\\", "/")}"
+                    : $"/uploads/default-charity.png"
             };
 
         var campaigns = await campaignsQuery
@@ -74,16 +82,17 @@ public class CampaignQueryRepository(
     public async Task<PagedData<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query)
     {
         var totalCount = await _queryDbContext.Campaigns.CountAsync();
-        
-        
+
         var campaignsQuery = from campaign in _queryDbContext.Campaigns
                 .Include(c => c.Charity)
-            where campaign.EndDate >= DateTime.UtcNow // Optional: Filter active campaigns
+            where campaign.EndDate >= DateTime.UtcNow
             orderby campaign.StartDate
             join bannerFile in _queryDbContext.StoredFiles
                 on campaign.BannerId equals bannerFile.Id into bannerFileGroup
             from bannerFile in bannerFileGroup.DefaultIfEmpty()
-            
+            join logoFile in _queryDbContext.StoredFiles
+                on campaign.Charity.LogoId equals logoFile.Id into logoFileGroup
+            from logoFile in logoFileGroup.DefaultIfEmpty()
             select new AllCampaignResponseDto
             {
                 Id = campaign.Id,
@@ -96,11 +105,12 @@ public class CampaignQueryRepository(
                     ? (campaign.ChargedAmount / campaign.TotalAmount) * 100
                     : 0,
                 CampaignStatus = campaign.CampaignStatus,
-
-                
                 BannerUriAddress = bannerFile != null
-                    ? $"{bannerFile.FilePath.Replace("\\", "/")}"
-                    : $"/uploads/default-campaign.png"
+                    ? bannerFile.FilePath.Replace("\\", "/")
+                    : "/uploads/default-campaign.png",
+                CharityLogoUriAddress = logoFile != null
+                    ? logoFile.FilePath.Replace("\\", "/")
+                    : "/uploads/default-charity.png"
             };
 
         var campaigns = await campaignsQuery
@@ -112,29 +122,27 @@ public class CampaignQueryRepository(
     }
 
 
-
     public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
     {
-        // Fetch campaign details including the related charity
         var campaign = await _queryDbContext.Campaigns
                            .Include(c => c.Charity)
                            .FirstOrDefaultAsync(c => c.Id == query.Id)
                        ?? throw new KeyNotFoundException($"Campaign with ID {query.Id} not found.");
 
-        // Fetch the number of unique contributors
         var contributorCount = await _queryDbContext.Transactions
             .Where(t => t.CampaignId == campaign.Id)
             .Select(t => t.UserId)
             .Distinct()
             .CountAsync();
 
-        // Fetch the banner image if available
         var bannerFile = await _queryDbContext.StoredFiles
             .Where(f => f.Id == campaign.BannerId)
             .FirstOrDefaultAsync();
 
-     
-        // Map to the DTO
+        var charityLogoFile = await _queryDbContext.StoredFiles
+            .Where(f => f.Id == campaign.Charity.LogoId)
+            .FirstOrDefaultAsync();
+
         var campaignDto = new CampaignByIdResponseDto
         {
             Id = campaign.Id,
@@ -144,31 +152,31 @@ public class CampaignQueryRepository(
             RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
             StartDateTime = campaign.StartDate,
             EndDateTime = campaign.EndDate,
-            ChargedAmountProgressPercentage = (campaign.TotalAmount > 0) 
-                ? (campaign.ChargedAmount / campaign.TotalAmount * 100) 
-                : 0, // Safe division
+            ChargedAmountProgressPercentage = (campaign.TotalAmount > 0)
+                ? (campaign.ChargedAmount / campaign.TotalAmount * 100)
+                : 0,
             ChargedAmount = campaign.ChargedAmount,
             TotalAmount = campaign.TotalAmount,
             CharityName = campaign.Charity.Name,
             CharityId = campaign.CharityId,
             CampaignStatus = campaign.CampaignStatus,
-
-            // Campaign Banner
-            BannerUriAddress = bannerFile != null 
-                ? $"{bannerFile.FilePath.Replace("\\", "/")}" 
-                : $"/uploads/default-campaign.png"
+            BannerUriAddress = bannerFile != null
+                ? bannerFile.FilePath.Replace("\\", "/")
+                : "/uploads/default-campaign.png",
+            CharityLogoUriAddress = charityLogoFile != null
+                ? charityLogoFile.FilePath.Replace("\\", "/")
+                : "/uploads/default-charity.png"
         };
 
         return campaignDto;
     }
 
 
-
     private static int CalculateRemainingDays(DateTime endDate)
     {
-        var now = DateTime.UtcNow; // Use provided date or default to UTC now
+        var now = DateTime.UtcNow;
         var remainingDays = (endDate - now).TotalDays;
 
-        return remainingDays > 0 ? (int)Math.Ceiling(remainingDays) : 0; // Ensure no negative values
+        return remainingDays > 0 ? (int)Math.Ceiling(remainingDays) : 0;
     }
 }
