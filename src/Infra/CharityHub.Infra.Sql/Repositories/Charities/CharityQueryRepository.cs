@@ -22,7 +22,7 @@ public class CharityQueryRepository(
     CharityHubQueryDbContext queryDbContext,
     ILogger<CharityQueryRepository> logger,
     IOptions<FileOptions> options,
-    IHttpContextAccessor httpContextAccessor) // Inject HTTP Context
+    IHttpContextAccessor httpContextAccessor) 
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)

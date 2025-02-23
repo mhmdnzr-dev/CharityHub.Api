@@ -12,4 +12,5 @@ public class AllCampaignResponseDto
     public decimal? TotalAmount { get; set; }
     public decimal? ProgressPercentage { get; set; }
     public CampaignStatus CampaignStatus { get; set; }
+    public string BannerUriAddress { get; set; }
 }

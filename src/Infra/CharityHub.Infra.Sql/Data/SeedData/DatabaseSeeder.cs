@@ -186,7 +186,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(6),
                     totalAmount: 50000m,
-                    photoId: 4,
                     cityId: 110,
                     charityId: 1
                 ),
@@ -196,7 +195,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(3),
                     totalAmount: 20000m,
-                    photoId: 5,
                     cityId: 100,
                     charityId: 2
                 ),
@@ -206,7 +204,6 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
                     startDate: DateTime.UtcNow,
                     endDate: DateTime.UtcNow.AddMonths(12),
                     totalAmount: 75000m,
-                    photoId: 8,
                     cityId: 120,
                     charityId: 1
                 ),

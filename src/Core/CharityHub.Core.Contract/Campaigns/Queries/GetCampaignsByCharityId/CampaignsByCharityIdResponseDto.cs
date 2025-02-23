@@ -12,4 +12,5 @@ public class CampaignsByCharityIdResponseDto
     public decimal? ChargedAmountProgressPercentage { get; set; }
     public string CharityName { get; set; }
     public CampaignStatus CampaignStatus { get; set; }
+    public string BannerUriAddress { get; set; }
 }

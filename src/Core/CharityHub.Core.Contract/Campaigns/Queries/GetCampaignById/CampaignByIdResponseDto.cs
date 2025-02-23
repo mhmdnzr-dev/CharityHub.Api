@@ -17,4 +17,5 @@ public class CampaignByIdResponseDto
     public string CharityName { get; set; }
     public int CharityId { get; set; }
     public CampaignStatus CampaignStatus { get; set; }
+    public string BannerUriAddress { get; set; }
 }

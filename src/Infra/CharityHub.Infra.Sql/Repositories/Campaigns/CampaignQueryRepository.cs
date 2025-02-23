@@ -9,27 +9,45 @@ using Core.Contract.Campaigns.Queries.GetAllCampaigns;
 using Core.Contract.Campaigns.Queries.GetCampaignById;
 using Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using Primitives;
 
-public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, ILogger<CampaignQueryRepository> logger)
+public class CampaignQueryRepository(
+    CharityHubQueryDbContext queryDbContext,
+    ILogger<CampaignQueryRepository> logger,
+    IHttpContextAccessor httpContextAccessor)
     : QueryRepository<Campaign>(queryDbContext), ICampaignQueryRepository
 {
     public async Task<PagedData<CampaignsByCharityIdResponseDto>> GetCampaignsByCharityId(
         GetCampaignsByCharityIdQuery query)
     {
+        #region Base URL Detection
+
+        string baseUrl =
+            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
+
+        #endregion
+
+        #region Fetch Total Count
+
         var totalCount = await _queryDbContext.Campaigns
             .Where(c => c.CharityId == query.Id)
             .CountAsync();
 
-        var campaigns = await _queryDbContext.Campaigns
-            .Where(c => c.CharityId == query.Id)
-            .OrderBy(c => c.StartDate)
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .Select(campaign => new CampaignsByCharityIdResponseDto
+        #endregion
+
+        #region Fetch Paginated Campaigns with Logo & Banner
+
+        var campaignsQuery = from campaign in _queryDbContext.Campaigns
+            where campaign.CharityId == query.Id
+            orderby campaign.StartDate
+            join bannerFile in _queryDbContext.StoredFiles
+                on campaign.BannerId equals bannerFile.Id into bannerFileGroup
+            from bannerFile in bannerFileGroup.DefaultIfEmpty()
+            select new CampaignsByCharityIdResponseDto
             {
                 Id = campaign.Id,
                 Title = campaign.Title,
@@ -37,25 +55,49 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
                 TotalAmount = campaign.TotalAmount,
                 ChargedAmount = campaign.ChargedAmount,
                 CharityName = campaign.Charity.Name,
-                ChargedAmountProgressPercentage = (campaign.ChargedAmount / campaign.TotalAmount * 100),
+                ChargedAmountProgressPercentage = (campaign.TotalAmount > 0)
+                    ? (campaign.ChargedAmount / campaign.TotalAmount * 100)
+                    : 0,
                 CampaignStatus = campaign.CampaignStatus,
-            })
+
+
+                // Campaign Banner
+                BannerUriAddress = bannerFile != null
+                    ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}"
+                    : $"{baseUrl}/uploads/default-campaign.png"
+            };
+
+        var campaigns = await campaignsQuery
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToArrayAsync();
+
+        #endregion
 
         return new PagedData<CampaignsByCharityIdResponseDto>(campaigns, totalCount, query.PageSize, query.Page);
     }
+
 
     public async Task<PagedData<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query)
     {
         var totalCount = await _queryDbContext.Campaigns.CountAsync();
 
+        #region Base URL Detection
 
-        var campaigns = await _queryDbContext.Campaigns
-            .Include(c => c.Charity)
-            .OrderBy(c => c.StartDate) // Ensure ordering for consistent pagination
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .Select(campaign => new AllCampaignResponseDto
+        string baseUrl =
+            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
+
+        #endregion
+        
+        var campaignsQuery = from campaign in _queryDbContext.Campaigns
+                .Include(c => c.Charity)
+            where campaign.EndDate >= DateTime.UtcNow // Optional: Filter active campaigns
+            orderby campaign.StartDate
+            join bannerFile in _queryDbContext.StoredFiles
+                on campaign.BannerId equals bannerFile.Id into bannerFileGroup
+            from bannerFile in bannerFileGroup.DefaultIfEmpty()
+            
+            select new AllCampaignResponseDto
             {
                 Id = campaign.Id,
                 Title = campaign.Title,
@@ -63,28 +105,50 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
                 RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
                 ContributionAmount = campaign.ChargedAmount,
                 TotalAmount = campaign.TotalAmount,
-                ProgressPercentage = (campaign.ChargedAmount / campaign.TotalAmount) * 100,
-                CampaignStatus = campaign.CampaignStatus
-            })
+                ProgressPercentage = campaign.TotalAmount > 0
+                    ? (campaign.ChargedAmount / campaign.TotalAmount) * 100
+                    : 0,
+                CampaignStatus = campaign.CampaignStatus,
+
+                
+                BannerUriAddress = bannerFile != null
+                    ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}"
+                    : $"{baseUrl}/uploads/default-campaign.png"
+            };
+
+        var campaigns = await campaignsQuery
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToArrayAsync();
 
         return new PagedData<AllCampaignResponseDto>(campaigns, totalCount, query.PageSize, query.Page);
     }
 
 
+
     public async Task<CampaignByIdResponseDto> GetDetailedById(GetCampaignByIdQuery query)
     {
+        // Fetch campaign details including the related charity
         var campaign = await _queryDbContext.Campaigns
                            .Include(c => c.Charity)
                            .FirstOrDefaultAsync(c => c.Id == query.Id)
                        ?? throw new KeyNotFoundException($"Campaign with ID {query.Id} not found.");
 
+        // Fetch the number of unique contributors
         var contributorCount = await _queryDbContext.Transactions
             .Where(t => t.CampaignId == campaign.Id)
-            .Select(t => t.UserId) // Select only UserIds
-            .Distinct() // Get unique contributors
-            .CountAsync(); // Count them
+            .Select(t => t.UserId)
+            .Distinct()
+            .CountAsync();
 
+        // Fetch the banner image if available
+        var bannerFile = await _queryDbContext.StoredFiles
+            .Where(f => f.Id == campaign.BannerId)
+            .FirstOrDefaultAsync();
+
+        var baseUrl = $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
+
+        // Map to the DTO
         var campaignDto = new CampaignByIdResponseDto
         {
             Id = campaign.Id,
@@ -94,16 +158,24 @@ public class CampaignQueryRepository(CharityHubQueryDbContext queryDbContext, IL
             RemainingDayCount = CalculateRemainingDays(campaign.EndDate),
             StartDateTime = campaign.StartDate,
             EndDateTime = campaign.EndDate,
-            ChargedAmountProgressPercentage = campaign.ChargedAmount / campaign.TotalAmount * 100,
+            ChargedAmountProgressPercentage = (campaign.TotalAmount > 0) 
+                ? (campaign.ChargedAmount / campaign.TotalAmount * 100) 
+                : 0, // Safe division
             ChargedAmount = campaign.ChargedAmount,
             TotalAmount = campaign.TotalAmount,
             CharityName = campaign.Charity.Name,
             CharityId = campaign.CharityId,
-            CampaignStatus = campaign.CampaignStatus
+            CampaignStatus = campaign.CampaignStatus,
+
+            // Campaign Banner
+            BannerUriAddress = bannerFile != null 
+                ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}" 
+                : $"{baseUrl}/uploads/default-campaign.png"
         };
 
         return campaignDto;
     }
+
 
 
     private static int CalculateRemainingDays(DateTime endDate)

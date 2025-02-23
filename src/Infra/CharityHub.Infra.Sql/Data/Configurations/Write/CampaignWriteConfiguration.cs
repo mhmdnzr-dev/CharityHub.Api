@@ -32,9 +32,6 @@ internal sealed class CampaignWriteConfiguration : BaseEntityConfiguration<Campa
             .HasColumnType("decimal(18,2)")
             .IsRequired(false);
 
-        entity.Property(c => c.PhotoId)
-            .IsFixedLength()
-            .IsRequired();
 
 
 
@@ -46,5 +43,10 @@ internal sealed class CampaignWriteConfiguration : BaseEntityConfiguration<Campa
         entity.HasMany(c => c.Donations)
             .WithOne(d => d.Campaign)
             .HasForeignKey(d => d.CampaignId);
+        
+        entity.HasOne(c => c.Banner)
+            .WithMany()
+            .HasForeignKey(c => c.BannerId)
+            .OnDelete(DeleteBehavior.NoAction);     
     }
 }

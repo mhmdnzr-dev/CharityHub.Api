@@ -67,6 +67,9 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BannerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CampaignStatus")
                         .HasColumnType("int");
 
@@ -95,10 +98,6 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("smalldatetime");
 
-                    b.Property<int>("PhotoId")
-                        .HasColumnType("int")
-                        .IsFixedLength();
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -111,6 +110,8 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BannerId");
 
                     b.HasIndex("CharityId");
 
@@ -743,11 +744,18 @@ namespace CharityHub.Infra.Sql.Migrations
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Campaign", b =>
                 {
+                    b.HasOne("CharityHub.Core.Domain.Entities.StoredFile", "Banner")
+                        .WithMany()
+                        .HasForeignKey("BannerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("CharityHub.Core.Domain.Entities.Charity", "Charity")
                         .WithMany("Campaigns")
                         .HasForeignKey("CharityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Banner");
 
                     b.Navigation("Charity");
                 });

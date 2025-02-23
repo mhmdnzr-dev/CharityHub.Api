@@ -12,7 +12,9 @@ public sealed class Campaign : BaseEntity
     public DateTime EndDate { get; private set; }
     public decimal? TotalAmount { get; private set; }
     public decimal? ChargedAmount { get; private set; }
-    public int PhotoId { get; private set; }
+    public int? BannerId { get; private set; }
+    public StoredFile? Banner { get; private set; }
+
     public int CityId { get; private set; }
     public int CharityId { get; private set; }
     public Charity Charity { get; private set; }
@@ -37,7 +39,6 @@ public sealed class Campaign : BaseEntity
         DateTime startDate,
         DateTime endDate,
         decimal? totalAmount,
-        int photoId,
         int cityId,
         int charityId)
     {
@@ -48,38 +49,35 @@ public sealed class Campaign : BaseEntity
             StartDate = startDate,
             EndDate = endDate,
             TotalAmount = totalAmount,
-            ChargedAmount = 0, // Default initial charged amount
-            PhotoId = photoId,
+            ChargedAmount = 0,
             CityId = cityId,
             CharityId = charityId,
             CampaignStatus = CampaignStatus.Pending
         };
     }
 
-    // Start the campaign (set StartDate and adjust state as needed)
+
     public void StartCampaign(DateTime startDate)
     {
         StartDate = startDate;
         CampaignStatus = CampaignStatus.Processing;
     }
 
-    // End the campaign (set EndDate and adjust state as needed)
-    public void EndCampaign(DateTime endDate)
+
+    private void EndCampaign(DateTime endDate)
     {
         EndDate = endDate;
         CampaignStatus = ChargedAmount >= TotalAmount ? CampaignStatus.Succeeded : CampaignStatus.Failed;
     }
 
-    // Add a donation to the campaign
+
     public void AddDonation(Donation donation)
     {
         _donations.Add(donation);
-
-        // Optionally, you could update the ChargedAmount here (e.g., adding the donation amount)
         ChargedAmount = ChargedAmount.GetValueOrDefault() + donation.Amount;
     }
 
-    // Adjust the total campaign goal amount
+
     public void AdjustTotalAmount(decimal newTotalAmount)
     {
         if (ChargedAmount > newTotalAmount)
@@ -90,7 +88,7 @@ public sealed class Campaign : BaseEntity
         TotalAmount = newTotalAmount;
     }
 
-    // Mark campaign as complete (i.e., fully funded)
+
     public void MarkAsComplete()
     {
         if (ChargedAmount >= TotalAmount)
@@ -104,7 +102,7 @@ public sealed class Campaign : BaseEntity
         }
     }
 
-    // Optionally, remove a donation
+
     public void RemoveDonation(Donation donation)
     {
         if (!_donations.Remove(donation))
@@ -112,6 +110,12 @@ public sealed class Campaign : BaseEntity
             throw new InvalidOperationException("The donation was not found for this campaign.");
         }
 
-        ChargedAmount -= donation.Amount; // Decrease the charged amount when a donation is removed.
+        ChargedAmount -= donation.Amount;
+    }
+
+    public void SetLogo(string fileName, string filePath, string fileType)
+    {
+        Banner = new StoredFile(fileName, filePath, fileType);
+        BannerId = Banner.Id;
     }
 }
