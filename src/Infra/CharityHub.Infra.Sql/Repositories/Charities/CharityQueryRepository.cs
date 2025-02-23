@@ -121,7 +121,7 @@ public class CharityQueryRepository(
                 : $"/uploads/default-charity.png",
             BannerUriAddress = !string.IsNullOrEmpty(query.BannerFilePath)
                 ? $"{query.BannerFilePath.Replace("\\", "/")}"
-                : $"/uploads/default-banner.png",
+                : $"/uploads/default-banner.jpg",
             Socials = socials
         };
 
