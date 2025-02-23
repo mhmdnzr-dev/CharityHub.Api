@@ -18,9 +18,9 @@ namespace CharityHub.Infra.Identity;
 
 public static class DependencyInjection
 {
-    public static void AddIdentity(this IServiceCollection services)
+    public static void AddIdentity(this IServiceCollection services,IConfiguration configuration)
     {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+ 
 
         // Register Identity services
         services.AddIdentity<ApplicationUser, ApplicationRole>()

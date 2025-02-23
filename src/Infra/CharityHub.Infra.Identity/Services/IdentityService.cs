@@ -193,17 +193,16 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {
-        var userDetails = _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token });
+        var userDetails = await _tokenService.GetUserByTokenAsync(new GetUserByTokenRequest { Token = request.Token });
+
         if (userDetails is null)
         {
             _logger.LogWarning("Logout failed: Invalid or expired token.");
             throw new Exception("Invalid or expired token.");
         }
 
-
-        var userTokens = _commandDbContext.UserTokens.Where(t => t.UserId == userDetails.Id);
-        _commandDbContext.UserTokens.RemoveRange(userTokens);
-
+        var userTokens = _commandDbContext.ApplicationUserTokens.Where(t => t.UserId == userDetails.Id);
+        _commandDbContext.ApplicationUserTokens.RemoveRange(userTokens);
 
         await _commandDbContext.SaveChangesAsync();
 

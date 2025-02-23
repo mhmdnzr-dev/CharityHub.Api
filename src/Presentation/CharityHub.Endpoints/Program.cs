@@ -83,6 +83,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseStaticFileResponseMiddleware();
 
 app.UseAuthorization();
+app.TokenValidationMiddleware();
 app.UsePagedDataResponseMiddleware();
 app.UseBaseResponseMiddleware();
 app.UseExceptionResponseMiddleware();

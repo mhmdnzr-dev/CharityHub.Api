@@ -51,24 +51,21 @@ public static class DependencyInjection
             options.DocInclusionPredicate((version, desc) => desc.GroupName == version);
 
             // Define the Bearer authentication scheme in Swagger
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Please enter JWT with Bearer into field"
-            });
-
-
+            options.AddSecurityDefinition("Bearer",
+                new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Please enter JWT with Bearer into field"
+                });
 
 
             options.OperationFilter<AuthorizeCheckOperationFilter>();
-
         });
     }
-
 
 
     public static void AddVersion(this IServiceCollection services)
@@ -88,10 +85,8 @@ public static class DependencyInjection
         });
     }
 
-    public static void AddCORSPolicy(this IServiceCollection services)
+    public static void AddCORSPolicy(this IServiceCollection services, IConfiguration configuration)
     {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
-
         var allowedDomains = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
         // Add CORS policy
@@ -122,13 +117,15 @@ public static class DependencyInjection
     {
         return builder.UseMiddleware<BaseResponseMiddleware>();
     }
-    
+
     public static IApplicationBuilder UseStaticFileResponseMiddleware(this IApplicationBuilder builder)
     {
         return builder.UseMiddleware<StaticFileMiddleware>();
     }
 
 
-
-    
+    public static IApplicationBuilder TokenValidationMiddleware(this IApplicationBuilder builder)
+    {
+        return builder.UseMiddleware<TokenValidationMiddleware>();
+    }
 }

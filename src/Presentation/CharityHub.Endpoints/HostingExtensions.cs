@@ -15,23 +15,18 @@ using Infra.FileManager;
 
 public static class HostingExtensions
 {
-    public static void AddCustomServices(this IServiceCollection services,IConfiguration configuration)
+    public static void AddCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpContextAccessor(); // Correct way to register IHttpContextAccessor
-
+        services.AddHttpContextAccessor();
         services.AddDotnetOutputCache();
         services.AddVersion();
-        services.AddCORSPolicy();
+        services.AddCORSPolicy(configuration);
         services.AddControllers();
         services.AddSwagger();
-
         services.AddFileManager();
-        services.AddSql();
-        services.AddIdentity();
-
-        services.AddContract(configuration); // Pass IConfiguration here
-
+        services.AddSql(configuration);
+        services.AddIdentity(configuration);
+        services.AddContract(configuration);
         services.AddApplication();
     }
-
 }

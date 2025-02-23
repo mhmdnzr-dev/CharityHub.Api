@@ -12,4 +12,7 @@ public interface ITokenService
 {
     Task<GenerateTokenResponse> GenerateTokenAsync(GenerateTokenRequest request);
     Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request);
+    Task<GenerateTokenResponse> RefreshTokenAsync(string refreshToken);
+    Task<bool> IsTokenValidAsync(string token);
+
 }

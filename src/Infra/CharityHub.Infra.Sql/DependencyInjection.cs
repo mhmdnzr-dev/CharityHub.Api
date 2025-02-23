@@ -11,15 +11,8 @@ using Primitives;
 
 public static class DependencyInjection
 {
-    public static void AddSql(this IServiceCollection services)
+    public static void AddSql(this IServiceCollection services, IConfiguration configuration)
     {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
         // Register the query-side DbContext (for read operations) without migrations
         services.AddDbContext<CharityHubQueryDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("QueryConnectionString")));
@@ -31,8 +24,5 @@ public static class DependencyInjection
         services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
         services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-       
     }
 }
-

@@ -13,22 +13,27 @@ using Core.Domain.Entities.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int,
+    IdentityUserClaim<int>, IdentityUserRole<int>,
+    IdentityUserLogin<int>, IdentityRoleClaim<int>,
+    ApplicationUserToken>
 {
     #region DbSets
 
     public DbSet<ApplicationUserTerm> ApplicationUserTerms { get; set; }
-   
+
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-    
+
+    public DbSet<ApplicationUserToken> ApplicationUserTokens { get; set; }
+
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<OTP> OTPs { get; set; }
     public DbSet<Social> Socials { get; set; }
-    
+
     public DbSet<StoredFile> StoredFiles { get; set; }
     public DbSet<Term> Terms { get; set; }
-    
+
     public DbSet<CampaignCategory> CampaignCategories { get; set; }
 
     public DbSet<Category> Categories { get; set; }
@@ -40,10 +45,12 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     public DbSet<Donation> Donations { get; set; }
 
     public DbSet<Transaction> Transactions { get; set; }
+
     #endregion
 
 
     #region Ctor
+
     // Parameterless constructor for design-time
     public CharityHubCommandDbContext() : base() { }
 
@@ -51,6 +58,7 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     public CharityHubCommandDbContext(DbContextOptions<CharityHubCommandDbContext> options) : base(options)
     {
     }
+
     #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -60,11 +68,11 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     }
 
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(), type => type.Name.EndsWith("WriteConfiguration"));
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
+            type => type.Name.EndsWith("WriteConfiguration"));
     }
 
 
@@ -80,6 +88,7 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
 
         return base.SaveChangesAsync(cancellationToken);
     }
+
     private void UpdateTimestamps()
     {
         var entries = ChangeTracker.Entries()
@@ -104,6 +113,4 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
             }
         }
     }
-
-
 }
