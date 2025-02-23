@@ -8,6 +8,7 @@ public class Message : BaseEntity
 {
     public int UserId { get; private set; }
     public ApplicationUser User { get; private set; }
+    public string Title { get; private set; }
     public string Content { get; private set; }
     public bool IsSeen { get; private set; }
     public DateTime? SeenDateTime { get; private set; }
@@ -16,7 +17,7 @@ public class Message : BaseEntity
 
  
     // Factory Method to create a new Message
-    public static Message Create(int userId, string content)
+    public static Message Create(int userId,string title, string content)
     {
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Message content cannot be empty.", nameof(content));
@@ -25,6 +26,7 @@ public class Message : BaseEntity
         {
             UserId = userId,
             Content = content.Trim(),
+            Title = content.Trim(),
             IsSeen = false
         };
     }

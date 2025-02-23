@@ -23,10 +23,10 @@ public class MessageQueryRepository(CharityHubQueryDbContext queryDbContext, ILo
         var result = await query.Select(message =>
                 new MessageByUserIdDto
                 {
-                    Id = message.Id, 
+                    Id = message.Id,
                     IsSeen = message.IsSeen,
                     SeenDate = message.SeenDateTime,
-                    Title=message.Content,
+                    Title = message.Title,
                     Content = message.Content,
                 })
             .ToArrayAsync();

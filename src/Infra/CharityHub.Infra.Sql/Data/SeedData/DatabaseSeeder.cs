@@ -99,14 +99,14 @@ public class DatabaseSeeder : ISeeder<CharityHubCommandDbContext>
 
             var messages = new List<Message>
             {
-                Message.Create(users[0].Id, "sample message 1"),
-                Message.Create(users[0].Id, "sample message 2"),
-                Message.Create(users[0].Id, "sample message 3"),
-                Message.Create(users[1].Id, "sample message 4"),
-                Message.Create(users[1].Id, "sample message 5"),
-                Message.Create(users[1].Id, "sample message 6"),
+                Message.Create(users[0].Id, "Title 1", "sample message 1"),
+                Message.Create(users[0].Id, "Title 2", "sample message 2"),
+                Message.Create(users[0].Id, "Title 3", "sample message 3"),
+                Message.Create(users[1].Id, "Title 3", "sample message 4"),
+                Message.Create(users[1].Id, "Title 4", "sample message 5"),
+                Message.Create(users[1].Id, "Title 5", "sample message 6"),
             };
-            
+
             await context.Messages.AddRangeAsync(messages, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 

@@ -22,6 +22,10 @@ internal sealed class MessageWriteConfiguration : BaseEntityConfiguration<Messag
         entity.Property(m => m.Content)
             .IsRequired()
             .HasMaxLength(1000); 
+        
+        entity.Property(m => m.Title)
+            .IsRequired()
+            .HasMaxLength(256); 
 
         entity.Property(m => m.IsSeen)
             .IsRequired();
