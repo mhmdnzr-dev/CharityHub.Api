@@ -15,46 +15,6 @@ using Infra.FileManager;
 
 public static class HostingExtensions
 {
-    public static IHostBuilder AddSerilog(this IHostBuilder builder)
-    {
-        builder.UseSerilog((context, services, configurationBuilder) =>
-        {
-            // Configure MSSQL Sink with AdditionalColumns
-            var columnOptions = new ColumnOptions
-            {
-                AdditionalColumns =
-                [
-                    new() { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 100 }
-                ]
-            };
-
-            columnOptions.Store.Remove(StandardColumn.Properties);
-            columnOptions.Store.Remove(StandardColumn.MessageTemplate);
-
-            configurationBuilder
-                .ReadFrom.Configuration(context.Configuration)
-                .ReadFrom.Services(services)
-                .WriteTo.Console()
-                .WriteTo.MSSqlServer(
-                    connectionString: context.Configuration.GetSection("Serilog:WriteTo").GetChildren()
-                        .First(x => x.GetValue<string>("Name") == "MSSqlServer")
-                        .GetSection("Args").GetValue<string>("connectionString"),
-                    sinkOptions: new MSSqlServerSinkOptions { AutoCreateSqlTable = true, TableName = "Logs" },
-                    columnOptions: columnOptions,
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
-                )
-                .WriteTo.Elasticsearch(
-                    new Serilog.Sinks.Elasticsearch.ElasticsearchSinkOptions(
-                        new Uri(context.Configuration["ElasticSearch:Uri"]))
-                    {
-                        AutoRegisterTemplate = true, IndexFormat = "charityhub-logs-{0:yyyy.MM.dd}"
-                    });
-        });
-
-        return builder;
-    }
-
-
     public static void AddCustomServices(this IServiceCollection services,IConfiguration configuration)
     {
         services.AddHttpContextAccessor(); // Correct way to register IHttpContextAccessor
