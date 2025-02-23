@@ -429,6 +429,11 @@ namespace CharityHub.Infra.Sql.Migrations
                     b.Property<DateTime?>("SeenDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 

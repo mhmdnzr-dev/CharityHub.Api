@@ -63,14 +63,13 @@ public class CharityQueryRepository(
                 CampaignCount = charityGroup.Count(c => c.campaign != null),
                 PhotoUriAddress = charityGroup.Key.FilePath != null
                     ? $"{baseUrl}{charityGroup.Key.FilePath.Replace("\\", "/")}" // Ensure correct URL
-                    : $"{baseUrl}/uploads/default-image.png"
+                    : $"{baseUrl}/uploads/default-charity.png"
             };
 
         #endregion
 
         #region Pagination
 
-  
         var totalCount = resultQuery.Count();
 
         var paginatedResult = await resultQuery
@@ -85,28 +84,63 @@ public class CharityQueryRepository(
     }
 
 
-    public async Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery query)
+    public async Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery dto)
     {
-        // Retrieve the charity and its associated socials using a LINQ query
-        var result = await (from charity in _queryDbContext.Charities
-            where charity.Id == query.Id
-            join social in _queryDbContext.Socials
-                on charity.SocialId equals social.Id into socialsGroup
-            select new { Charity = charity, Socials = socialsGroup.ToList() }).FirstOrDefaultAsync();
+        #region Base URL Detection
 
-        // If no result is found, return null or throw an exception based on your needs
-        if (result == null)
+        string baseUrl =
+            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
+
+        #endregion
+
+        #region Query Charity with Logo & Banner
+
+        var query = await (from charity in _queryDbContext.Charities
+            where charity.Id == dto.Id && charity.IsActive
+            join storedLogoFile in _queryDbContext.StoredFiles
+                on charity.LogoId equals storedLogoFile.Id into logoFileGroup
+            from storedLogoFile in logoFileGroup.DefaultIfEmpty()
+            join storedBannerFile in _queryDbContext.StoredFiles
+                on charity.BannerId equals storedBannerFile.Id into bannerFileGroup
+            from storedBannerFile in bannerFileGroup.DefaultIfEmpty()
+            select new
+            {
+                Charity = charity,
+                LogoFilePath = storedLogoFile.FilePath,
+                BannerFilePath = storedBannerFile.FilePath
+            }).FirstOrDefaultAsync();
+
+        #endregion
+
+        if (query is null)
             return new CharityByIdResponseDto();
 
-        // Map the result to the response DTO
-        var response = new CharityByIdResponseDto
+        #region Fetch Socials Separately
+
+        var socials = await _queryDbContext.Socials
+            .Where(s => s.Id == query.Charity.SocialId)
+            .Select(s => new SocialDtoModel { Name = s.Name, Url = s.Url })
+            .ToListAsync();
+
+        #endregion
+
+        #region Construct Result
+
+        var result = new CharityByIdResponseDto
         {
-            Name = result.Charity.Name,
-            Description = result.Charity.Description,
-            Socials = result.Socials.Select(s => new SocialDtoModel { Name = s.Name, Url = "https://google.com" })
-                .ToList()
+            Name = query.Charity.Name,
+            Description = query.Charity.Description,
+            PhotoUriAddress = !string.IsNullOrEmpty(query.LogoFilePath)
+                ? $"{baseUrl}{query.LogoFilePath.Replace("\\", "/")}"
+                : $"{baseUrl}/uploads/default-charity.png",
+            BannerUriAddress = !string.IsNullOrEmpty(query.BannerFilePath)
+                ? $"{baseUrl}{query.BannerFilePath.Replace("\\", "/")}"
+                : $"{baseUrl}/uploads/default-banner.png",
+            Socials = socials
         };
 
-        return response;
+        #endregion
+
+        return result;
     }
 }

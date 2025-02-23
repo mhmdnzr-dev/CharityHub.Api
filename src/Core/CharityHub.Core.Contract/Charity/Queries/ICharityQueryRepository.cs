@@ -12,5 +12,5 @@ using Primitives.Repositories;
 public interface ICharityQueryRepository : IQueryRepository<Charity>
 {
     Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query);
-    Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery query);
+    Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery dto);
 }
