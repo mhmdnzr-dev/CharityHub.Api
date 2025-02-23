@@ -75,10 +75,11 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByNameAsync(request.PhoneNumber);
         var isUserExist = user != null;
 
+        result.IsNewUser = (!isUserExist || !user!.IsActive);
+
         if (isUserExist)
         {
-            result.IsNewUser = false;
-            var otp = OTP.Add(user.Id, otpCode);
+            var otp = OTP.Add(user!.Id, otpCode);
             await CreateOtpAsync(otp);
         }
         else
@@ -95,7 +96,6 @@ public class IdentityService : IIdentityService
 
             await AssignRoleToUserAsync(newUser, "Client");
 
-            result.IsNewUser = true;
 
             var otp = OTP.Add(newUser.Id, otpCode);
             await CreateOtpAsync(otp);
@@ -190,9 +190,6 @@ public class IdentityService : IIdentityService
         return result;
     }
 
-
-   
-    
 
     public async Task<bool> LogoutAsync(LogoutRequest request)
     {
