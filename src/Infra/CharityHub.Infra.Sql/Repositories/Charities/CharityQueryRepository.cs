@@ -27,13 +27,6 @@ public class CharityQueryRepository(
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
     {
-        #region Base URL Detection
-
-        string baseUrl =
-            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
-
-        #endregion
-
         #region Query Data
 
         var charities = _queryDbContext.Charities
@@ -62,8 +55,8 @@ public class CharityQueryRepository(
                 Name = charityGroup.Key.Name,
                 CampaignCount = charityGroup.Count(c => c.campaign != null),
                 PhotoUriAddress = charityGroup.Key.FilePath != null
-                    ? $"{baseUrl}{charityGroup.Key.FilePath.Replace("\\", "/")}" // Ensure correct URL
-                    : $"{baseUrl}/uploads/default-charity.png"
+                    ? $"{charityGroup.Key.FilePath.Replace("\\", "/")}" // Ensure correct URL
+                    : $"/uploads/default-charity.png"
             };
 
         #endregion
@@ -86,13 +79,6 @@ public class CharityQueryRepository(
 
     public async Task<CharityByIdResponseDto> GetDetailedById(GetCharityByIdQuery dto)
     {
-        #region Base URL Detection
-
-        string baseUrl =
-            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
-
-        #endregion
-
         #region Query Charity with Logo & Banner
 
         var query = await (from charity in _queryDbContext.Charities
@@ -131,11 +117,11 @@ public class CharityQueryRepository(
             Name = query.Charity.Name,
             Description = query.Charity.Description,
             PhotoUriAddress = !string.IsNullOrEmpty(query.LogoFilePath)
-                ? $"{baseUrl}{query.LogoFilePath.Replace("\\", "/")}"
-                : $"{baseUrl}/uploads/default-charity.png",
+                ? $"{query.LogoFilePath.Replace("\\", "/")}"
+                : $"/uploads/default-charity.png",
             BannerUriAddress = !string.IsNullOrEmpty(query.BannerFilePath)
-                ? $"{baseUrl}{query.BannerFilePath.Replace("\\", "/")}"
-                : $"{baseUrl}/uploads/default-banner.png",
+                ? $"{query.BannerFilePath.Replace("\\", "/")}"
+                : $"/uploads/default-banner.png",
             Socials = socials
         };
 

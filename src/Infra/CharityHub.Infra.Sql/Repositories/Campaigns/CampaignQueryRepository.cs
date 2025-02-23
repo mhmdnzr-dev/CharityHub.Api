@@ -24,13 +24,6 @@ public class CampaignQueryRepository(
     public async Task<PagedData<CampaignsByCharityIdResponseDto>> GetCampaignsByCharityId(
         GetCampaignsByCharityIdQuery query)
     {
-        #region Base URL Detection
-
-        string baseUrl =
-            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
-
-        #endregion
-
         #region Fetch Total Count
 
         var totalCount = await _queryDbContext.Campaigns
@@ -63,8 +56,8 @@ public class CampaignQueryRepository(
 
                 // Campaign Banner
                 BannerUriAddress = bannerFile != null
-                    ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}"
-                    : $"{baseUrl}/uploads/default-campaign.png"
+                    ? $"{bannerFile.FilePath.Replace("\\", "/")}"
+                    : $"/uploads/default-campaign.png"
             };
 
         var campaigns = await campaignsQuery
@@ -81,13 +74,7 @@ public class CampaignQueryRepository(
     public async Task<PagedData<AllCampaignResponseDto>> GetAllCampaignsAsync(GetAllCampaignQuery query)
     {
         var totalCount = await _queryDbContext.Campaigns.CountAsync();
-
-        #region Base URL Detection
-
-        string baseUrl =
-            $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
-
-        #endregion
+        
         
         var campaignsQuery = from campaign in _queryDbContext.Campaigns
                 .Include(c => c.Charity)
@@ -112,8 +99,8 @@ public class CampaignQueryRepository(
 
                 
                 BannerUriAddress = bannerFile != null
-                    ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}"
-                    : $"{baseUrl}/uploads/default-campaign.png"
+                    ? $"{bannerFile.FilePath.Replace("\\", "/")}"
+                    : $"/uploads/default-campaign.png"
             };
 
         var campaigns = await campaignsQuery
@@ -146,8 +133,7 @@ public class CampaignQueryRepository(
             .Where(f => f.Id == campaign.BannerId)
             .FirstOrDefaultAsync();
 
-        var baseUrl = $"{httpContextAccessor.HttpContext?.Request.Scheme}://{httpContextAccessor.HttpContext?.Request.Host}";
-
+     
         // Map to the DTO
         var campaignDto = new CampaignByIdResponseDto
         {
@@ -169,8 +155,8 @@ public class CampaignQueryRepository(
 
             // Campaign Banner
             BannerUriAddress = bannerFile != null 
-                ? $"{baseUrl}{bannerFile.FilePath.Replace("\\", "/")}" 
-                : $"{baseUrl}/uploads/default-campaign.png"
+                ? $"{bannerFile.FilePath.Replace("\\", "/")}" 
+                : $"/uploads/default-campaign.png"
         };
 
         return campaignDto;
