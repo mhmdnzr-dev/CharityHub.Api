@@ -22,25 +22,43 @@ public class TransactionQueryRepository(
     {
         // Log the start of the query
         logger.LogInformation("Starting GetTransactionsByUserId for UserId: {UserId}", userId);
-        var totalCount = await _queryDbContext.Transactions.Where(t => t.UserId == userId).CountAsync();
+
         try
         {
-            var transactions = await queryDbContext.Transactions
-                .Where(t => t.UserId == userId) // Filtering by UserId
-                .Include(t => t.Campaign)
-                .OrderBy(t => t.CreatedAt) // Ensure ordering for consistent pagination
+            var transactionsQuery = from transaction in _queryDbContext.Transactions
+                where transaction.UserId == userId
+                orderby transaction.CreatedAt
+                join bannerFile in _queryDbContext.StoredFiles
+                    on transaction.Campaign.BannerId equals bannerFile.Id into bannerFileGroup
+                from bannerFile in bannerFileGroup.DefaultIfEmpty()
+                join charityLogoFile in _queryDbContext.StoredFiles
+                    on transaction.Campaign.Charity.LogoId equals charityLogoFile.Id into charityLogoFileGroup
+                from charityLogoFile in charityLogoFileGroup.DefaultIfEmpty()
+                select new UserTransactionsResponseDto
+                {
+                    CampaignName = transaction.Campaign.Title,
+                    CharityId = transaction.Campaign.CharityId,
+                    CharityName = transaction.Campaign.Charity.Name,
+                    CharityLogoUrl = charityLogoFile != null
+                        ? charityLogoFile.FilePath.Replace("\\", "/")
+                        : "/uploads/default-charity.png",
+                    AmountOfAssistance = transaction.Amount,
+                    AssistanceDate = transaction.CreatedAt,
+                    CampaignBannerPhotoUrlAddress = bannerFile != null
+                        ? bannerFile.FilePath.Replace("\\", "/")
+                        : "/uploads/default-campaign.png"
+                };
+
+            var totalCount = await _queryDbContext.Transactions
+                .Where(t => t.UserId == userId)
+                .CountAsync();
+
+            var transactions = await transactionsQuery
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .Select(t => new UserTransactionsResponseDto
-                {
-                    CampaignName = t.Campaign.Title, // Assuming Campaign has a Title property
-                    CharityName = t.Campaign.Charity.Name, // Assuming Charity is related to Campaign
-                    AmountOfAssistance = t.Amount, // The Amount for the transaction
-                    AssistanceDate = t.CreatedAt // Assuming there's a CreatedAt or similar field
-                })
                 .ToArrayAsync();
 
-            // Log the successful retrieval of transactions
+            // Log successful retrieval
             logger.LogInformation("Successfully retrieved {TransactionCount} transactions for UserId: {UserId}",
                 transactions.Length, userId);
 
@@ -48,9 +66,8 @@ public class TransactionQueryRepository(
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during the query
             logger.LogError(ex, "Error occurred while retrieving transactions for UserId: {UserId}", userId);
-            throw; // Re-throw the exception to ensure the error is propagated
+            throw;
         }
     }
 }
