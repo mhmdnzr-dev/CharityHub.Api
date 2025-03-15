@@ -7,10 +7,15 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
+	
+
+	
 	<ItemGroup>
 		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.3" />
+
 		<PackageReference Include="Moq" Version="4.20.72" />
 		<PackageReference Include="MSTest" Version="3.6.1" />
 		<PackageReference Include="xunit" Version="2.9.3" />
@@ -21,12 +26,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="IntegrationTests\" />
-		<Folder Include="Fixtures\" />
+	  <ProjectReference Include="..\..\src\Presentation\CharityHub.Presentation\CharityHub.Presentation.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\Presentation\CharityHub.Presentation\CharityHub.Presentation.csproj" />
+	  <Folder Include="IntegrationTests\" />
 	</ItemGroup>
 
 	

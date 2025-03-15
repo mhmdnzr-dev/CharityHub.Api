@@ -20,7 +20,7 @@ using Presentation.Controllers;
 
 using Xunit;
 
-public class AuthControllerTests
+public class AuthControllerUnitTests
 {
     private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
@@ -28,7 +28,7 @@ public class AuthControllerTests
     private readonly AuthController _controller;
 
 
-    public AuthControllerTests()
+    public AuthControllerUnitTests()
     {
         _mediatorMock = new Mock<IMediator>();
         _tokenServiceMock = new Mock<ITokenService>();

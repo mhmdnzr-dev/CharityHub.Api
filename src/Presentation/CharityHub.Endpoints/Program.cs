@@ -12,6 +12,11 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register services
+builder.Services.AddHttpClient();
+
+
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) 
     .CreateLogger();

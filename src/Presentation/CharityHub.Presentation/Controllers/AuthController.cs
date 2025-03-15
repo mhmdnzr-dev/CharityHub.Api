@@ -29,8 +29,6 @@ public class AuthController : BaseController
     [MapToApiVersion("1.0")]
     [SwaggerOperation(Summary = "Send OTP", Description = "Sends an OTP to the specified phone number.")]
     [SwaggerResponse(200, "OTP sent successfully", typeof(BaseApiResponse<RegisterMobileUserResponseDto>))]
-    [SwaggerResponse(400, "Bad Request")]
-    [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> SendOtp([FromBody] GetRegisterMobileUserQuery query)
     {
         var result = await _mediator.Send(query);
