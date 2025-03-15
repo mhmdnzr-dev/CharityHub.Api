@@ -54,10 +54,7 @@ public class AuthController : BaseController
     }
 
 
-    /// <summary>
-    /// Logs out the user by invalidating the provided authorization token.
-    /// </summary>
-    /// <returns>A response indicating the success or failure of the logout operation.</returns>
+
     [HttpPost("logout")]
     [MapToApiVersion("1.0")]
     [Authorize]
