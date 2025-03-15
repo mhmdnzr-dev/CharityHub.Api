@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/CharityHub.Core.Application/CharityHub.Core.Application.csproj" />
+    <Project Path="src/Core/CharityHub.Core.Contract/CharityHub.Core.Contract.csproj" />
+    <Project Path="src/Core/CharityHub.Core.Domain/CharityHub.Core.Domain.csproj" />
+    <Project Path="src/Core/CharityHub.Core.DomainService/CharityHub.Core.DomainService.csproj" />
+  </Folder>
+  <Folder Name="/src/Infra/">
+    <Project Path="src/Infra/CharityHub.Infra.FileManager/CharityHub.Infra.FileManager.csproj" />
+    <Project Path="src/Infra/CharityHub.Infra.Identity/CharityHub.Infra.Identity.csproj" />
+    <Project Path="src/Infra/CharityHub.Infra.Sql/CharityHub.Infra.Sql.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/CharityHub.Endpoints/CharityHub.Endpoints.csproj" />
+    <Project Path="src/Presentation/CharityHub.Presentation/CharityHub.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Utils/">
+    <Project Path="src/Utils/CharityHub.Utils.Extensions/CharityHub.Utils.Extensions.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/CharityHub.Tests/CharityHub.Tests.csproj" />
+  </Folder>
+</Solution>
