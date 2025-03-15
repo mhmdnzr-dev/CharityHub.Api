@@ -1,8 +1,8 @@
 namespace CharityHub.Infra.Sql.Repositories.Transactions;
 
+using Core.Contract.Features.Transactions.Queries;
+using Core.Contract.Features.Transactions.Queries.GetUserTransactions;
 using Core.Contract.Primitives.Models;
-using Core.Contract.Transactions.Queries;
-using Core.Contract.Transactions.Queries.GetUserTransactions;
 using Core.Domain.Entities;
 
 using Data.DbContexts;

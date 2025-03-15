@@ -1,13 +1,14 @@
 namespace CharityHub.Infra.Sql.Repositories.Campaigns;
 
 using CharityHub.Core.Contract.Primitives.Models;
-using Core.Domain.Entities;
-using Data.DbContexts;
 
-using Core.Contract.Campaigns.Queries;
-using Core.Contract.Campaigns.Queries.GetAllCampaigns;
-using Core.Contract.Campaigns.Queries.GetCampaignById;
-using Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
+using Core.Contract.Features.Campaigns.Queries;
+using Core.Contract.Features.Campaigns.Queries.GetAllCampaigns;
+using Core.Contract.Features.Campaigns.Queries.GetCampaignById;
+using Core.Contract.Features.Campaigns.Queries.GetCampaignsByCharityId;
+using Core.Domain.Entities;
+
+using Data.DbContexts;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +18,7 @@ using Primitives;
 
 public class CampaignQueryRepository(
     CharityHubQueryDbContext queryDbContext,
-    ILogger<CampaignQueryRepository> logger,
-    IHttpContextAccessor httpContextAccessor)
+    ILogger<CampaignQueryRepository> logger)
     : QueryRepository<Campaign>(queryDbContext), ICampaignQueryRepository
 {
     public async Task<PagedData<CampaignsByCharityIdResponseDto>> GetCampaignsByCharityId(
@@ -37,14 +37,11 @@ public class CampaignQueryRepository(
         var campaignsQuery = from campaign in _queryDbContext.Campaigns
             where campaign.CharityId == query.Id && campaign.IsActive
             orderby campaign.StartDate
-
             join bannerFile in _queryDbContext.StoredFiles
                 on campaign.BannerId equals bannerFile.Id into bannerFileGroup
             from bannerFile in bannerFileGroup.DefaultIfEmpty()
-
             join charity in _queryDbContext.Charities
                 on campaign.CharityId equals charity.Id
-
             join logoFile in _queryDbContext.StoredFiles
                 on charity.LogoId equals logoFile.Id into logoFileGroup
             from logoFile in logoFileGroup.DefaultIfEmpty()

@@ -1,8 +1,6 @@
 namespace CharityHub.Infra.Sql.Repositories.Charities;
 
-using Core.Contract.Charity.Queries;
-using Core.Contract.Charity.Queries.GetAllCharities;
-using Core.Contract.Charity.Queries.GetCharityById;
+
 using Core.Contract.Primitives.Models;
 using Core.Domain.Entities;
 
@@ -12,6 +10,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Core.Contract.Configuration.Models;
+using Core.Contract.Features.Charity.Queries;
+using Core.Contract.Features.Charity.Queries.GetAllCharities;
+using Core.Contract.Features.Charity.Queries.GetCharityById;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +22,8 @@ using Primitives;
 public class CharityQueryRepository(
     CharityHubQueryDbContext queryDbContext,
     ILogger<CharityQueryRepository> logger,
-    IOptions<FileOptions> options,
-    IHttpContextAccessor httpContextAccessor) 
+    IOptions<FileOptions> options
+    ) 
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)

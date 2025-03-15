@@ -1,7 +1,7 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Contract.Messages.Commands.SeenMessage;
-using Core.Contract.Messages.Queries.GetMessageByUserIdQuery;
+using Core.Contract.Features.Messages.Commands.SeenMessage;
+using Core.Contract.Features.Messages.Queries.GetMessageByUserIdQuery;
 
 using MediatR;
 

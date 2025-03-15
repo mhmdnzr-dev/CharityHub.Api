@@ -1,7 +1,8 @@
 namespace CharityHub.Infra.Sql.Repositories.Messages;
 
-using Core.Contract.Messages.Commands;
-using Core.Contract.Messages.Commands.SeenMessage;
+using Core.Contract.Features.Messages.Commands;
+
+
 using Core.Domain.Entities;
 
 using Data.DbContexts;

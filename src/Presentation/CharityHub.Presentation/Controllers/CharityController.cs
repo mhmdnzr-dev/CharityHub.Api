@@ -1,10 +1,8 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Application.Primitives;
-using Core.Contract.Charity.Commands.CreateCharity;
-using Core.Contract.Charity.Queries;
-using Core.Contract.Charity.Queries.GetAllCharities;
-using Core.Contract.Charity.Queries.GetCharityById;
+using Core.Contract.Features.Charity.Commands.CreateCharity;
+using Core.Contract.Features.Charity.Queries.GetAllCharities;
+using Core.Contract.Features.Charity.Queries.GetCharityById;
 using Core.Contract.Primitives.Models;
 
 using MediatR;

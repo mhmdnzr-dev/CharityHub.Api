@@ -1,9 +1,8 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Application.Primitives;
-using Core.Contract.Campaigns.Queries.GetAllCampaigns;
-using Core.Contract.Campaigns.Queries.GetCampaignById;
-using Core.Contract.Campaigns.Queries.GetCampaignsByCharityId;
+using Core.Contract.Features.Campaigns.Queries.GetAllCampaigns;
+using Core.Contract.Features.Campaigns.Queries.GetCampaignById;
+using Core.Contract.Features.Campaigns.Queries.GetCampaignsByCharityId;
 using Core.Contract.Primitives.Models;
 
 using Swashbuckle.AspNetCore.Annotations;

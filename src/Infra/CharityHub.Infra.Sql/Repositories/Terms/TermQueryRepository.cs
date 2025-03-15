@@ -2,9 +2,9 @@
 
 using System.Threading.Tasks;
 
-using CharityHub.Core.Contract.Terms.Queries.GetLastTerm;
 
-using Core.Contract.Terms.Queries;
+using Core.Contract.Features.Terms.Queries;
+using Core.Contract.Features.Terms.Queries.GetLastTerm;
 using Core.Domain.Entities;
 
 using Data.DbContexts;

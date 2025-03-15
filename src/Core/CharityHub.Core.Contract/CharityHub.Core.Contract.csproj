@@ -27,6 +27,6 @@
 
 
 	<ItemGroup>
-	  <Folder Include="Transactions\Commands\" />
+	  <Folder Include="Features\" />
 	</ItemGroup>
 </Project>

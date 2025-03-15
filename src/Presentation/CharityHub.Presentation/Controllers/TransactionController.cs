@@ -1,7 +1,6 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Contract.Terms.Queries.GetLastTerm;
-using Core.Contract.Transactions.Queries.GetUserTransactions;
+using Core.Contract.Features.Transactions.Queries.GetUserTransactions;
 
 using MediatR;
 

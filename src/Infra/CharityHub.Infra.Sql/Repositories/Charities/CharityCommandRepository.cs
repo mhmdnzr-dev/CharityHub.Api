@@ -1,6 +1,6 @@
 namespace CharityHub.Infra.Sql.Repositories.Charities;
 
-using Core.Contract.Charity.Commands;
+using Core.Contract.Features.Charity.Commands;
 using Core.Domain.Entities;
 
 using Data.DbContexts;

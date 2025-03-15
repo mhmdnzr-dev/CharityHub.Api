@@ -1,0 +1,9 @@
+namespace CharityHub.Core.Contract.Features.Users.Queries.GetUserProfileDetails;
+
+public class UserProfileDetailResponseDto
+{
+    public string? UserName { get; set; }
+    public string PhoneNumber { get; set; }
+    public string? LastName { get; set; }
+    public string? FirstName { get; set; }
+}

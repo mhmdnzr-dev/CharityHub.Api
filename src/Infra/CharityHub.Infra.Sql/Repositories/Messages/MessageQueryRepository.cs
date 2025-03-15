@@ -1,7 +1,7 @@
 namespace CharityHub.Infra.Sql.Repositories.Messages;
 
-using Core.Contract.Messages.Queries;
-using Core.Contract.Messages.Queries.GetMessageByUserIdQuery;
+using Core.Contract.Features.Messages.Queries;
+using Core.Contract.Features.Messages.Queries.GetMessageByUserIdQuery;
 using Core.Domain.Entities;
 
 using Data.DbContexts;

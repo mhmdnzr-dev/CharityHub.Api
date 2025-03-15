@@ -5,9 +5,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Contract.Users.Queries.GetLogoutMobileUsers;
-using Core.Contract.Users.Queries.GetRegisterMobileUsers;
-using Core.Contract.Users.Queries.GetVerifyMobileUsers;
+using Core.Contract.Features.Users.Queries.GetLogoutMobileUsers;
+using Core.Contract.Features.Users.Queries.GetRegisterMobileUsers;
+using Core.Contract.Features.Users.Queries.GetVerifyMobileUsers;
+
 
 using Microsoft.AspNetCore.Authorization;
 

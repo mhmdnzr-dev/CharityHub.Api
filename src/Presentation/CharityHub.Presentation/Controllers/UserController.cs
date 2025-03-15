@@ -1,9 +1,7 @@
 namespace CharityHub.Presentation.Controllers;
 
-using Core.Contract.Users.Commands.UpdateUserProfiles;
-using Core.Contract.Users.Queries.GetUserProfileDetails;
-
-
+using Core.Contract.Features.Users.Commands.UpdateUserProfiles;
+using Core.Contract.Features.Users.Queries.GetUserProfileDetails;
 
 using MediatR;
 

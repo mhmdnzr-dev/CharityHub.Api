@@ -1,8 +1,7 @@
 namespace CharityHub.Infra.Sql.Repositories.Categories;
 
-using Core.Contract.Categories.Queries;
-using Core.Contract.Categories.Queries.GetAllCategories;
-using Core.Contract.Primitives.Repositories;
+using Core.Contract.Features.Categories.Queries;
+using Core.Contract.Features.Categories.Queries.GetAllCategories;
 using Core.Domain.Entities;
 
 using Data.DbContexts;
