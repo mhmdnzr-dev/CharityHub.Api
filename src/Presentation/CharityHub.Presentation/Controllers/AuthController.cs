@@ -1,14 +1,15 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+
 namespace CharityHub.Presentation.Controllers;
 
 using Core.Contract.Features.Users.Queries.GetLogoutMobileUsers;
 using Core.Contract.Features.Users.Queries.GetRegisterMobileUsers;
 using Core.Contract.Features.Users.Queries.GetVerifyMobileUsers;
+using Core.Contract.Primitives.Models;
 
+using Filters;
 
 using Microsoft.AspNetCore.Authorization;
 
@@ -23,17 +24,12 @@ public class AuthController : BaseController
     {
     }
 
-    /// <summary>
-    /// Sends an OTP to the specified phone number.
-    /// </summary>
-    /// <param name="query">The phone number to which the OTP should be sent.</param>
-    /// <returns>A response indicating if the user is new and whether the OTP was successfully sent.</returns>
+
     [HttpPost("send-otp")]
     [MapToApiVersion("1.0")]
     [SwaggerOperation(Summary = "Send OTP", Description = "Sends an OTP to the specified phone number.")]
-    [SwaggerResponse(200, "OTP sent successfully",
-        typeof(RegisterMobileUserResponseDto))] // Replace SendOtpDto with your actual response model
-    [SwaggerResponse(400, "Bad Request")] // Optionally add an ErrorDto to handle errors
+    [SwaggerResponse(200, "OTP sent successfully", typeof(BaseApiResponse<RegisterMobileUserResponseDto>))]
+    [SwaggerResponse(400, "Bad Request")]
     [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> SendOtp([FromBody] GetRegisterMobileUserQuery query)
     {
@@ -41,18 +37,14 @@ public class AuthController : BaseController
         return Ok(result);
     }
 
-    /// <summary>
-    /// Verifies the OTP for the specified phone number and generates a token if successful.
-    /// </summary>
-    /// <param name="query">The phone number and OTP code to verify.</param>
-    /// <returns>A response containing a token if OTP verification is successful.</returns>
+
     [HttpPost("verify-otp")]
     [MapToApiVersion("1.0")]
     [SwaggerOperation(Summary = "Verify OTP",
         Description = "Verifies the OTP for the specified phone number and generates a token if the OTP is correct.")]
     [SwaggerResponse(200, "OTP verified successfully, token generated",
-        typeof(VerifyMobileUserResponseDto))] // The VerifyDto contains the token
-    [SwaggerResponse(400, "Bad Request")] // Optionally, return an ErrorDto for error cases
+        typeof(BaseApiResponse<VerifyMobileUserResponseDto>))] 
+    [SwaggerResponse(400, "Bad Request")] 
     [SwaggerResponse(401, "Unauthorized, invalid OTP")]
     [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> VerifyOtp([FromBody] GetVerifyMobileUserQuery query)
@@ -71,7 +63,8 @@ public class AuthController : BaseController
     [Authorize]
     [SwaggerOperation(Summary = "Logout User",
         Description = "Logs out the user by invalidating the provided authorization token.")]
-    [SwaggerResponse(200, "Logout successful", typeof(LogoutMobileUserResponseDto))] // Replace with your actual response DTO
+    [SwaggerResponse(200, "Logout successful",
+        typeof(LogoutMobileUserResponseDto))] // Replace with your actual response DTO
     [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
     [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> Logout([FromQuery] GetLogoutMobileUserQuery query)

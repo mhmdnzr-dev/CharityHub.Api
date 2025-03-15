@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace CharityHub.Presentation.Middleware;
 
+using Core.Contract.Primitives.Models;
+
 internal sealed class ExceptionResponseMiddleware
 {
     private readonly RequestDelegate _next;
@@ -33,7 +35,7 @@ internal sealed class ExceptionResponseMiddleware
         // Flag the response to skip BaseResponseMiddleware wrapping
         context.Items["SkipBaseResponse"] = true;
 
-        var response = new BaseResponseFilter<string>
+        var response = new BaseApiResponse<string>
         {
             Success = false,
             Data = null,

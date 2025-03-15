@@ -5,6 +5,7 @@ using CharityHub.Presentation.Filters;
 using Microsoft.AspNetCore.Http;
 namespace CharityHub.Presentation.Middleware;
 
+using Core.Contract.Primitives.Models;
 
 internal sealed class BaseResponseMiddleware
 {
@@ -43,7 +44,7 @@ internal sealed class BaseResponseMiddleware
                     parsedData = responseBody; // Keep raw response if deserialization fails
                 }
 
-                var baseResponse = new BaseResponseFilter<object>
+                var baseResponse = new BaseApiResponse<object>
                 {
                     Success = context.Response.StatusCode is >= 200 and < 300,
                     Data = parsedData,
