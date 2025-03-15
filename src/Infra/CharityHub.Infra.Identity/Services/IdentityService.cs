@@ -67,7 +67,7 @@ public class IdentityService : IIdentityService
         }
 
 
-        var otpCode = "522368"; // TODO: use it in prod: GenerateOtpCode()
+        var otpCode = "123456"; // TODO: use it in prod: GenerateOtpCode()
         var result = new SendOtpResponse();
         result.IsSMSSent =
             true; // TODO: use it in prod: result.IsSMSSent = await _otpService.SendOTPAsync(request.PhoneNumber, otpCode);

@@ -1,6 +1,6 @@
 namespace CharityHub.Core.Contract.Features.Users.Queries.GetVerifyMobileUsers;
 
-using CharityHub.Core.Contract.Primitives.Handlers;
+using Primitives.Handlers;
 
 public class GetVerifyMobileUserQuery : IQuery<VerifyMobileUserResponseDto>
 {
