@@ -61,7 +61,7 @@ public class AuthController : BaseController
     [SwaggerOperation(Summary = "Logout User",
         Description = "Logs out the user by invalidating the provided authorization token.")]
     [SwaggerResponse(200, "Logout successful",
-        typeof(LogoutMobileUserResponseDto))] // Replace with your actual response DTO
+        typeof(BaseApiResponse<LogoutMobileUserResponseDto>))] 
     [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
     [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> Logout([FromQuery] GetLogoutMobileUserQuery query)
