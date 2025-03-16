@@ -42,9 +42,6 @@ public class AuthController : BaseController
         Description = "Verifies the OTP for the specified phone number and generates a token if the OTP is correct.")]
     [SwaggerResponse(200, "OTP verified successfully, token generated",
         typeof(BaseApiResponse<VerifyMobileUserResponseDto>))] 
-    [SwaggerResponse(400, "Bad Request")] 
-    [SwaggerResponse(401, "Unauthorized, invalid OTP")]
-    [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> VerifyOtp([FromBody] GetVerifyMobileUserQuery query)
     {
         var result = await _mediator.Send(query);
@@ -60,8 +57,6 @@ public class AuthController : BaseController
         Description = "Logs out the user by invalidating the provided authorization token.")]
     [SwaggerResponse(200, "Logout successful",
         typeof(BaseApiResponse<LogoutMobileUserResponseDto>))] 
-    [SwaggerResponse(401, "Unauthorized, invalid or missing token")]
-    [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> Logout([FromQuery] GetLogoutMobileUserQuery query)
     {
         var result = await _mediator.Send(query);
