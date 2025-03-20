@@ -1,5 +1,7 @@
 namespace CharityHub.Endpoints;
 
+using System.Threading.RateLimiting;
+
 using Infra.Sql.Data.DbContexts;
 using Infra.Sql.Data.SeedData;
 using Infra.Sql.Extensions;
@@ -16,7 +18,22 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
+                httpContext => RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5, // حداکثر ۵ درخواست در بازه زمانی
+                        Window = TimeSpan.FromSeconds(30), // در هر ۳۰ ثانیه
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = 0 // هیچ درخواستی در صف منتظر نمی‌ماند
+                    }));
 
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        });
+        
         builder.Services.AddHttpClient();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
@@ -77,6 +94,7 @@ public class Program
 
     private static void ConfigureMiddleware(WebApplication app, string staticFilesPath, string uploadDirectory)
     {
+        app.UseRateLimiter();
         app.UseHttpsRedirection();
         app.UseCors("CorsPolicy");
         app.UseOutputCache();
@@ -95,10 +113,19 @@ public class Program
             ServeUnknownFileTypes = true,
             DefaultContentType = "application/octet-stream"
         });
+        
+        app.Use(async (context, next) =>
+        {
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation($"Request from IP: {context.Connection.RemoteIpAddress}, Path: {context.Request.Path}");
+            await next();
+        });
 
+ 
+        app.UseFluentValidationMiddleware();
         app.UseStaticFileResponseMiddleware();
         app.UseAuthorization();
-        app.TokenValidationMiddleware();
+        app.UseTokenValidationMiddleware();
         app.UsePagedDataResponseMiddleware();
         app.UseBaseResponseMiddleware();
         app.UseExceptionResponseMiddleware();

@@ -5,11 +5,7 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-
 using System.Linq;
-
-
-
 
 public class AuthorizeCheckOperationFilter : IOperationFilter
 {
@@ -31,7 +27,6 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
         // If [Authorize] attribute is found on either the controller or action, add security requirement
         if (hasAuthorizeAttribute)
         {
-            // Initialize security requirements if not already initialized
             operation.Security ??= new List<OpenApiSecurityRequirement>();
 
             // Add the security requirement for the Bearer token (JWT)

@@ -20,13 +20,11 @@ using Presentation.Controllers;
 
 using Xunit;
 
-public class AuthControllerUnitTests
+public sealed class AuthControllerUnitTests
 {
     private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
-
     private readonly AuthController _controller;
-
 
     public AuthControllerUnitTests()
     {
@@ -34,6 +32,7 @@ public class AuthControllerUnitTests
         _tokenServiceMock = new Mock<ITokenService>();
         _controller = new AuthController(_mediatorMock.Object);
     }
+
 
     [Fact]
     public async Task SendOtp_ShouldReturnOk_WithRegisterMobileUserResponseDto()
@@ -128,7 +127,4 @@ public class AuthControllerUnitTests
 
         _tokenServiceMock.Verify(t => t.IsTokenValidAsync(token), Times.Once);
     }
-    
-    
-    
 }

@@ -1,6 +1,10 @@
 namespace CharityHub.Core.Application.Features.Users.Queries.GetVerifyMobileUsers;
 
-public class GetVerifyMobileUserQueryValidator
+using Contract.Features.Users.Queries.GetVerifyMobileUsers;
+
+using FluentValidation;
+
+public class GetVerifyMobileUserQueryValidator:AbstractValidator<GetVerifyMobileUserQuery>
 {
     
 }

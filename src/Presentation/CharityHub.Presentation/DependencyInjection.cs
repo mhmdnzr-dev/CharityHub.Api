@@ -38,7 +38,7 @@ public static class DependencyInjection
             foreach (var description in provider.ApiVersionDescriptions)
             {
                 options.SwaggerDoc(description.GroupName,
-                    new Microsoft.OpenApi.Models.OpenApiInfo
+                    new OpenApiInfo
                     {
                         Title = $"API Version {description.GroupName.ToUpper()}",
                         Version = description.ApiVersion.ToString(),
@@ -102,30 +102,35 @@ public static class DependencyInjection
         });
     }
 
-    public static IApplicationBuilder UseExceptionResponseMiddleware(this IApplicationBuilder builder)
+    public static void UseExceptionResponseMiddleware(this IApplicationBuilder builder)
     {
-        return builder.UseMiddleware<ExceptionResponseMiddleware>();
+        builder.UseMiddleware<ExceptionResponseMiddleware>();
     }
 
-    public static IApplicationBuilder UsePagedDataResponseMiddleware(this IApplicationBuilder builder)
+    public static void UsePagedDataResponseMiddleware(this IApplicationBuilder builder)
     {
-        return builder.UseMiddleware<PagedDataResponseMiddleware>();
-    }
-
-
-    public static IApplicationBuilder UseBaseResponseMiddleware(this IApplicationBuilder builder)
-    {
-        return builder.UseMiddleware<BaseResponseMiddleware>();
-    }
-
-    public static IApplicationBuilder UseStaticFileResponseMiddleware(this IApplicationBuilder builder)
-    {
-        return builder.UseMiddleware<StaticFileMiddleware>();
+        builder.UseMiddleware<PagedDataResponseMiddleware>();
     }
 
 
-    public static IApplicationBuilder TokenValidationMiddleware(this IApplicationBuilder builder)
+    public static void UseBaseResponseMiddleware(this IApplicationBuilder builder)
     {
-        return builder.UseMiddleware<TokenValidationMiddleware>();
+        builder.UseMiddleware<BaseResponseMiddleware>();
+    }
+
+    public static void UseStaticFileResponseMiddleware(this IApplicationBuilder builder)
+    {
+        builder.UseMiddleware<StaticFileMiddleware>();
+    }
+
+
+    public static void UseTokenValidationMiddleware(this IApplicationBuilder builder)
+    {
+        builder.UseMiddleware<TokenValidationMiddleware>();
+    }
+
+    public static void UseFluentValidationMiddleware(this IApplicationBuilder builder)
+    {
+        builder.UseMiddleware<FluentValidationResponseMiddleware>();
     }
 }
