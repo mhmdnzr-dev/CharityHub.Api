@@ -17,6 +17,7 @@ public static class DependencyInjection
         // Bind configuration options properly
         services.Configure<LoggingOptions>(configuration.GetSection("Logging"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<OpenIdOptions>(configuration.GetSection("OpenId"));
         services.Configure<SmsProviderOptions>(configuration.GetSection("SmsProvider"));
         services.Configure<FileOptions>(configuration.GetSection("FileSettings"));
 

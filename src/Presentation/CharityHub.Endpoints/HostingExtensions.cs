@@ -9,8 +9,9 @@ using Serilog.Sinks.MSSqlServer;
 
 namespace CharityHub.Endpoints;
 
-
 using Infra.FileManager;
+
+using Microsoft.IdentityModel.Tokens;
 
 public static class HostingExtensions
 {
@@ -23,7 +24,7 @@ public static class HostingExtensions
         services.AddSwagger();
         services.AddFileManager();
         services.AddSql(configuration);
-        services.AddIdentity(configuration);
+        services.AddIdentityServices(configuration);
         services.AddContract(configuration);
         services.AddApplication();
     }

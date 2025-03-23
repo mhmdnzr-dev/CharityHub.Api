@@ -71,6 +71,17 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<ApplicationUserToken>().ToTable("AspNetUserTokens", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AspNetUserClaims", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AspNetUserLogins", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("AspNetRoleClaims", "Sso", t => t.ExcludeFromMigrations());
+
+        
+        
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly(),
             type => type.Name.EndsWith("WriteConfiguration"));
     }

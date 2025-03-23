@@ -25,10 +25,10 @@ public class Program
                     partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
-                        PermitLimit = 5, // حداکثر ۵ درخواست در بازه زمانی
-                        Window = TimeSpan.FromSeconds(30), // در هر ۳۰ ثانیه
+                        PermitLimit = 5, 
+                        Window = TimeSpan.FromSeconds(30), 
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = 0 // هیچ درخواستی در صف منتظر نمی‌ماند
+                        QueueLimit = 0
                     }));
 
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

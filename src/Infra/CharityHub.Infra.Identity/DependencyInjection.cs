@@ -16,32 +16,31 @@ using Microsoft.IdentityModel.Tokens;
 namespace CharityHub.Infra.Identity;
 
 
+
 public static class DependencyInjection
 {
-    public static void AddIdentity(this IServiceCollection services,IConfiguration configuration)
+    public static void AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
- 
-
-        // Register Identity services
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<CharityHubCommandDbContext>()
             .AddDefaultTokenProviders();
 
+        services.ConfigureAuthentication(configuration);
+        services.ConfigureAuthorization();
 
-        // Register policies for access control
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("CanViewDonations", policy =>
-                policy.RequireRole("Admin", "Manager"));
-        });
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IOTPService, KavenegarOtpService>();
+    }
 
-        // Add authentication and authorization
+    private static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options =>
+        .AddJwtBearer("Identity", options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -57,20 +56,38 @@ public static class DependencyInjection
             {
                 OnTokenValidated = context =>
                 {
-                    var userClaims = context.Principal.Claims;
-                    // Example: Extract roles or custom claims
-                    var roles = userClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
-                    var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")?.Value;
-
-                    // Perform additional validation or processing if necessary
+                    if (context.Principal is not null)
+                    {
+                        var userClaims = context.Principal.Claims.ToList();
+                        var roles = userClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+                        var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")!.Value;
+                    }
                     return Task.CompletedTask;
                 }
             };
+        })
+        .AddJwtBearer("OpenId", options =>
+        {
+            options.Authority = configuration["OpenId:Authority"];
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false
+            };
         });
-
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IOTPService, KavenegarOtpService>();
-
     }
-}
+
+    private static void ConfigureAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "scope_sapplus");
+            });
+
+            options.AddPolicy("CanViewDonations", policy =>
+                policy.RequireRole("Admin", "Manager"));
+        });
+    }
+} 
