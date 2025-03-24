@@ -7,6 +7,7 @@ using Core.Contract.Primitives.Models;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
@@ -67,19 +68,13 @@ public class CharityController : BaseController
     }
 
 
-    /// <summary>
-    /// Creates a new charity with the provided details.
-    /// </summary>
-    /// <param name="command">The request containing the charity details.</param>
-    /// <returns>The created charity's details or an appropriate error response.</returns>
+  
     [HttpPost("create-charity")]
     [MapToApiVersion("2.0")]
     [Authorize]
     [SwaggerOperation(Summary = "Create a new Charity",
         Description = "Creates a new charity with the provided name, description, and other details.")]
     [SwaggerResponse(201, "Charity created successfully", typeof(int))]
-    [SwaggerResponse(400, "Bad Request, invalid input data")]
-    [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> Get([FromBody] CreateCharityCommand command)
     {
         var result = await _mediator.Send(command);

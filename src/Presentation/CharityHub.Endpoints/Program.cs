@@ -100,6 +100,8 @@ public class Program
         app.UseOutputCache();
         app.UseRouting();
         app.UseAuthentication();
+        app.UseAuthorization();
+
 
         if (!Directory.Exists(staticFilesPath))
         {
@@ -125,7 +127,8 @@ public class Program
         app.UseFluentValidationMiddleware();
         app.UseStaticFileResponseMiddleware();
         app.UseAuthorization();
-        app.UseTokenValidationMiddleware();
+      
+        
         app.UsePagedDataResponseMiddleware();
         app.UseBaseResponseMiddleware();
         app.UseExceptionResponseMiddleware();

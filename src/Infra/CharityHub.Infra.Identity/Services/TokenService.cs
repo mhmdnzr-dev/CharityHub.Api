@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 
 using Core.Contract.Configuration.Models;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 using Models;
@@ -29,12 +30,14 @@ public class TokenService : ITokenService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly CharityHubCommandDbContext _commandDbContext;
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
     public TokenService(IOptions<JwtOptions> options, UserManager<ApplicationUser> userManager,
-        CharityHubCommandDbContext commandDbContext)
+        CharityHubCommandDbContext commandDbContext, IHttpContextAccessor httpContextAccessor)
     {
         _options = options;
         _userManager = userManager;
         _commandDbContext = commandDbContext;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<GenerateTokenResponse> GenerateTokenAsync(GenerateTokenRequest request)
@@ -121,70 +124,26 @@ public class TokenService : ITokenService
 
     public async Task<GetUserByTokenResponse> GetUserByTokenAsync(GetUserByTokenRequest request)
     {
-        if (string.IsNullOrEmpty(request.Token))
-            throw new ArgumentNullException(nameof(request.Token), "Token cannot be null or empty.");
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_options.Value.Key);
+        if (string.IsNullOrEmpty(userId))
+            throw new SecurityTokenException("User ID claim not found in token.");
 
-        try
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new SecurityTokenException("User not found.");
+
+        return new GetUserByTokenResponse
         {
-            var parameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _options.Value.Issuer,
-                ValidAudience = _options.Value.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ClockSkew = TimeSpan.Zero // Prevents allowing expired tokens due to default clock skew
-            };
-
-            var principal = tokenHandler.ValidateToken(request.Token, parameters, out var validatedToken);
-            if (validatedToken is not JwtSecurityToken jwtToken)
-                throw new SecurityTokenException("Invalid token");
-
-            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-
-            if (string.IsNullOrEmpty(userId))
-                throw new SecurityTokenException("User ID claim not found in token.");
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-
-            if (user == null)
-                throw new SecurityTokenException("User not found.");
-
-
-            var isTokenValid = await _commandDbContext.UserTokens
-                .AnyAsync(t => t.UserId == user.Id);
-
-            if (!isTokenValid)
-            {
-                throw new SecurityTokenException("Token has been invalidated or expired.");
-            }
-
-            return new GetUserByTokenResponse
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                Issuer = jwtToken.Issuer,
-                Audience = jwtToken.Audiences.FirstOrDefault(),
-                Expiration = jwtToken.ValidTo,
-                ClaimsPrincipal = GetUserDetailsFromToken(request.Token)
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new SecurityTokenException("Token validation failed.", ex);
-        }
+            Id = user.Id,
+            UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+         
+        };
     }
-    
+
     public async Task<bool> IsTokenValidAsync(string token)
     {
         return await _commandDbContext.ApplicationUserTokens.AnyAsync(t => t.Value == token);

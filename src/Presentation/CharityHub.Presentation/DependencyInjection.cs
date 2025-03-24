@@ -124,11 +124,7 @@ public static class DependencyInjection
     }
 
 
-    public static void UseTokenValidationMiddleware(this IApplicationBuilder builder)
-    {
-        builder.UseMiddleware<TokenValidationMiddleware>();
-    }
-
+ 
     public static void UseFluentValidationMiddleware(this IApplicationBuilder builder)
     {
         builder.UseMiddleware<FluentValidationResponseMiddleware>();

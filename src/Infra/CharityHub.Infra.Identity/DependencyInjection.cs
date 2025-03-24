@@ -15,7 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CharityHub.Infra.Identity;
 
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 public static class DependencyInjection
 {
@@ -35,59 +36,61 @@ public static class DependencyInjection
 
     private static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        
+   
+
+
+        // Add authentication and authorization
         services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer("Identity", options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
-                ValidAudience = configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
-            };
-            options.Events = new JwtBearerEvents
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
             {
-                OnTokenValidated = context =>
+                options.Authority = "https://localhost:5001"; 
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    if (context.Principal is not null)
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    // ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
                     {
-                        var userClaims = context.Principal.Claims.ToList();
+                        var userClaims = context.Principal.Claims;
+                        // Example: Extract roles or custom claims
                         var roles = userClaims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
-                        var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")!.Value;
+                        var customClaim = userClaims.FirstOrDefault(c => c.Type == "CustomClaimType")?.Value;
+
+                        // Perform additional validation or processing if necessary
+                        return Task.CompletedTask;
                     }
-                    return Task.CompletedTask;
-                }
-            };
-        })
-        .AddJwtBearer("OpenId", options =>
-        {
-            options.Authority = configuration["OpenId:Authority"];
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false
-            };
-        });
+                };
+            });
+
+
+     
     }
 
     private static void ConfigureAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "scope_sapplus");
-            });
-
             options.AddPolicy("CanViewDonations", policy =>
                 policy.RequireRole("Admin", "Manager"));
+            
+            options.AddPolicy("Organization.Read", policy =>
+                policy.RequireClaim("scope", "organization.read"));
+            options.AddPolicy("Organization.Write", policy =>
+                policy.RequireClaim("scope", "organization.write"));
         });
     }
 } 
+
