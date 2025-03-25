@@ -102,31 +102,17 @@ public static class DependencyInjection
         });
     }
 
-    public static void UseExceptionResponseMiddleware(this IApplicationBuilder builder)
-    {
-        builder.UseMiddleware<ExceptionResponseMiddleware>();
-    }
-
-    public static void UsePagedDataResponseMiddleware(this IApplicationBuilder builder)
-    {
-        builder.UseMiddleware<PagedDataResponseMiddleware>();
-    }
-
-
+  
+    
+    
+    
     public static void UseBaseResponseMiddleware(this IApplicationBuilder builder)
     {
         builder.UseMiddleware<BaseResponseMiddleware>();
     }
 
-    public static void UseStaticFileResponseMiddleware(this IApplicationBuilder builder)
-    {
-        builder.UseMiddleware<StaticFileMiddleware>();
-    }
 
+    
 
  
-    public static void UseFluentValidationMiddleware(this IApplicationBuilder builder)
-    {
-        builder.UseMiddleware<FluentValidationResponseMiddleware>();
-    }
 }

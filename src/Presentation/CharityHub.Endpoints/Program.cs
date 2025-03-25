@@ -2,6 +2,8 @@ namespace CharityHub.Endpoints;
 
 using System.Threading.RateLimiting;
 
+using Core.Contract.Primitives.Models;
+
 using Infra.Sql.Data.DbContexts;
 using Infra.Sql.Data.SeedData;
 using Infra.Sql.Extensions;
@@ -13,7 +15,9 @@ using Microsoft.Extensions.FileProviders;
 
 using Serilog;
 
-public class Program
+
+
+public sealed class Program
 {
     public static async Task Main(string[] args)
     {
@@ -49,7 +53,7 @@ public class Program
 
         var staticFilesPath = Path.Combine(Directory.GetCurrentDirectory(), uploadDirectory);
 
-        builder.Services.Configure<StaticFileMiddlewareOptions>(options =>
+        builder.Services.Configure<StaticFileDto>(options =>
         {
             options.StaticFilePath = staticFilesPath;
             options.RequestPath = $"/{uploadDirectory}";
@@ -124,13 +128,9 @@ public class Program
         });
 
  
-        app.UseFluentValidationMiddleware();
-        app.UseStaticFileResponseMiddleware();
-        app.UseAuthorization();
-      
+ 
         
-        app.UsePagedDataResponseMiddleware();
         app.UseBaseResponseMiddleware();
-        app.UseExceptionResponseMiddleware();
+     
     }
 }

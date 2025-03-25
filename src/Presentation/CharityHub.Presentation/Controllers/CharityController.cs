@@ -33,13 +33,10 @@ public class CharityController : BaseController
     /// <returns>A response containing the list of charities.</returns>
     [HttpGet("get-all")]
     [MapToApiVersion("1.0")]
-    [OutputCache(PolicyName = "Expire20")]
     [SwaggerOperation(Summary = "Get All Charities",
         Description = "Retrieves all charities based on the provided query parameters.")]
     [SwaggerResponse(200, "Charities retrieved successfully",
         typeof(PagedData<AllCharitiesResponseDto>))] // Replace with your actual response DTO
-    [SwaggerResponse(400, "Bad Request, invalid query parameters")]
-    [SwaggerResponse(500, "Internal Server Error")]
     public async Task<IActionResult> Get([FromQuery] GetAllCharitiesQuery query)
     {
         var result = await _mediator.Send(query);
