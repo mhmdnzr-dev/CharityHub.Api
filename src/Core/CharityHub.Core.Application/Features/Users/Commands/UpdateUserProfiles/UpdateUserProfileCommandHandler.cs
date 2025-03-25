@@ -23,7 +23,7 @@ public class UpdateUserProfileCommandHandler : CommandHandlerBase<UpdateUserProf
         _userManager = userManager;
         _logger = logger;
     }
-    public override async Task<int> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
+    public override async Task<int> Handle(UpdateUserProfileCommand command, CancellationToken cancellationToken)
     {
         var userDetails = await GetUserDetailsAsync();
 
@@ -34,8 +34,8 @@ public class UpdateUserProfileCommandHandler : CommandHandlerBase<UpdateUserProf
             throw new Exception("User not found");
         }
 
-        existingUser.FirstName = request.FirstName;
-        existingUser.LastName = request.LastName;
+        existingUser.FirstName = command.FirstName;
+        existingUser.LastName = command.LastName;
 
         var result = await _userManager.UpdateAsync(existingUser);
 

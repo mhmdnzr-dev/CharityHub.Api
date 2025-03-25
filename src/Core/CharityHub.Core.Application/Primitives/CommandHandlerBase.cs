@@ -21,7 +21,7 @@ public abstract class CommandHandlerBase<TCommand> : ICommandHandler<TCommand>
         _httpContextAccessor = httpContextAccessor; // Assign it here
     }
 
-    public abstract Task<int> Handle(TCommand request, CancellationToken cancellationToken);
+    public abstract Task<int> Handle(TCommand command, CancellationToken cancellationToken);
 
     protected string GetTokenFromHeader()
     {
