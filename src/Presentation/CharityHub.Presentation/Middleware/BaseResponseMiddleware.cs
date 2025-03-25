@@ -50,30 +50,34 @@ internal sealed class BaseResponseMiddleware
                 object parsedData;
                 try
                 {
-                    parsedData = JsonSerializer.Deserialize<object>(responseBody);
+                    parsedData = JsonSerializer.Deserialize<JsonElement>(responseBody);
                 }
                 catch
                 {
                     parsedData = responseBody;
                 }
 
-                if (parsedData is JsonElement jsonElement &&
-                    jsonElement.TryGetProperty("data", out var dataElement) &&
-                    dataElement.TryGetProperty("items", out var itemsElement) &&
-                    (itemsElement.ValueKind == JsonValueKind.Null || (itemsElement.ValueKind == JsonValueKind.Array &&
-                                                                      itemsElement.GetArrayLength() == 0)))
+                if (parsedData is JsonElement jsonElement)
                 {
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(
-                        new BaseApiResponse<string>
+                    if (jsonElement.ValueKind == JsonValueKind.Array)
+                    {
+                        if (jsonElement.GetArrayLength() == 0)
                         {
-                            Success = false,
-                            Data = null,
-                            ErrorMessage = "Not found!",
-                            StatusCode = StatusCodes.Status404NotFound
-                        }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-                    return;
+                            await WriteNotFoundResponseAsync(context);
+                            return;
+                        }
+                    }
+                    else if (jsonElement.ValueKind == JsonValueKind.Object)
+                    {
+                        if (jsonElement.TryGetProperty("data", out var dataElement) &&
+                            dataElement.TryGetProperty("items", out var itemsElement) &&
+                            (itemsElement.ValueKind == JsonValueKind.Null ||
+                             (itemsElement.ValueKind == JsonValueKind.Array && itemsElement.GetArrayLength() == 0)))
+                        {
+                            await WriteNotFoundResponseAsync(context);
+                            return;
+                        }
+                    }
                 }
 
                 var baseResponse = new BaseApiResponse<object>
@@ -139,6 +143,22 @@ internal sealed class BaseResponseMiddleware
 
         var jsonResponse = JsonSerializer.Serialize(response,
             new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        return context.Response.WriteAsync(jsonResponse);
+    }
+
+    private static Task WriteNotFoundResponseAsync(HttpContext context)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        context.Response.ContentType = "application/json";
+
+        var response = new BaseApiResponse<string>
+        {
+            Success = false, Data = null, ErrorMessage = "Not found!", StatusCode = StatusCodes.Status404NotFound
+        };
+
+        var jsonResponse = JsonSerializer.Serialize(response,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
         return context.Response.WriteAsync(jsonResponse);
     }
 }
