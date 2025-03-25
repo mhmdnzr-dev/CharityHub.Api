@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
@@ -61,9 +62,11 @@ public class CampaignController : BaseController
         return Ok(result);
     }
     
-    [HttpPost("create-campaign-by-charity-id")]
+    
+    [Authorize]
     [MapToApiVersion("2.0")]
-    [SwaggerResponse(200, "Campaigns retrieved successfully", typeof(PagedData<CampaignsByCharityIdResponseDto>))] 
+    [HttpPost("create-campaign-by-charity-id")]
+    [SwaggerResponse(200, "Campaigns added successfully", typeof(int))] 
     public async Task<IActionResult> Post([FromBody] CreateCampaignByCharityIdCommand command)
     {
         var result = await _mediator.Send(command);
