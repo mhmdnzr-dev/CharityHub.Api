@@ -1,6 +1,5 @@
 namespace CharityHub.Infra.Sql.Repositories.Charities;
 
-
 using Core.Contract.Primitives.Models;
 using Core.Domain.Entities;
 
@@ -23,7 +22,7 @@ public class CharityQueryRepository(
     CharityHubQueryDbContext queryDbContext,
     ILogger<CharityQueryRepository> logger,
     IOptions<FileOptions> options
-    ) 
+)
     : QueryRepository<Charity>(queryDbContext), ICharityQueryRepository
 {
     public async Task<PagedData<AllCharitiesResponseDto>> GetAllAsync(GetAllCharitiesQuery query)
@@ -123,7 +122,15 @@ public class CharityQueryRepository(
             BannerUriAddress = !string.IsNullOrEmpty(query.BannerFilePath)
                 ? $"{query.BannerFilePath.Replace("\\", "/")}"
                 : $"/uploads/default-banner.jpg",
-            Socials = socials
+            Socials = socials,
+            CityId = query.Charity.CityId,
+            CreatedAt = query.Charity.CreatedAt,
+            ContactName = query.Charity.ContactName,
+            ContactPhone = query.Charity.ContactPhone,
+            Telephone = query.Charity.Telephone,
+            ManagerName = query.Charity.ManagerName,
+            Address = query.Charity.Address,
+            Website = query.Charity.Website,
         };
 
         #endregion

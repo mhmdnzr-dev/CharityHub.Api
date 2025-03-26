@@ -31,7 +31,7 @@ public class CampaignController : BaseController
     [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get all campaigns", Description = "Retrieve a list of campaigns based on query parameters.")]
     [SwaggerResponse(200, "The list of campaigns", typeof(List<AllCampaignResponseDto>))] 
-    public async Task<IActionResult> Get([FromQuery] GetAllCampaignQuery query)
+    public async Task<IActionResult> GetAllCampaigns([FromQuery] GetAllCampaignQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);
@@ -42,7 +42,7 @@ public class CampaignController : BaseController
     [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Campaign by ID", Description = "Retrieves a campaign based on the provided campaign ID.")]
     [SwaggerResponse(200, "Campaign retrieved successfully", typeof(CampaignByIdResponseDto))] 
-    public async Task<IActionResult> Get([FromQuery] GetCampaignByIdQuery query)
+    public async Task<IActionResult> GetCampaignById([FromQuery] GetCampaignByIdQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);
@@ -56,7 +56,18 @@ public class CampaignController : BaseController
     [OutputCache(PolicyName = "Expire20")]  
     [SwaggerOperation(Summary = "Get Campaigns by Charity ID", Description = "Retrieves all campaigns associated with a specific charity identified by its charity ID.")]
     [SwaggerResponse(200, "Campaigns retrieved successfully", typeof(PagedData<CampaignsByCharityIdResponseDto>))] 
-    public async Task<IActionResult> Get([FromQuery] GetCampaignsByCharityIdQuery query)
+    public async Task<IActionResult> GetCampaignsByCharityIdMobile([FromQuery] GetCampaignsByCharityIdQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+    
+    [HttpGet("get-by-charity-id")]
+    [MapToApiVersion("2.0")]
+    [OutputCache(PolicyName = "Expire20")]  
+    [SwaggerOperation(Summary = "Get Campaigns by Charity ID", Description = "Retrieves all campaigns associated with a specific charity identified by its charity ID.")]
+    [SwaggerResponse(200, "Campaigns retrieved successfully", typeof(PagedData<CampaignsByCharityIdResponseDto>))] 
+    public async Task<IActionResult> GetCampaignsByCharityIdPanel([FromQuery] GetCampaignsByCharityIdQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);

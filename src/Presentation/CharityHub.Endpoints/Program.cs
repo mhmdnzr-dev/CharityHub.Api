@@ -22,21 +22,23 @@ public sealed class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddRateLimiter(options =>
-        {
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
-                httpContext => RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",
-                    factory: _ => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 5, 
-                        Window = TimeSpan.FromSeconds(30), 
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = 0
-                    }));
-
-            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-        });
+        
+        // TODO: uncomment on production to prevent DDOS attacks
+        // builder.Services.AddRateLimiter(options =>
+        // {
+        //     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
+        //         httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        //             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "global",
+        //             factory: _ => new FixedWindowRateLimiterOptions
+        //             {
+        //                 PermitLimit = 5, 
+        //                 Window = TimeSpan.FromSeconds(30), 
+        //                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+        //                 QueueLimit = 0
+        //             }));
+        //
+        //     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        // });
         
         builder.Services.AddHttpClient();
         Log.Logger = new LoggerConfiguration()
@@ -98,7 +100,8 @@ public sealed class Program
 
     private static void ConfigureMiddleware(WebApplication app, string staticFilesPath, string uploadDirectory)
     {
-        app.UseRateLimiter();
+        // TODO: uncomment on production to prevent DDOS attacks
+        // app.UseRateLimiter();
         app.UseHttpsRedirection();
         app.UseCors("CorsPolicy");
         app.UseOutputCache();
