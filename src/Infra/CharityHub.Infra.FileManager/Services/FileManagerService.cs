@@ -49,7 +49,7 @@ public sealed class FileManagerService : IFileManagerService
 
             _logger.LogInformation("File {FileName} uploaded successfully to {FilePath}", fileName, filePath);
 
-            return new UpdateFileResponseModel { FileName = fileName, FilePath = filePath };
+            return new UpdateFileResponseModel { FileName = fileName, FilePath = filePath, IsSuccess = true };
         }
         catch (UnauthorizedAccessException ex)
         {

@@ -110,4 +110,28 @@ public sealed class Charity : BaseEntity
 
         _campaigns.Remove(campaign);
     }
+  
+
+    public void UpdateDetails(
+        string name,
+        string description,
+        string website,
+        string address,
+        int? cityId,
+        string telephone,
+        string managerName,
+        string contactName,
+        string contactPhone
+    )
+    {
+        Name = name;
+        Description = description;
+        Website = website;
+        Address = address;
+        CityId = cityId;
+        Telephone = telephone;
+        ManagerName = managerName;
+        ContactName = contactName;
+        ContactPhone = contactPhone;
+    }
 }

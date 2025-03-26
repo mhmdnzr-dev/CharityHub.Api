@@ -1,6 +1,7 @@
 namespace CharityHub.Presentation.Controllers;
 
 using Core.Contract.Features.Charity.Commands.CreateCharity;
+using Core.Contract.Features.Charity.Commands.UpdateCharity;
 using Core.Contract.Features.Charity.Queries.GetAllCharities;
 using Core.Contract.Features.Charity.Queries.GetCharityById;
 using Core.Contract.Primitives.Models;
@@ -86,10 +87,19 @@ public class CharityController : BaseController
     [HttpPost("create-charity")]
     [MapToApiVersion("2.0")]
     [Authorize]
-    [SwaggerOperation(Summary = "Create a new Charity",
-        Description = "Creates a new charity with the provided name, description, and other details.")]
+   
     [SwaggerResponse(201, "Charity created successfully", typeof(int))]
     public async Task<IActionResult> Get([FromBody] CreateCharityCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+    
+    [HttpPatch("update-charity-by-id")]
+    [MapToApiVersion("2.0")]
+    [Authorize]
+    [SwaggerResponse(200, "Charity updated successfully", typeof(int))]
+    public async Task<IActionResult> UpdateCharity([FromBody] UpdateCharityCommand command)
     {
         var result = await _mediator.Send(command);
         return Ok(result);
