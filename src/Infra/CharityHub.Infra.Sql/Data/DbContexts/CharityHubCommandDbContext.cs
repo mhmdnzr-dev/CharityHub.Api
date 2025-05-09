@@ -72,13 +72,13 @@ public sealed class CharityHubCommandDbContext : IdentityDbContext<ApplicationUs
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<ApplicationUserToken>().ToTable("AspNetUserTokens", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AspNetUserClaims", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AspNetUserLogins", "Sso", t => t.ExcludeFromMigrations());
-        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("AspNetRoleClaims", "Sso", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<ApplicationUserToken>().ToTable("AspNetUserTokens", "Sso");
+        modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "Sso");
+        modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles", "Sso");
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AspNetUserClaims", "Sso");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AspNetUserRoles", "Sso");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AspNetUserLogins", "Sso");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("AspNetRoleClaims", "Sso");
 
         
         

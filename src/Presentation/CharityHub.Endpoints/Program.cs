@@ -7,6 +7,9 @@ using Core.Contract.Primitives.Models;
 using Infra.Sql.Data.DbContexts;
 using Infra.Sql.Data.SeedData;
 using Infra.Sql.Extensions;
+
+using Microsoft.AspNetCore.DataProtection;
+
 using Presentation;
 using Presentation.Middleware;
 
@@ -22,6 +25,10 @@ public sealed class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo("/home/app/.aspnet/DataProtection-Keys"))
+            .SetApplicationName("CharityHubApi");
         
         // TODO: uncomment on production to prevent DDOS attacks
         // builder.Services.AddRateLimiter(options =>

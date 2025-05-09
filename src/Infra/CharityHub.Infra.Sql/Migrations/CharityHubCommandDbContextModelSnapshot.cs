@@ -322,10 +322,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetRoles", "Sso");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Identity.ApplicationUser", b =>
@@ -402,10 +399,7 @@ namespace CharityHub.Infra.Sql.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUsers", "Sso");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Identity.ApplicationUserToken", b =>
@@ -431,10 +425,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserTokens", "Sso");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.Message", b =>
@@ -676,10 +667,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetRoleClaims", "Sso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -703,10 +691,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserClaims", "Sso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -727,10 +712,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserLogins", "Sso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -745,10 +727,7 @@ namespace CharityHub.Infra.Sql.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", "Sso", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserRoles", "Sso");
                 });
 
             modelBuilder.Entity("CharityHub.Core.Domain.Entities.ApplicationUserTerm", b =>
